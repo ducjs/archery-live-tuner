@@ -5,6 +5,16 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 - Specification: [recurve-tuning-simulator-spec.md](recurve-tuning-simulator-spec.md)
 - Phase tracker: [ROADMAP.md](ROADMAP.md)
 
+## What it does today
+
+- Bow and arrow inputs, in Simple and Advanced detail
+- Arrow flight seen from above, from the side, or both, with a bare shaft flown next to the fletched arrow
+- Play, pause, a slider to jump to any moment, playback from 1/48 of real time up to real speed, and target distances from 18 m to 90 m
+- Model result: dynamic behavior, lateral and vertical tendency, oscillation, clearance sensitivity, bare shaft test
+- Tuning suggestions in order of priority, each with a button to try it
+
+A 3D view of the bow is being tried out on the `preview/3d-bow` branch.
+
 ## Requirements
 
 - Node.js 22 or newer

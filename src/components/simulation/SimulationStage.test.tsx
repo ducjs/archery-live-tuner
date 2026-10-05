@@ -8,11 +8,11 @@ import { FlightView, PlaybackControls, type ViewSettings } from './SimulationSta
 
 afterEach(cleanup)
 
-const settings: ViewSettings = { view: 'top', speed: 1, exaggeration: 3 }
+const settings: ViewSettings = { view: 'top', distance: 18, speed: 1, exaggeration: 3 }
 const noop = () => {}
 
 describe('PlaybackControls', () => {
-  it('offers the view choice, but not speed or amplification, outside Advanced', async () => {
+  it('offers view, distance and speed, but not amplification, outside Advanced', async () => {
     const onSettingsChange = vi.fn()
     render(
       <PlaybackControls
@@ -31,11 +31,27 @@ describe('PlaybackControls', () => {
       'Top',
       'Side',
       'Both',
+      '18 m',
+      '30 m',
+      '50 m',
+      '70 m',
+      '90 m',
+      '1/48',
+      '1/24',
+      '1/12',
+      '1/6',
+      'Real',
     ])
     expect(screen.queryByRole('slider')).toBeNull()
 
     await userEvent.click(screen.getByRole('radio', { name: 'Both' }))
     expect(onSettingsChange).toHaveBeenLastCalledWith({ ...settings, view: 'both' })
+
+    await userEvent.click(screen.getByRole('radio', { name: '70 m' }))
+    expect(onSettingsChange).toHaveBeenLastCalledWith({ ...settings, distance: 70 })
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Real' }))
+    expect(onSettingsChange).toHaveBeenLastCalledWith({ ...settings, speed: 12 })
   })
 
   it('reports view, speed and amplification changes', async () => {
@@ -57,7 +73,7 @@ describe('PlaybackControls', () => {
     await userEvent.click(screen.getByRole('radio', { name: 'Side' }))
     expect(onSettingsChange).toHaveBeenLastCalledWith({ ...settings, view: 'side' })
 
-    await userEvent.click(screen.getByRole('radio', { name: '0.25×' }))
+    await userEvent.click(screen.getByRole('radio', { name: '1/48' }))
     expect(onSettingsChange).toHaveBeenLastCalledWith({ ...settings, speed: 0.25 })
 
     fireEvent.change(screen.getByRole('slider', { name: 'Amplify' }), { target: { value: '5' } })
@@ -77,6 +93,22 @@ describe('PlaybackControls', () => {
       />,
     )
     expect(screen.getByText(/Slowed 48 times/)).toBeTruthy()
+  })
+
+  it('says so when playing at real speed', () => {
+    render(
+      <PlaybackControls
+        playing
+        onToggle={noop}
+        onRestart={noop}
+        bareShaft
+        onBareShaftChange={noop}
+        settings={{ ...settings, speed: 12 }}
+        onSettingsChange={noop}
+      />,
+    )
+    expect(screen.getByText(/Real speed\./)).toBeTruthy()
+    expect(screen.queryByText(/Slowed/)).toBeNull()
   })
 })
 

@@ -4,7 +4,9 @@ import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
 import { SCENE } from './timing.ts'
 
 // Visual amplification. The drawing is not to scale.
-const PIXELS_PER_MM = 0.3
+const MAX_PIXELS_PER_MM = 0.3
+/** Tallest the arc may be drawn, so a long shot still fits in the frame. */
+const MAX_RISE_PIXELS = 105
 const ANGLE_GAIN = 3
 const DIRECTION_STEP = 0.004
 const TRAIL_STEP = 6
@@ -24,11 +26,19 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
 
+  // Both arrows share one vertical scale, small enough for the highest point of the arc.
+  const highest = Math.max(
+    ...[result, ...(bare ? [bare] : [])].flatMap((flight) =>
+      flight.trajectory.map((point) => Math.abs(point.y)),
+    ),
+  )
+  const pixelsPerMm = Math.min(MAX_PIXELS_PER_MM, MAX_RISE_PIXELS / Math.max(highest, 1))
+
   const startX = SCENE.bowX + SCENE.arrowLength / 2
   const endX = SCENE.targetX - SCENE.arrowLength / 2
   const project = (x: number, y: number): ScreenPoint => ({
     x: startX + (x / distance) * (endX - startX),
-    y: SCENE.centerY - y * PIXELS_PER_MM,
+    y: SCENE.centerY - y * pixelsPerMm,
   })
 
   const fly = (flight: SimulationResult) => {
