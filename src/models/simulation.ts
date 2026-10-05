@@ -50,6 +50,26 @@ export type SimulationMetrics = {
   launchSpeed: number
 }
 
+/**
+ * The bare shaft test: a shaft without fletching, weighted to match, shot with
+ * the fletched arrows. Fletching steers an arrow back toward the line, so the
+ * bare shaft shows the launch error that the fletched arrows hide.
+ */
+export type BareShaftComparison = {
+  fletched: SimulationResult
+  bare: SimulationResult
+  /** Where the bare shaft lands relative to the fletched arrows. */
+  horizontal: 'LEFT' | 'TOGETHER' | 'RIGHT'
+  vertical: 'LOW' | 'TOGETHER' | 'HIGH'
+  /** Offset of the bare shaft from the fletched arrows, on the -1..+1 scales. */
+  offset: {
+    /** positive = right */
+    lateral: number
+    /** positive = high */
+    vertical: number
+  }
+}
+
 export type SimulationResult = {
   setupId: string
   modelVersion: string

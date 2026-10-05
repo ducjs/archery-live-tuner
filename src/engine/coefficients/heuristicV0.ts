@@ -96,6 +96,13 @@ export const HEURISTIC_V0 = {
     driftSlope: 1 / 200,
   },
 
+  fletching: {
+    /** Largest share of the launch error that fletching can steer out. */
+    maxCorrection: 0.6,
+    /** Grains of fletching at which about two thirds of that is reached. */
+    correctionScale: 3.5,
+  },
+
   clearance: {
     base: 0.15,
     mismatch: 0.5,
@@ -119,6 +126,7 @@ export const HEURISTIC_V0 = {
     stiffnessNeutral: 0.2,
     lateralNeutral: 0.15,
     verticalNeutral: 0.15,
+    bareShaftTogether: 0.05,
     oscillationMedium: 0.35,
     oscillationHigh: 0.65,
     clearanceMedium: 0.33,

@@ -1,4 +1,5 @@
 import type {
+  BareShaftComparison,
   SimulationMetrics,
   SimulationResult,
   TuningClassification,
@@ -24,16 +25,30 @@ export type Analysis = {
 export type SimulationModel = {
   readonly version: string
   /** Metrics and classification only. Cheap enough to run over a grid of setups. */
-  analyze(setup: SetupInput): Analysis
-  simulate(setup: SetupInput, options?: TrajectoryOptions): SimulationResult
+  analyze(setup: SetupInput, options?: SimulateOptions): Analysis
+  simulate(setup: SetupInput, options?: SimulateOptions): SimulationResult
+  /** Flies a bare shaft next to the fletched arrow and reports where it lands. */
+  compareBareShaft(setup: SetupInput, options?: SimulateOptions): BareShaftComparison
+}
+
+export type SimulateOptions = {
+  /**
+   * Fly the arrow as a bare shaft: no steering or damping from fletching. The
+   * mass is kept, as with a bare shaft taped to match the fletched arrows.
+   */
+  bareShaft?: boolean
+  trajectory?: TrajectoryOptions
 }
 
 type Internals = Analysis & {
   verticalTendency: number
+  driftFactor: number
   flexDirection: 1 | -1
 }
 
-function evaluate(setup: SetupInput, c: Coefficients): Internals {
+const GRAMS_PER_GRAIN = 0.06479891
+
+function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Internals {
   const { bow, arrow } = setup
   const { reference } = c
 
@@ -57,9 +72,15 @@ function evaluate(setup: SetupInput, c: Coefficients): Internals {
       c.oscillation.bowInertia * Math.log(relativeBowInertia(bow, c)),
   )
 
+  // Fletching steers the arrow back toward the line and damps its wobble.
+  const fletchingGrains = bareShaft ? 0 : arrow.fletchingWeight / GRAMS_PER_GRAIN
+  const driftFactor =
+    1 - c.fletching.maxCorrection * (1 - Math.exp(-fletchingGrains / c.fletching.correctionScale))
+
   // Right-handed: a weak arrow goes right, a stiff arrow goes left.
   const lateralDeviation =
     side *
+    driftFactor *
     Math.tanh(
       -c.lateral.behavior * dynamicBehavior +
         c.lateral.perMmCenterShot * centerShot +
@@ -88,8 +109,7 @@ function evaluate(setup: SetupInput, c: Coefficients): Internals {
   )
 
   const oscillationDecay =
-    c.oscillation.baseDecay +
-    c.oscillation.decayPerGrainFletching * (arrow.fletchingWeight / 0.06479891)
+    c.oscillation.baseDecay + c.oscillation.decayPerGrainFletching * fletchingGrains
   const stabilityTime =
     Math.log(Math.max(oscillation, c.oscillation.settledLevel) / c.oscillation.settledLevel) /
     oscillationDecay
@@ -114,6 +134,7 @@ function evaluate(setup: SetupInput, c: Coefficients): Internals {
     metrics,
     classification: classify(metrics, c),
     verticalTendency,
+    driftFactor,
     // The first bend is toward the riser.
     flexDirection: side,
   }
@@ -123,28 +144,54 @@ export function createHeuristicModel(coefficients: Coefficients = HEURISTIC_V0):
   return {
     version: coefficients.version,
 
-    analyze(setup) {
-      const { metrics, classification } = evaluate(setup, coefficients)
+    analyze(setup, options) {
+      const { metrics, classification } = evaluate(setup, coefficients, options?.bareShaft)
       return { metrics, classification }
     },
 
-    simulate(setup, options) {
-      const { metrics, classification, verticalTendency, flexDirection } = evaluate(
-        setup,
-        coefficients,
-      )
+    simulate,
+
+    compareBareShaft(setup, options) {
+      const fletched = simulate(setup, { ...options, bareShaft: false })
+      const bare = simulate(setup, { ...options, bareShaft: true })
+      const fletchedEnd = fletched.trajectory.at(-1)!
+      const bareEnd = bare.trajectory.at(-1)!
+
+      const offset = {
+        lateral:
+          ((bareEnd.z ?? 0) - (fletchedEnd.z ?? 0)) / (bareEnd.x * coefficients.lateral.driftSlope),
+        vertical: (bareEnd.y - fletchedEnd.y) / (bareEnd.x * coefficients.vertical.driftSlope),
+      }
+      const together = coefficients.thresholds.bareShaftTogether
       return {
-        setupId: setup.id,
-        modelVersion: coefficients.version,
-        classification,
-        metrics,
-        trajectory: buildTrajectory(
-          { metrics, verticalTendency, flexDirection },
-          coefficients,
-          options,
-        ),
+        fletched,
+        bare,
+        offset,
+        horizontal:
+          offset.lateral < -together ? 'LEFT' : offset.lateral > together ? 'RIGHT' : 'TOGETHER',
+        vertical:
+          offset.vertical < -together ? 'LOW' : offset.vertical > together ? 'HIGH' : 'TOGETHER',
       }
     },
+  }
+
+  function simulate(setup: SetupInput, options?: SimulateOptions): SimulationResult {
+    const { metrics, classification, verticalTendency, driftFactor, flexDirection } = evaluate(
+      setup,
+      coefficients,
+      options?.bareShaft,
+    )
+    return {
+      setupId: setup.id,
+      modelVersion: coefficients.version,
+      classification,
+      metrics,
+      trajectory: buildTrajectory(
+        { metrics, verticalTendency, driftFactor, flexDirection },
+        coefficients,
+        options?.trajectory,
+      ),
+    }
   }
 }
 

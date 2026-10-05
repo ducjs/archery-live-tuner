@@ -194,6 +194,62 @@ describe('properties over all valid setups', () => {
   })
 })
 
+describe('bare shaft test', () => {
+  const weak = withDisplay(reference, 'arrow.spine', 900)
+
+  it('lands together with the fletched arrows for the reference setup', () => {
+    const comparison = heuristicModel.compareBareShaft(reference)
+    expect(comparison.horizontal).toBe('TOGETHER')
+    expect(comparison.vertical).toBe('TOGETHER')
+  })
+
+  it('lands right of the fletched arrows when a right-handed setup is weak', () => {
+    const comparison = heuristicModel.compareBareShaft(weak)
+    expect(comparison.horizontal).toBe('RIGHT')
+    expect(comparison.offset.lateral).toBeGreaterThan(0)
+    // Both go the same way; the bare shaft goes further.
+    expect(comparison.fletched.metrics.lateralDeviation).toBeGreaterThan(0)
+    expect(comparison.bare.metrics.lateralDeviation).toBeGreaterThan(
+      comparison.fletched.metrics.lateralDeviation,
+    )
+  })
+
+  it('lands left when the setup is stiff, and mirrors for a left-handed archer', () => {
+    const stiff = withDisplay(reference, 'arrow.spine', 500)
+    expect(heuristicModel.compareBareShaft(stiff).horizontal).toBe('LEFT')
+
+    const leftHandedWeak = setValue(weak, getParameter('bow.handedness'), 'LH')
+    expect(heuristicModel.compareBareShaft(leftHandedWeak).horizontal).toBe('LEFT')
+  })
+
+  it('lands low when the nocking point is too high', () => {
+    const nockHigh = withDisplay(reference, 'bow.nockingPointHeight', 10)
+    expect(heuristicModel.compareBareShaft(nockHigh).vertical).toBe('LOW')
+    const nockLow = withDisplay(reference, 'bow.nockingPointHeight', -2)
+    expect(heuristicModel.compareBareShaft(nockLow).vertical).toBe('HIGH')
+  })
+
+  it('keeps the mass, so only steering and damping differ', () => {
+    const { fletched, bare } = heuristicModel.compareBareShaft(weak)
+    expect(bare.metrics.launchSpeed).toBe(fletched.metrics.launchSpeed)
+    expect(bare.metrics.dynamicBehavior).toBe(fletched.metrics.dynamicBehavior)
+    expect(bare.metrics.oscillationDecay).toBeLessThan(fletched.metrics.oscillationDecay)
+    expect(bare.metrics.stabilityTime).toBeGreaterThan(fletched.metrics.stabilityTime)
+  })
+
+  it('never lands on the other side of the fletched arrows from the line', () => {
+    fc.assert(
+      fc.property(setupArbitrary, (setup) => {
+        const { fletched, bare } = heuristicModel.compareBareShaft(setup)
+        const f = fletched.metrics.lateralDeviation
+        const b = bare.metrics.lateralDeviation
+        expect(Math.abs(b)).toBeGreaterThanOrEqual(Math.abs(f))
+        expect(Math.sign(b) * Math.sign(f)).toBeGreaterThanOrEqual(0)
+      }),
+    )
+  })
+})
+
 describe('trajectory', () => {
   const weak = withDisplay(reference, 'arrow.spine', 900)
   const { trajectory, metrics } = heuristicModel.simulate(weak)
@@ -224,7 +280,9 @@ describe('trajectory', () => {
   })
 
   it('honours distance and time step options', () => {
-    const far = heuristicModel.simulate(reference, { distance: 70_000, timeStep: 0.005 })
+    const far = heuristicModel.simulate(reference, {
+      trajectory: { distance: 70_000, timeStep: 0.005 },
+    })
     expect(far.trajectory[far.trajectory.length - 1]!.x).toBeCloseTo(70_000, 6)
     expect(far.trajectory.length).toBeLessThan(500)
   })

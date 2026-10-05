@@ -20,6 +20,8 @@ export type TrajectoryInput = {
   metrics: SimulationMetrics
   /** -1..+1, positive = nock high */
   verticalTendency: number
+  /** 0..1, share of the vertical launch error that is left after fletching steers */
+  driftFactor: number
   /** +1 = first bend is to the right, -1 = to the left */
   flexDirection: 1 | -1
 }
@@ -34,7 +36,7 @@ export function buildTrajectory(
   coefficients: Coefficients,
   options: TrajectoryOptions = DEFAULT_TRAJECTORY_OPTIONS,
 ): TrajectoryPoint[] {
-  const { metrics, verticalTendency, flexDirection } = input
+  const { metrics, verticalTendency, driftFactor, flexDirection } = input
   const { flex, oscillation, lateral, vertical } = coefficients
   const speed = metrics.launchSpeed
 
@@ -60,7 +62,7 @@ export function buildTrajectory(
       y:
         speed * Math.sin(elevation) * t -
         0.5 * GRAVITY * t ** 2 -
-        verticalTendency * vertical.driftSlope * x,
+        verticalTendency * driftFactor * vertical.driftSlope * x,
       z: metrics.lateralDeviation * lateral.driftSlope * x,
       yaw: metrics.yaw * settle + fishtailAmplitude * settle * Math.sin(fishtailOmega * t),
       pitch: metrics.pitch * settle + porpoiseAmplitude * settle * Math.sin(fishtailOmega * t),

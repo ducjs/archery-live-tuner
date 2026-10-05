@@ -4,6 +4,7 @@ export {
   heuristicModel,
   type Analysis,
   type SetupInput,
+  type SimulateOptions,
   type SimulationModel,
 } from './simulation/simulate.ts'
 export { DEFAULT_TRAJECTORY_OPTIONS, type TrajectoryOptions } from './simulation/trajectory.ts'
