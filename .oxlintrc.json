@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  },
+  "overrides": [
+    {
+      "files": ["src/engine/**", "src/models/**", "src/utils/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              { "name": "react", "message": "engine, models and utils must not depend on React." },
+              { "name": "react-dom", "message": "engine, models and utils must not depend on React." },
+              { "name": "zustand", "message": "engine, models and utils must not depend on UI state." }
+            ],
+            "patterns": [
+              {
+                "group": ["**/components/**", "**/state/**", "**/pages/**"],
+                "message": "engine, models and utils must not import UI code."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
