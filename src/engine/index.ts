@@ -1,5 +1,12 @@
 export { HEURISTIC_V0, type Coefficients } from './coefficients/heuristicV0.ts'
 export {
+  suggestTuning,
+  type Effort,
+  type SuggestOptions,
+  type Suggestion,
+  type TuningAdvice,
+} from './recommendation/suggest.ts'
+export {
   createHeuristicModel,
   heuristicModel,
   type Analysis,

@@ -16,7 +16,8 @@ import {
 import { usePlayback } from '../components/simulation/usePlayback.ts'
 import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
 import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
-import { heuristicModel } from '../engine/index.ts'
+import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
+import { heuristicModel, suggestTuning } from '../engine/index.ts'
 import { useTuningStore } from '../state/tuningStore.ts'
 
 type Stage = 'flight' | 'bow'
@@ -35,8 +36,11 @@ const DEFAULT_VIEW: ViewSettings = {
 export function Simulator() {
   const setup = useTuningStore((state) => state.setup)
   const mode = useTuningStore((state) => state.mode)
+  const setParameter = useTuningStore((state) => state.setParameter)
   const comparison = useMemo(() => heuristicModel.compareBareShaft(setup), [setup])
   const result = comparison.fletched
+  // Simple mode only gets suggestions about values it can see.
+  const advice = useMemo(() => suggestTuning(heuristicModel, setup, { tier: mode }), [setup, mode])
   const [bareShaft, setBareShaft] = useState(true)
 
   // Speed and amplification are Advanced features. Simple mode always uses their
@@ -120,6 +124,17 @@ export function Simulator() {
               comparison={bareShaft ? comparison : undefined}
               handedness={setup.bow.handedness}
             />
+            <div className="mt-5">
+              <TuningSuggestions
+                advice={advice}
+                before={{
+                  classification: result.classification,
+                  horizontal: comparison.horizontal,
+                  vertical: comparison.vertical,
+                }}
+                onTry={setParameter}
+              />
+            </div>
           </div>
         </div>
 
