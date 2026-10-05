@@ -1247,7 +1247,7 @@ Improved dynamic model.
 Comparison + tuning landscape.
 
 ### V0.4
-Real-world calibration.
+Real-world calibration. Possibly sight mark prediction (section 38).
 
 ### V0.5
 Advanced bow/arrow parameters. Possibly execution errors (section 37).
@@ -1498,3 +1498,76 @@ Archers do not know by how many millimetres they pluck. Each error is set as a l
 1. A simulated group on the target with the single consistency control. Already shows which setup forgives more.
 2. Collapse, dirty release and bow hand torque, three levels each.
 3. Alignment and finger pressure, after references are available.
+
+## 37.6 Finger pressure on the string
+
+Status: an idea inside this idea. It widens the "uneven finger pressure" row of 37.1 into an input of its own.
+
+Question to answer: how does the share of the draw carried by each of the three fingers change the shot?
+
+What is expected, to be checked against references before any of it is built:
+
+| Hook | Expected effect | Mapped to |
+|---|---|---|
+| More load on the index finger (top-heavy) | The string is pulled from a higher point, the limbs load unevenly, the nock leaves on a different vertical path | A shift of the nocking point and tiller, in the vertical tendency |
+| More load on the ring finger (bottom-heavy) | The same, the other way | The same, opposite sign |
+| Index and middle finger squeezing the nock (pinch) | The arrow is bent or lifted off the rest before release | Vertical disturbance, more clearance risk |
+| Deep hook or shallow hook | Changes how far the string must roll around the fingers to get free | The sideways string deflection of a dirty release (37.1) |
+| Load that changes from shot to shot | Different vertical launch on every arrow | A taller group: the varying part of 37.2 |
+
+Inputs: the archer does not know the split in numbers, so the choice is between presets (top-heavy, balanced, bottom-heavy), with three sliders that add up to 100 % only in the Advanced tier.
+
+The useful result is the link to tuning: a nocking point that was tuned with one hook is wrong for another. The app could show that an archer whose bare shafts read "nocking point too high" may get the same reading from a bottom-heavy hook, and that fixing it on the string hides the cause.
+
+Limits: the commonly taught splits differ between coaches and there is no measured data here for how many millimetres of nock travel a given split causes. Even the sign of the top-heavy and bottom-heavy rows above is an expectation, not a checked fact. Section 37.4 applies in full.
+
+---
+
+# 38. Sight mark prediction (idea, V0.4 at the earliest)
+
+Status: an idea, written down so it is not lost. Nothing here is scheduled or built.
+
+Goal: the archer enters the sight marks they already have, and the app predicts the marks for the distances they have not shot.
+
+```text
+Known:      18 m → 15      30 m → 30
+Predicted:  50 m → ?       70 m → ?       90 m → ?
+```
+
+## 38.1 Why the marks can be predicted
+
+A sight mark is a measurement of the launch angle. Moving the sight pin down by a distance `h` on a sight whose pin sits `R` in front of the eye raises the arrow's launch angle by about `h / R`. So:
+
+```text
+mark(D) = offset + scale · tan(launch angle needed for distance D)
+```
+
+The launch angle for each distance comes from the flight path, which the engine already computes from arrow speed. `offset` and `scale` depend on the sight and on how the archer anchors, and are not known in advance.
+
+## 38.2 What has to be fitted
+
+| Unknown | Meaning | Found from |
+|---|---|---|
+| `offset` | Where zero sits on this sight's scale | The known marks |
+| `scale` | Scale units per unit of angle: pin-to-eye distance and the units of the scale | The known marks, or measured by the archer |
+| Arrow speed | Sets how fast the needed angle grows with distance | The model's estimate, or a third mark |
+| Drag | Slows the arrow, so far distances need more angle | Arrow mass, diameter and fletching, or a fourth mark |
+
+Two marks fix only two unknowns, `offset` and `scale`. Without drag and at small angles the needed angle is proportional to distance, so two marks give a straight line: the example above would give 55, 80 and 105 for 50, 70 and 90 m. Real marks curve away from that line, toward more elevation at long distance, and the curve is what speed and drag decide. With two marks those have to come from the model. Each further mark replaces one estimate with a measurement.
+
+## 38.3 What the model needs first
+
+- Air drag in the flight path. The trajectory is drag-free today, which is harmless for an animation and wrong for a 90 m mark.
+- The height of the eye above the arrow at anchor, or a way to absorb it into the fit. It matters most at short distances.
+
+## 38.4 What it gives back
+
+The marks are real measurements of this bow and this arrow. Fitting them gives an arrow speed that can be set next to the model's own estimate, and stored as a real-world observation for calibration (section 18).
+
+## 38.5 Limits
+
+- A predicted mark is a starting point to confirm by shooting, and must be shown with a range, wider the further it is from the known marks. Predicting 90 m from 18 m and 30 m is a long reach.
+- Sight scales differ: some count up as the pin goes down, some the other way, and the units are not always millimetres. The fit must take the scale as the archer reads it.
+- The known marks must come from the same setup. A change of arrows, draw weight, anchor or sight extension makes old marks useless.
+- Wind, temperature and altitude are ignored.
+- Section 2.1 applies: this is a model result, labelled as such.

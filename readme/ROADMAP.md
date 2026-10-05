@@ -209,6 +209,18 @@ Why it matters: a setup can look tuned in the simulator and still shoot differen
 - [ ] Diagnosis that starts from the observed offset, uses the entered setup to choose between causes (spine, plunger, center shot, nocking point), and ranks the changes
 - [ ] Observed offset stored as a real-world observation, so it also feeds calibration
 
+### Sight marks (idea, not scheduled)
+
+> **Nói đơn giản:** Nhập vạch thước ngắm (sight) ở vài cự ly đã bắn chuẩn, ví dụ 18 m vạch 15 và 30 m vạch 30, ứng dụng đoán vạch cho 50, 70, 90 m. Ra bãi không phải dò lại từ đầu, chỉ cần bắn vài mũi để chỉnh tinh. Đây mới là ý tưởng, chưa lên lịch làm.
+
+Why it matters: every archer needs marks for distances they have not shot yet, and finding them by trial costs arrows and time. The known marks are also real measurements of how this bow throws this arrow, which the model otherwise only estimates. Details and limits are in §38.
+
+- [ ] Enter sight marks for the distances already shot, at least two, in the archer's own sight scale (§38)
+- [ ] Predict the marks for the other distances, 18 m to 90 m, from a flight path fitted to the known marks
+- [ ] Air drag in the flight path, since without it the long distances come out too low
+- [ ] A range for each predicted mark, wider the further it lies from the known ones, and a note that it is a starting point to confirm by shooting
+- [ ] The arrow speed that the known marks imply, shown next to the model's estimate and stored as a real-world observation
+
 **Exit criteria:** after a user logs observations for several setups, the calibrated model matches those observations better than the base model, and the user can always switch back to the base model.
 
 ---
@@ -237,6 +249,7 @@ Why it matters: a dirty release reads on the bare shaft much like a wrong spine,
 - [ ] Each error as a constant part that moves the whole group and a varying part that widens it
 - [ ] The same target face as the target plot diagnosis of V0.4, so the model's group and the real one can be compared
 - [ ] Alignment and uneven finger pressure, once there are references for their size and direction
+- [ ] Finger pressure as an input of its own: the share of the draw carried by the index, middle and ring finger, and what a top-heavy or bottom-heavy hook does to the vertical tendency and the bare shaft (§37.6)
 - [ ] Wording that says "if you collapse, you would see this", never "you are collapsing"
 
 **Exit criteria:** every new parameter is in the Advanced tier with a default, Simple mode is unchanged, and each recommendation is one the landscape shows as an improvement.

@@ -252,6 +252,27 @@ export const ROADMAP: RoadmapPhase[] = [
           todo('Lưu độ lệch quan sát để dùng cho hiệu chỉnh'),
         ],
       },
+      {
+        title: 'Đoán vạch thước ngắm (ý tưởng, chưa lên lịch)',
+        summary:
+          'Nhập vạch thước ngắm (sight) ở vài cự ly đã bắn chuẩn, ví dụ 18 m vạch 15 và 30 m vạch 30, ứng dụng đoán vạch cho 50, 70, 90 m. Ra bãi không phải dò lại từ đầu, chỉ cần bắn vài mũi để chỉnh tinh.',
+        note: 'Vì sao cần: ai cũng cần vạch cho cự ly chưa bắn, và dò bằng cách bắn thử thì tốn tên, tốn thời gian. Các vạch đã có cũng là số đo thật về cách cây cung này đẩy mũi tên này, thứ mà mô hình mới chỉ ước lượng.',
+        items: [
+          todo(
+            'Nhập vạch thước cho các cự ly đã bắn, ít nhất hai cự ly, theo thang của chính thước đó',
+          ),
+          todo(
+            'Đoán vạch cho các cự ly còn lại, từ 18 m tới 90 m, bằng đường bay khớp với các vạch đã có',
+          ),
+          todo('Thêm lực cản không khí vào đường bay, nếu không cự ly xa sẽ bị đoán thấp'),
+          todo(
+            'Mỗi vạch đoán có khoảng sai số, càng xa cự ly đã biết càng rộng, kèm lời nhắc phải bắn thử để chốt',
+          ),
+          todo(
+            'Vận tốc tên suy ra từ các vạch đã có, đặt cạnh ước lượng của mô hình và lưu làm quan sát thực tế',
+          ),
+        ],
+      },
     ],
     exit: 'Sau khi ghi quan sát cho vài setup, mô hình đã hiệu chỉnh khớp thực tế hơn mô hình gốc, và người dùng luôn quay lại mô hình gốc được.',
   },
@@ -291,6 +312,9 @@ export const ROADMAP: RoadmapPhase[] = [
           ),
           todo(
             'Alignment và áp lực ngón không đều, khi đã có tài liệu về độ lớn và chiều ảnh hưởng',
+          ),
+          todo(
+            'Áp lực trên từng ngón tay thành một đầu vào riêng: ngón trỏ, giữa, áp út mỗi ngón gánh bao nhiêu phần lực kéo, và móc dây nặng ngón trên hay nặng ngón dưới thì độ lệch dọc và bareshaft đổi ra sao',
           ),
           todo(
             'Câu chữ kiểu "nếu bạn collapse thì sẽ thấy thế này", không phán "bạn đang collapse"',
