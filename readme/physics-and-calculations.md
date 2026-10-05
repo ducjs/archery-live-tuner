@@ -151,11 +151,15 @@ spine_cần = spine_thamchiếu · exp(−logLoad)
 | braceHeight | 0.3 | cần thân cứng hơn, tức tên đang có sẽ bắn yếu đi |
 | arrow length | 2.5 | cần thân cứng hơn (ảnh hưởng mạnh nhất) |
 | m_trước (point + insert) | 0.3 | cần thân cứng hơn |
-| m_sau (nock + fletching) | −0.1 | cần thân mềm hơn |
-| stringMass | −0.1 | cần thân mềm hơn |
+| m_sau (nock + fletching) | −0.02 | cần thân mềm hơn |
+| stringMass | −0.2 | cần thân mềm hơn |
 | strandCount | −0.05 | cần thân mềm hơn |
 
 `shaftGpi` và `shaftDiameter` không có mặt trong luật này.
+
+Số mũ của khối lượng đuôi cố ý để nhỏ. Đuôi tên chỉ nặng khoảng một phần mười đầu tên (14 gr so với 132 gr), nên cùng một số mũ sẽ làm một grain ở nock nặng ký gấp mười lần một grain ở point. Với −0.02, một grain ở nock có tác dụng nhỏ hơn một grain ở point một chút, theo chiều ngược lại. Trước đây số mũ là −0.1, khiến đổi nock từ 9 xuống 2 gr đã đủ đẩy kết quả sang WEAK.
+
+Số mũ của khối lượng dây lấy theo sách Easton: đổi số sợi dây "có thể" cần thân tên khác một cỡ. Với −0.2 cùng −0.05 của số sợi, thêm 4 sợi vào dây 16 sợi (dây nặng thêm 25%) tương đương khoảng ba phần tư một bước spine 50.
 
 Số mũ của brace height lấy theo sách Easton: tăng brace height làm tên bắn yếu đi, và cả dải brace height dùng được của một cây recurve (khoảng 21,0 tới 24,1 cm với cung 68 in) tương đương khoảng 20 gr point. Với 0.3, đi hết dải đó cho `0.3 · ln(241/210) = 0.041`, so với `0.042` của 20 gr point. Brace height vẫn làm giảm power stroke và vận tốc ở mục 5.1; hai tác dụng này tính riêng. Nguồn và các điểm đối chiếu khác: [tuning-references.md](tuning-references.md).
 
@@ -402,7 +406,7 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 - Không mô hình hóa người bắn: release, tay cầm cung, collapse (§7, §37).
 - Hệ số còn nằm trong code (`heuristicV0.ts`), chưa chuyển sang JSON có phiên bản (§34.7).
 - Chưa đối chiếu với bảng spine của nhà sản xuất (§25 Test 8).
-- Vài điểm còn lệch với tài liệu tuning (số sợi dây, vị trí center shot trung tính, nocking point khởi đầu), ghi ở [tuning-references.md](tuning-references.md).
+- Vài điểm còn lệch với tài liệu tuning (vị trí center shot trung tính, nocking point khởi đầu), ghi ở [tuning-references.md](tuning-references.md).
 
 ## 14. Tính toán ở trang "Xem trước"
 

@@ -44,8 +44,20 @@ export const HEURISTIC_V0 = {
     braceHeight: 0.3,
     arrowLength: 2.5,
     frontMass: 0.3,
-    tailMass: -0.1,
-    stringMass: -0.1,
+    /**
+     * Kept small on purpose. The tail carries about a tenth of the mass of the
+     * front, so the same exponent would make a grain at the nock count ten
+     * times as much as a grain at the point. With this value it counts for a
+     * little less than a grain at the point, in the other direction.
+     */
+    tailMass: -0.02,
+    /**
+     * A change of strands "can require a shaft one full size weaker or stiffer"
+     * (Easton, Arrow Tuning and Maintenance Guide, "Bowstring"). Four strands
+     * more on a 16-strand string, with the mass that comes with them, is worth
+     * about three quarters of a 50-point spine step here.
+     */
+    stringMass: -0.2,
     strandCount: -0.05,
   },
 

@@ -102,7 +102,7 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [x] Bow and Arrow panels rendered from the parameter metadata
 - [x] Numeric input + slider + unit + reset per parameter, with min/max and a hint on the convention
 - [x] Simple / Advanced toggle, remembered in the browser, with "advanced values changed" notice (§4.1)
-- [x] Simple mode says which values it assumes: how many, the arrow parts that move the result most, the full list on request, and a way to enter them (§4.1)
+- [x] Simple mode says which values it assumes: how many, the ones that move the result most, the full list on request, and a way to enter them (§4.1)
 - [x] Zustand store
 - [x] Estimated total arrow mass
 - [x] Component tests for the panels (jsdom + Testing Library)

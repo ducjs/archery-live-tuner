@@ -167,7 +167,7 @@ The UI has a global `Simple | Advanced` toggle that separates basic tuning from 
 Rules:
 - The mode is a UI concern only. The engine always receives a complete `TuningSetup`; parameters hidden in Simple mode take their default values.
 - Switching to Simple does not reset advanced values. If any hidden value differs from its default, show a notice such as `3 advanced values modified` with a reset action, so the result is never silently affected by something the user cannot see.
-- A default is a guess at the user's equipment, and a wrong guess is just as silent. Simple mode therefore always says that it assumes the hidden values: how many, the ones that move the result most (insert, nock and fletching weight) with their values, the full list on request, and an action that opens Advanced mode to enter them.
+- A default is a guess at the user's equipment, and a wrong guess is just as silent. Simple mode therefore always says that it assumes the hidden values: how many, the ones that move the result most (insert weight, string mass, plunger preload) with their values, the full list on request, and an action that opens Advanced mode to enter them.
 - Each parameter declares its tier in one metadata table (label, unit, bounds, default, tier), and the panels render from that table.
 - The chosen mode is remembered per user.
 

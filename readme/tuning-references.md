@@ -4,7 +4,7 @@ Tài liệu này ghi lại các nguồn tuning đã đọc, những điểm rút
 
 Bản gốc của các nguồn nằm trong thư mục `docs/` trên máy, không đưa vào repo vì thuộc bản quyền của người khác (`docs/` có trong `.gitignore`). Ở đây chỉ có ghi chú tự viết.
 
-> **Nói đơn giản:** Sách tuning không cho công thức, nhưng cho biết đổi cái gì thì tên yếu đi hay cứng lên, nên chỉnh theo thứ tự nào, và lệch bao nhiêu thì phải đổi tên. Mô hình được đối chiếu với các điều đó. Một chỗ sai chiều (brace height) đã sửa; ba chỗ còn lệch được ghi lại để xử lý sau.
+> **Nói đơn giản:** Sách tuning không cho công thức, nhưng cho biết đổi cái gì thì tên yếu đi hay cứng lên, nên chỉnh theo thứ tự nào, và lệch bao nhiêu thì phải đổi tên. Mô hình được đối chiếu với các điều đó. Một chỗ sai chiều (brace height) và một chỗ quá nhẹ (dây) đã sửa; các chỗ còn lệch được ghi lại để xử lý sau.
 
 ## 1. Các nguồn
 
@@ -33,7 +33,7 @@ Cho người bắn tay phải, finger release. Tay trái thì đổi trái phả
 | Bare shaft rơi bên trái cụm tên có cánh: tên cứng. Bên phải: tên yếu | Giống | Khớp |
 | Bare shaft rơi cao hơn cụm: nocking point quá thấp. Thấp hơn: quá cao | Giống | Khớp |
 | Tên cứng thì tăng lực kéo, tăng point, hoặc giảm lực plunger | Lực kéo và point tăng làm tên yếu đi; plunger mềm hơn làm tên yếu đi | Khớp |
-| Dây nặng hơn hoặc nhiều sợi hơn làm tên phản ứng cứng hơn | Cùng chiều | Khớp về chiều, lệch về độ lớn (mục 4) |
+| Dây nặng hơn hoặc nhiều sợi hơn làm tên phản ứng cứng hơn | Cùng chiều | Khớp; độ lớn đã chỉnh (mục 4.1) |
 | Tăng brace height làm tên bắn yếu đi; cả dải brace height tương đương khoảng 20 gr point | Trước đây ngược chiều. Đã sửa | Khớp, xem mục 3 |
 | Tăng brace height làm mất một ít vận tốc vì power stroke ngắn lại | Vận tốc tính từ power stroke | Khớp |
 | Nock quá chặt gây vấn đề, nhất là cung dưới 30 lb | Nock fit TIGHT cộng vào nguy cơ clearance | Khớp về chiều; chưa phụ thuộc lực kéo |
@@ -62,11 +62,15 @@ Năng lượng và vận tốc vẫn tính từ power stroke như cũ.
 
 ## 4. Các điểm còn lệch
 
-Chưa sửa. Mỗi điểm cần quyết định trước khi đụng vào engine.
+Trừ mục 4.1, chưa sửa. Mỗi điểm còn lại cần quyết định trước khi đụng vào engine.
 
-### 4.1 Số sợi dây ảnh hưởng quá nhẹ
+### 4.1 Số sợi dây: đã chỉnh
 
-Sách: thêm hoặc bớt sợi dây có thể đổi spine động tới mức phải chọn thân tên khác một cỡ. Trong mô hình, 16 lên 20 sợi kèm dây nặng thêm 25% cho `dynamicBehavior` +0.10, còn một cỡ spine (700 xuống 600) cho +0.43. Chữ "có thể" của sách là mức tối đa, nên chưa rõ nên tăng bao nhiêu. Sách cũng nói lớp serving giữa và loại nocking point (kim loại hay buộc chỉ) có tác dụng tương tự; mô hình chưa có hai thông số đó.
+Sách: thêm hoặc bớt sợi dây có thể đổi spine động tới mức phải chọn thân tên khác một cỡ. Mô hình cũ cho 16 lên 20 sợi kèm dây nặng thêm 25% chỉ +0.10, còn một cỡ spine (700 xuống 600) là +0.43.
+
+Số mũ của khối lượng dây đã tăng từ −0.1 lên −0.2. Cùng thay đổi đó giờ cho +0.16, khoảng ba phần tư một bước spine 50. Không đẩy lên đủ một cỡ vì chữ "có thể" của sách là mức tối đa.
+
+Còn mở: sách nói lớp serving giữa và loại nocking point (kim loại hay buộc chỉ) có tác dụng tương tự; mô hình chưa có hai thông số đó.
 
 ### 4.2 Center shot trung tính
 

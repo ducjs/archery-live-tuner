@@ -146,6 +146,10 @@ describe('properties over all valid setups', () => {
     ['arrow.spine', 'weaker'],
     ['bow.braceHeight', 'weaker'],
     ['bow.plungerStiffness', 'stiffer'],
+    ['bow.string.stringMass', 'stiffer'],
+    ['bow.string.strandCount', 'stiffer'],
+    ['arrow.nockWeight', 'stiffer'],
+    ['arrow.fletchingWeight', 'stiffer'],
   ]
 
   it.each(monotonic)('increasing %s never shifts the other way (%s)', (key, direction) => {

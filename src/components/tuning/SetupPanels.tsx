@@ -85,8 +85,9 @@ function AdvancedNotice() {
   )
 }
 
-// The hidden values that move weak / stiff most in the model, named up front.
-const ASSUMED_FIRST = ['arrow.fletchingWeight', 'arrow.nockWeight', 'arrow.insertWeight']
+// The hidden values named up front: the two that move weak / stiff most in the
+// model, and the one that most easily turns the bare shaft reading.
+const ASSUMED_FIRST = ['arrow.insertWeight', 'bow.string.stringMass', 'bow.plungerPreload']
 
 /**
  * Shown in Simple mode: the values the result is built on but the user has not

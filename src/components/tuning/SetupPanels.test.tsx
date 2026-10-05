@@ -118,7 +118,7 @@ describe('SetupPanels', () => {
     render(<SetupPanels />)
     const assumed = screen.getByRole('region', { name: 'Simple mode assumes 13 more values' })
     expect(assumed.textContent).toContain(
-      'Insert weight 12 gr, Nock weight 9.0 gr, Fletching weight 5.0 gr and 10 more',
+      'Plunger preload 1.0 mm, String mass 105 gr, Insert weight 12 gr and 10 more',
     )
     expect(within(assumed).queryByText('Tiller')).toBeNull()
 
@@ -137,7 +137,7 @@ describe('SetupPanels', () => {
     useTuningStore.setState({ units: 'metric' })
     render(<SetupPanels />)
     expect(screen.getByRole('region', { name: /Simple mode assumes/ }).textContent).toContain(
-      'Nock weight 0.58 g',
+      'Insert weight 0.78 g',
     )
     useTuningStore.setState({ units: 'archery' })
   })
