@@ -154,7 +154,12 @@ export const ROADMAP: RoadmapPhase[] = [
         items: [
           done('Nhìn từ trên: cung, tên uốn, dao động, ổn định dần'),
           done('Nhìn ngang: tên chúi hay ngóc. Chọn nhìn trên, nhìn ngang hoặc cả hai'),
-          done('Chạy, dừng, chạy lại; chỉnh mức phóng đại độ uốn'),
+          done(
+            'Chạy, dừng, chạy lại; chỉnh mức phóng đại độ uốn. Hình đứng yên ở tư thế kéo hết dây tới khi bấm chạy',
+          ),
+          done(
+            'Kéo dây rồi thả: dây kéo lùi, đẩy tên suốt power stroke, tên rời dây ở trạng thái thẳng. Nhìn ngang thì cung nghiêng theo hướng bắn, thanh cân bằng vuông góc với dây, tên chúc theo nocking point',
+          ),
           done('Tốc độ phát: 1/48, 1/24, 1/12, 1/6 và tốc độ thật'),
           done('Thanh thời điểm: nhảy tới bất kỳ lúc nào của đường bay'),
           done('Chọn cự ly bia: 18, 30, 50, 70 hoặc 90 m, kèm thời gian bay'),

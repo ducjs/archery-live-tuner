@@ -8,7 +8,7 @@ import type { TuningSetup } from '../../models/setup.ts'
 import { HEURISTIC_V0, type Coefficients } from '../coefficients/heuristicV0.ts'
 import { clamp01 } from '../math/scalar.ts'
 import { bendingFrequency } from './arrowModel.ts'
-import { launchSpeed, relativeBowInertia } from './bowModel.ts'
+import { launchSpeed, powerStroke, relativeBowInertia, timeOnString } from './bowModel.ts'
 import { classify } from './classification.ts'
 import { stiffnessMismatch } from './dynamicSpine.ts'
 import { plungerBehaviorShift, plungerLateralPush } from './plungerModel.ts'
@@ -181,9 +181,15 @@ export function createHeuristicModel(coefficients: Coefficients = HEURISTIC_V0):
       coefficients,
       options?.bareShaft,
     )
+    const { bow, arrow } = setup
     return {
       setupId: setup.id,
       modelVersion: coefficients.version,
+      launch: {
+        powerStroke: powerStroke(bow),
+        timeOnString: timeOnString(bow, arrow, coefficients),
+        nockAngle: Math.atan2(bow.nockingPointHeight, bow.braceHeight),
+      },
       classification,
       metrics,
       trajectory: buildTrajectory(

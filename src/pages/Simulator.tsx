@@ -16,7 +16,7 @@ import {
   DEFAULT_EXAGGERATION,
   DEFAULT_SPEED,
   HOLD_SECONDS,
-  flightSeconds,
+  clipSeconds,
 } from '../components/simulation/timing.ts'
 import { usePlayback } from '../components/simulation/usePlayback.ts'
 import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
@@ -30,7 +30,7 @@ import { useTuningStore } from '../state/tuningStore.ts'
 type Stage = 'flight' | 'compare' | 'bow'
 
 const DEFAULT_VIEW: ViewSettings = {
-  view: 'top',
+  view: 'both',
   distance: DEFAULT_DISTANCE,
   speed: DEFAULT_SPEED,
   exaggeration: DEFAULT_EXAGGERATION,
@@ -100,8 +100,8 @@ export function Simulator() {
 
   // The slower of two flights sets the length of the loop, so both finish.
   const duration = compared
-    ? Math.max(flightSeconds(result), flightSeconds(otherResult))
-    : flightSeconds(result)
+    ? Math.max(clipSeconds(result), clipSeconds(otherResult))
+    : clipSeconds(result)
   const playback = usePlayback(duration, HOLD_SECONDS, view.speed)
 
   const onSettingsChange = (next: ViewSettings) =>

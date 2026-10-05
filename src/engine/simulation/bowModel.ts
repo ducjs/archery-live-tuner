@@ -22,6 +22,11 @@ export function launchSpeed(bow: BowSetup, arrow: ArrowSetup, coefficients: Coef
   return metersPerSecond * 1000
 }
 
+/** s on the string, taking the push of the string as even over the power stroke */
+export function timeOnString(bow: BowSetup, arrow: ArrowSetup, coefficients: Coefficients): number {
+  return (2 * powerStroke(bow)) / launchSpeed(bow, arrow, coefficients)
+}
+
 /** Resistance of the bow to being moved by the shot, relative to the reference bow. */
 export function relativeBowInertia(bow: BowSetup, coefficients: Coefficients): number {
   const inertia = (mass: number, stabilizerMass: number, position: number) =>

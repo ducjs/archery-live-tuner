@@ -208,7 +208,8 @@ export const vi: Messages = {
     real: 'Thật',
     moment: 'Thời điểm',
     momentText: (milliseconds, metres) =>
-      `${milliseconds} mili giây sau khi thả, cách ${metres} mét`,
+      `${milliseconds} mili giây sau khi rời dây, cách ${metres} mét`,
+    momentOnString: (milliseconds) => `Còn trên dây, ${milliseconds} mili giây nữa thì rời dây`,
     play: 'Chạy',
     pause: 'Dừng',
     restart: 'Chạy lại',

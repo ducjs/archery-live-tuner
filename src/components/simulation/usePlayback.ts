@@ -1,18 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-function prefersReducedMotion(): boolean {
-  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-}
-
 /**
  * Drives a looping clock with requestAnimationFrame. `elapsed` runs from 0 to
  * `flightSeconds` at `rate` times real time, waits `holdSeconds` at the end,
- * then starts over. Does not start by itself when the user asks for reduced
- * motion. `seek` jumps to a moment and stops there.
+ * then starts over. Waits at the moment of release until the user presses
+ * play. `seek` jumps to a moment and stops there.
  */
 export function usePlayback(flightSeconds: number, holdSeconds: number, rate: number) {
   const [position, setPosition] = useState(0)
-  const [playing, setPlaying] = useState(() => !prefersReducedMotion())
+  const [playing, setPlaying] = useState(false)
   const settings = useRef({ flightSeconds, holdSeconds, rate })
 
   useEffect(() => {

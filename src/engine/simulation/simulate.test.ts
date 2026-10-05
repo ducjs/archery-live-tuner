@@ -272,10 +272,20 @@ describe('trajectory', () => {
     expect(trajectory[trajectory.length - 1]!.y).toBeCloseTo(0, 6)
   })
 
-  it('starts flexed toward the riser and the flex dies out', () => {
-    expect(trajectory[0]!.flex).toBeCloseTo(metrics.flexAmplitude, 12)
+  it('starts straight, bends toward the riser first, and the flex dies out', () => {
+    expect(trajectory[0]!.flex).toBeCloseTo(0, 12)
+    expect(trajectory[3]!.flex).toBeGreaterThan(metrics.flexAmplitude * 0.5)
     const lateFlex = trajectory.slice(-20).map((point) => Math.abs(point.flex!))
     expect(Math.max(...lateFlex)).toBeLessThan(metrics.flexAmplitude * 0.1)
+  })
+
+  it('describes the shot before the arrow leaves the string', () => {
+    const { launch } = heuristicModel.simulate(reference)
+    expect(launch.powerStroke).toBeCloseTo(reference.bow.drawLength - reference.bow.braceHeight, 9)
+    // A recurve arrow is on the string for somewhere between 10 and 25 ms.
+    expect(launch.timeOnString).toBeGreaterThan(0.01)
+    expect(launch.timeOnString).toBeLessThan(0.025)
+    expect(launch.nockAngle).toBeGreaterThan(0)
   })
 
   it('drifts to the side the lateral tendency points to', () => {

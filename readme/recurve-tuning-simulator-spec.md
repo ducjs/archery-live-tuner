@@ -602,6 +602,8 @@ Show:
 5. forward movement
 6. gradual stabilization
 
+As built: the clip opens at full draw and waits there; nothing plays until the user presses play. The string then pushes the arrow over the power stroke, and the arrow leaves it straight, bending toward the riser first. Top and side view are shown together by default. In the side view the bow is tilted to where it aims, the long rod is square to the string, and the arrow on the string is tipped nose-down by the nocking point height. Bow and arrow share one scale.
+
 Concept:
 
 ```text

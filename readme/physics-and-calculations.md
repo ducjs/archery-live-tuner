@@ -288,12 +288,24 @@ lắng(t) = exp(−oscillationDecay · t)
 yaw(t)   = yaw   · lắng + hướng · 0.03  · oscillation      · lắng · sin(2π · 6 · t)
 pitch(t) = pitch · lắng +         0.015 · verticalTendency · lắng · sin(2π · 6 · t)
 
-flex(t) = hướng · flexAmplitude · exp(−14 · t) · cos(2π · f · t)
+flex(t) = hướng · flexAmplitude · exp(−14 · t) · sin(2π · f · t)
 ```
 
-- `hướng` bằng `side`: nhịp uốn đầu tiên là về phía riser.
+- `hướng` bằng `side`: nhịp uốn đầu tiên là về phía riser. Dùng `sin` nên tên thẳng lúc rời dây (`t = 0`) rồi mới uốn.
 - Lắc đuôi (fishtail) và nhấp nhô (porpoise) là chuyển động của cả mũi tên, tần số cố định 6 Hz, chậm hơn nhiều so với rung uốn `f` (khoảng 70 Hz).
 - Độ trôi `y` và `z` tăng tuyến tính theo khoảng cách. Ở lệch ngang tối đa, tên trôi 1 mm mỗi 120 mm đường bay. Đây là minh họa, không phải vị trí trúng bia.
+
+### 9.1 Trước khi tên rời dây
+
+`t = 0` là lúc nock rời dây. Trước đó là quãng dây đẩy tên, tính riêng:
+
+```text
+timeOnString = 2 · powerStroke / v              coi lực đẩy đều suốt power stroke
+quãng đã đi  = powerStroke · (τ / timeOnString)²     τ = thời gian từ lúc thả dây
+nockAngle    = atan(nockingPointHeight / braceHeight)
+```
+
+Setup tham chiếu: `timeOnString` = 16,8 ms, `nockAngle` khoảng 1°. Lực đẩy đều là giả định đơn giản; dây thật đẩy mạnh lúc đầu và yếu dần. Trong quãng này tên được vẽ thẳng; mô hình chưa tính độ uốn khi tên còn trên dây.
 
 ## 10. Bare shaft
 
@@ -440,6 +452,9 @@ một chiều chỉ được tính khi thành phần của nó > 0.4 · |offset|
 
 Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 
+- Đoạn phim mở đầu ở tư thế kéo hết dây và đứng yên tới khi bấm chạy. Dây kéo lùi đúng bằng power stroke theo tỉ lệ của cung. Cánh cung cong theo: đầu cánh lùi về sau và khép vào vừa đủ để dây giữ nguyên chiều dài (đầu cánh lùi 35% quãng kéo, con số chọn cho hợp mắt).
+- Quãng dây đẩy tên được chiếu chậm hơn quãng bay. Cung vẽ to hơn nhiều so với cự ly tới bia, nên nếu chiếu cùng nhịp thì tên vọt khỏi dây rồi như bị phanh lại. Nhịp chiếu được chọn để tên rời dây đúng bằng tốc độ nó bay trên màn hình sau đó, tối đa 1,2 giây. Số mili giây hiển thị vẫn là thời gian thật.
+- Góc nhìn ngang: cung nghiêng theo hướng tên rời cung, thanh cân bằng vuông góc với dây. Tên trên dây chúc mũi xuống theo `nockAngle`, nhân với mức phóng đại.
 - Chuyển động chậm: tốc độ thường là chậm 12 lần so với thật; các mức là 1/48, 1/24, 1/12, 1/6 và tốc độ thật.
 - Cung và mũi tên vẽ cùng một tỉ lệ: cung 68 in cao 187 đơn vị, nên tên 27 in dài khoảng 74 đơn vị. Cự ly tới bia, độ uốn và độ trôi mỗi thứ có tỉ lệ riêng, nên toàn cảnh vẫn không theo tỉ lệ.
 - Phóng đại độ uốn: 1× tới 5×, mặc định 2×. Ở 1×, tên cân (`flexAmplitude` 0.4) uốn lệch 3% chiều dài thân; công thức là `flex · 0.075 · chiều dài · mức phóng đại`.

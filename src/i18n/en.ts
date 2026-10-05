@@ -190,7 +190,9 @@ export const en = {
     real: 'Real',
     moment: 'Moment',
     momentText: (milliseconds: string, metres: string) =>
-      `${milliseconds} milliseconds after release, ${metres} metres out`,
+      `${milliseconds} milliseconds after leaving the string, ${metres} metres out`,
+    momentOnString: (milliseconds: string) =>
+      `On the string, ${milliseconds} milliseconds before the arrow leaves it`,
     play: 'Play',
     pause: 'Pause',
     restart: 'Restart',

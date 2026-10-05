@@ -112,8 +112,9 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 > **Nói đơn giản:** Phần nhìn thấy được. Hoạt hình mũi tên rời cung, uốn, dao động rồi ổn định; kèm bảng kết quả. Kéo thanh trượt là hoạt hình và kết quả đổi theo, không cần bấm nút tính.
 
 - [x] Top view: bow, arrow flex, oscillation, stabilization (§13)
-- [x] Side view: vertical attitude. Top, side or both together, in Simple and Advanced
-- [x] Play / pause / restart, flex exaggeration (§23)
+- [x] Side view: vertical attitude. Top, side or both together, in Simple and Advanced; both is the default
+- [x] Play / pause / restart, flex exaggeration (§23). The clip waits at full draw until play is pressed
+- [x] Draw and release: the string is drawn back, pushes the arrow over the power stroke, and the arrow leaves it straight. In the side view the bow tilts to where it aims, with the long rod square to the string and the arrow tipped by the nocking point
 - [x] Playback speed in Simple and Advanced: 1/48, 1/24, 1/12, 1/6 of real time, and real speed
 - [x] Moment slider: jump to any instant of the flight, with the time since release and distance travelled
 - [x] Target distance: 18, 30, 50, 70 or 90 m, with the flight time shown in the result

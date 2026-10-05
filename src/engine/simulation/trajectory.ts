@@ -66,11 +66,12 @@ export function buildTrajectory(
       z: metrics.lateralDeviation * lateral.driftSlope * x,
       yaw: metrics.yaw * settle + fishtailAmplitude * settle * Math.sin(fishtailOmega * t),
       pitch: metrics.pitch * settle + porpoiseAmplitude * settle * Math.sin(fishtailOmega * t),
+      // Straight on the string at release; the first bend is toward the riser.
       flex:
         flexDirection *
         metrics.flexAmplitude *
         Math.exp(-flex.decay * t) *
-        Math.cos(bendingOmega * t),
+        Math.sin(bendingOmega * t),
     })
   }
   return points

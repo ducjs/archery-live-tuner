@@ -5,7 +5,14 @@ import { DEFAULT_TRAJECTORY_OPTIONS, heuristicModel } from '../../engine/index.t
 import { createDefaultSetup } from '../../models/setup.ts'
 import { ResultPanel } from '../tuning/ResultPanel.tsx'
 import { FlightView, TimeScrubber } from './SimulationStage.tsx'
-import { DISTANCES, SLOW_MOTION, flightSeconds } from './timing.ts'
+import {
+  DISTANCES,
+  SLOW_MOTION,
+  clipSeconds,
+  clipTime,
+  flightSeconds,
+  strokeSeconds,
+} from './timing.ts'
 
 afterEach(cleanup)
 
@@ -68,8 +75,8 @@ describe('TimeScrubber', () => {
     render(
       <TimeScrubber
         result={fletched}
-        elapsed={flight / 2}
-        flightSeconds={flight}
+        elapsed={strokeSeconds(fletched) + flight / 2}
+        flightSeconds={clipSeconds(fletched)}
         onSeek={vi.fn()}
       />,
     )
@@ -78,6 +85,23 @@ describe('TimeScrubber', () => {
     expect(screen.getByText(', 9.0 m')).toBeTruthy()
     expect(screen.getByRole('slider', { name: 'Moment' }).getAttribute('aria-valuetext')).toContain(
       '9.0 metres out',
+    )
+  })
+
+  it('opens at full draw, before the arrow has left the string', () => {
+    render(
+      <TimeScrubber
+        result={fletched}
+        elapsed={0}
+        flightSeconds={clipSeconds(fletched)}
+        onSeek={vi.fn()}
+      />,
+    )
+    const milliseconds = (fletched.launch.timeOnString * 1000).toFixed(0)
+    expect(screen.getByText(`−${milliseconds} ms`)).toBeTruthy()
+    expect(clipTime(fletched, strokeSeconds(fletched))).toBeCloseTo(0, 12)
+    expect(screen.getByRole('slider', { name: 'Moment' }).getAttribute('aria-valuetext')).toBe(
+      `On the string, ${milliseconds} milliseconds before the arrow leaves it`,
     )
   })
 

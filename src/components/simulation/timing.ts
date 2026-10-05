@@ -30,6 +30,18 @@ export const DEFAULT_EXAGGERATION = 2
  */
 export const EQUIPMENT_SCALE = 187 / (68 * 25.4)
 
+/** s of flight over which the arrow turns from its rest on the bow to its flight attitude */
+const LAUNCH_SECONDS = 0.008
+
+/**
+ * 0 on the string, 1 once the arrow is away. `time` counts from the moment the
+ * nock leaves the string and is negative before that.
+ */
+export function launchEase(time: number): number {
+  const share = Math.min(1, Math.max(0, time / LAUNCH_SECONDS))
+  return share * share * (3 - 2 * share)
+}
+
 /** Shared drawing area of the top and side views, in SVG units. */
 export const SCENE = {
   width: 800,
@@ -39,6 +51,53 @@ export const SCENE = {
   targetX: 752,
   // A 27 in arrow at the scale of the bow.
   arrowLength: 27 * 25.4 * EQUIPMENT_SCALE,
+}
+
+/**
+ * SVG units the nock sits behind the string's place at brace height: the whole
+ * power stroke at full draw, nothing once the arrow has left. The string pushes
+ * evenly, so the arrow covers the stroke as the square of the time.
+ */
+export function drawBack(result: SimulationResult, time: number): number {
+  if (time >= 0) return 0
+  const { powerStroke, timeOnString } = result.launch
+  const share = Math.max(0, 1 + time / timeOnString)
+  // Kept inside the frame for a very long draw.
+  return Math.min(SCENE.bowX - 6, powerStroke * EQUIPMENT_SCALE) * (1 - share * share)
+}
+
+/** s, the longest the push of the string is shown for at normal playback speed */
+const MAX_STROKE_SECONDS = 1.2
+
+/**
+ * s, how long the push of the string takes on screen at normal playback speed.
+ * The bow is drawn far larger than the distance to the target, so at the pace
+ * of the flight the arrow would shoot off the string and then seem to brake.
+ * The push is shown slower instead, so the arrow leaves the string at the
+ * speed it then flies at on screen.
+ */
+export function strokeSeconds(result: SimulationResult): number {
+  const { powerStroke, timeOnString } = result.launch
+  const flightPixels = SCENE.targetX - SCENE.bowX - SCENE.arrowLength
+  const pixelsPerSecond = flightPixels / flightSeconds(result)
+  const matched = (2 * powerStroke * EQUIPMENT_SCALE) / pixelsPerSecond
+  return Math.min(MAX_STROKE_SECONDS, Math.max(timeOnString * SLOW_MOTION, matched))
+}
+
+/**
+ * s of simulated time for a moment of the clip, counted from the nock leaving
+ * the string: negative during the push, which runs at its own pace.
+ */
+export function clipTime(result: SimulationResult, elapsed: number): number {
+  const stroke = strokeSeconds(result)
+  return elapsed < stroke
+    ? -result.launch.timeOnString * (1 - elapsed / stroke)
+    : (elapsed - stroke) / SLOW_MOTION
+}
+
+/** s, the whole clip on screen: from full draw until the arrow is in the target */
+export function clipSeconds(result: SimulationResult): number {
+  return strokeSeconds(result) + flightSeconds(result)
 }
 
 /** s, how long the flight takes on screen at normal playback speed */

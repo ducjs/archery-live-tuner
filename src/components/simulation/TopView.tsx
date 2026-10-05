@@ -3,7 +3,7 @@ import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
-import { SCENE } from './timing.ts'
+import { SCENE, drawBack, launchEase } from './timing.ts'
 
 // Visual amplification per unit of exaggeration. The drawing is not to scale.
 // Sideways movement of the middle of the shaft, as a share of its length, at
@@ -18,7 +18,7 @@ type Props = {
   /** A bare shaft to fly alongside. */
   bare?: SimulationResult
   handedness: Handedness
-  /** s, simulated time since release */
+  /** s, simulated time since the nock left the string; negative while it is on it */
   time: number
   /** 1..5, how much bending and yaw are amplified */
   exaggeration: number
@@ -50,16 +50,16 @@ export function TopView({ result, bare, handedness, time, exaggeration }: Props)
     const now = sampleTrajectory(flight.trajectory, time)
     const center = project(now.x, now.z ?? 0)
     const pose: ArrowPose = {
-      centerX: center.x,
+      centerX: center.x - drawBack(flight, time),
       centerY: center.y,
       length: SCENE.arrowLength,
-      angle: (now.yaw ?? 0) * ANGLE_GAIN * exaggeration,
+      angle: (now.yaw ?? 0) * ANGLE_GAIN * exaggeration * launchEase(time),
       bend: (now.flex ?? 0) * BEND_SHARE * SCENE.arrowLength * exaggeration,
     }
     const trail = flight.trajectory
       .filter((point, index) => index % TRAIL_STEP === 0 && point.t <= time)
       .map((point) => project(point.x, point.z ?? 0))
-    return { pose, trail: [...trail, center] }
+    return { pose, trail: time > 0 ? [...trail, center] : [] }
   }
 
   // Seen from above, a right-handed bow has the arrow on the left of the riser.

@@ -70,9 +70,20 @@ export type BareShaftComparison = {
   }
 }
 
+/** The shot before the arrow is free: what the views need to draw the bow at full draw. */
+export type LaunchGeometry = {
+  /** mm, how far the string carries the arrow, from full draw to brace height */
+  powerStroke: number
+  /** s, from release until the nock leaves the string */
+  timeOnString: number
+  /** rad, how far the arrow on the bow points below square to the string; positive for a nocking point above square */
+  nockAngle: number
+}
+
 export type SimulationResult = {
   setupId: string
   modelVersion: string
+  launch: LaunchGeometry
   classification: TuningClassification
   metrics: SimulationMetrics
   trajectory: TrajectoryPoint[]

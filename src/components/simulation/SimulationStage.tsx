@@ -9,7 +9,7 @@ import {
   DISTANCES,
   MAX_EXAGGERATION,
   MIN_EXAGGERATION,
-  SLOW_MOTION,
+  clipTime,
   SPEEDS,
   slowdown,
 } from './timing.ts'
@@ -63,7 +63,8 @@ export function FlightView({
   compact = false,
 }: FlightViewProps) {
   const m = useMessages()
-  const time = elapsed / SLOW_MOTION
+  // The clip opens at full draw; the views count time from the nock leaving the string.
+  const time = clipTime(result, elapsed)
   const both = view === 'both'
   // Keeps the drawing from pushing everything else off a wide, short screen.
   const heightLimit = both || compact ? '[&>svg]:max-h-[30vh]' : '[&>svg]:max-h-[46vh]'
@@ -125,9 +126,9 @@ const DISTANCE_OPTIONS = DISTANCES.map((distance) => ({
 
 type TimeScrubberProps = {
   result: SimulationResult
-  /** s, time on screen since release, at normal playback speed */
+  /** s, time on screen since full draw, at normal playback speed */
   elapsed: number
-  /** s, how long the whole flight takes on screen at normal playback speed */
+  /** s, how long the whole clip takes on screen at normal playback speed */
   flightSeconds: number
   /** Jumps to a moment of the flight and pauses there. */
   onSeek: (elapsed: number) => void
@@ -137,7 +138,8 @@ type TimeScrubberProps = {
 export function TimeScrubber({ result, elapsed, flightSeconds, onSeek }: TimeScrubberProps) {
   const id = useId()
   const m = useMessages()
-  const time = elapsed / SLOW_MOTION
+  const time = clipTime(result, elapsed)
+  const milliseconds = (time * 1000).toFixed(0).replace('-', '−')
   const travelled = sampleTrajectory(result.trajectory, time).x / 1000
   return (
     <div className="flex items-center gap-3">
@@ -152,11 +154,15 @@ export function TimeScrubber({ result, elapsed, flightSeconds, onSeek }: TimeScr
         step={flightSeconds / 500}
         value={elapsed}
         onChange={(event) => onSeek(Number(event.target.value))}
-        aria-valuetext={m.stage.momentText((time * 1000).toFixed(0), travelled.toFixed(1))}
+        aria-valuetext={
+          time < 0
+            ? m.stage.momentOnString((-time * 1000).toFixed(0))
+            : m.stage.momentText(milliseconds, travelled.toFixed(1))
+        }
         className="accent-accent focus-visible:outline-accent h-11 min-w-0 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
       />
       <span className="w-32 text-right text-sm whitespace-nowrap">
-        <span className="font-semibold">{(time * 1000).toFixed(0)} ms</span>
+        <span className="font-semibold">{milliseconds} ms</span>
         <span className="text-ink-muted">, {travelled.toFixed(1)} m</span>
       </span>
     </div>
