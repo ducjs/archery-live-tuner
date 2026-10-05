@@ -97,6 +97,9 @@ export const ROADMAP: RoadmapPhase[] = [
             'Mỗi thông số: ô số, thanh trượt, đơn vị, nút đặt lại, min/max và chú thích quy ước',
           ),
           done('Nút Simple/Advanced, được ghi nhớ, có cảnh báo khi giá trị nâng cao đang bị ẩn'),
+          done(
+            'Chế độ Simple nói rõ đang giả định những thông số nào: bao nhiêu cái, các phần của tên ảnh hưởng mạnh nhất, danh sách đầy đủ khi cần, và lối vào để tự nhập',
+          ),
           done('Kho trạng thái chung của ứng dụng'),
           done('Ước lượng tổng khối lượng mũi tên'),
           done('Test giao diện cho các bảng nhập'),

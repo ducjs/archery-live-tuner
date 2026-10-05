@@ -56,6 +56,12 @@ export const en = {
         : `${count} advanced values are changed and still affect the result.`,
     showThem: 'Show them',
     resetThem: 'Reset them',
+    assumed: (count: number) => `Simple mode assumes ${count} more values`,
+    assumedExamples: (examples: string[], rest: number) =>
+      `${examples.join(', ')} and ${rest} more. If your equipment differs, the result shifts.`,
+    assumedShow: 'See all of them',
+    assumedHide: 'Hide the list',
+    assumedEnter: 'Enter my own values',
     totalMass: 'Estimated total arrow mass',
     resetLabel: (label: string, value: string) => `Reset ${label} to ${value}`,
     resetTitle: (value: string) => `Reset to ${value}`,

@@ -1,12 +1,16 @@
+import { useState } from 'react'
 import { ParameterSlider } from '../common/ParameterSlider.tsx'
 import { SegmentedControl } from '../common/SegmentedControl.tsx'
 import { parameterText } from '../../i18n/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import { arrowTotalMass } from '../../models/arrow.ts'
 import {
+  PARAMETERS,
+  formatValue,
   getValue,
   modifiedParameters,
   visibleParameters,
+  type Parameter,
   type ParameterGroup,
   type ParameterTier,
 } from '../../models/parameters.ts'
@@ -81,6 +85,79 @@ function AdvancedNotice() {
   )
 }
 
+// The hidden values that move weak / stiff most in the model, named up front.
+const ASSUMED_FIRST = ['arrow.fletchingWeight', 'arrow.nockWeight', 'arrow.insertWeight']
+
+/**
+ * Shown in Simple mode: the values the result is built on but the user has not
+ * entered. Defaults are a guess at the equipment, and a wrong guess is silent.
+ */
+function AssumedValues() {
+  const setup = useTuningStore((state) => state.setup)
+  const units = useTuningStore((state) => state.units)
+  const setMode = useTuningStore((state) => state.setMode)
+  const m = useMessages()
+  const [open, setOpen] = useState(false)
+
+  const hidden = PARAMETERS.filter((parameter) => parameter.tier === 'advanced')
+  const shown = (parameter: Parameter) =>
+    parameter.kind === 'enum'
+      ? (parameterText(m, parameter).options?.[getValue(setup, parameter)] ??
+        getValue(setup, parameter))
+      : formatValue(parameter, getValue(setup, parameter), units)
+  const examples = hidden
+    .filter((parameter) => ASSUMED_FIRST.includes(parameter.key))
+    .map((parameter) => `${parameterText(m, parameter).label} ${shown(parameter)}`)
+  const groups: [ParameterGroup, string][] = [
+    ['bow', m.panels.bow],
+    ['arrow', m.panels.arrow],
+  ]
+
+  return (
+    <section aria-labelledby="assumed-heading" className="border-line rounded-md border px-3 py-2">
+      <h2 id="assumed-heading" className="font-medium">
+        {m.panels.assumed(hidden.length)}
+      </h2>
+      <p className="text-ink-muted">
+        {m.panels.assumedExamples(examples, hidden.length - examples.length)}
+      </p>
+      <div className="flex flex-wrap gap-x-4">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls="assumed-list"
+          onClick={() => setOpen(!open)}
+          className={linkButtonClass}
+        >
+          {open ? m.panels.assumedHide : m.panels.assumedShow}
+        </button>
+        <button type="button" onClick={() => setMode('advanced')} className={linkButtonClass}>
+          {m.panels.assumedEnter}
+        </button>
+      </div>
+      {open && (
+        <div id="assumed-list" className="grid gap-3 pb-1 sm:grid-cols-2">
+          {groups.map(([group, title]) => (
+            <div key={group}>
+              <h3 className="font-medium">{title}</h3>
+              <dl className="grid grid-cols-[1fr_auto] gap-x-3">
+                {hidden
+                  .filter((parameter) => parameter.group === group)
+                  .map((parameter) => (
+                    <div key={parameter.key} className="contents">
+                      <dt className="text-ink-muted">{parameterText(m, parameter).label}</dt>
+                      <dd className="text-right tabular-nums">{shown(parameter)}</dd>
+                    </div>
+                  ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
 export function SetupPanels() {
   const mode = useTuningStore((state) => state.mode)
   const setMode = useTuningStore((state) => state.setMode)
@@ -101,6 +178,7 @@ export function SetupPanels() {
         onChange={(value) => setMode(value as ParameterTier)}
       />
       {mode === 'simple' && <AdvancedNotice />}
+      {mode === 'simple' && <AssumedValues />}
       <ParameterPanel group="bow" title={m.panels.bow} />
       <div>
         <ParameterPanel group="arrow" title={m.panels.arrow} />

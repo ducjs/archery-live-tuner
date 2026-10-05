@@ -10,7 +10,7 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 
 ## What it does today
 
-- Bow and arrow inputs, in Simple and Advanced detail
+- Bow and arrow inputs, in Simple and Advanced detail. Simple mode lists the values it assumes for everything it does not ask
 - Arrow flight seen from above, from the side, or both, with a bare shaft flown next to the fletched arrow
 - Play, pause, a slider to jump to any moment, playback from 1/48 of real time up to real speed, and target distances from 18 m to 90 m
 - Model result: dynamic behavior, lateral and vertical tendency, oscillation, clearance sensitivity, bare shaft test

@@ -78,6 +78,12 @@ export const vi: Messages = {
     advancedChanged: (count) => `${count} thông số nâng cao đã đổi và vẫn ảnh hưởng tới kết quả.`,
     showThem: 'Xem',
     resetThem: 'Đặt lại',
+    assumed: (count) => `Chế độ Cơ bản đang giả định ${count} thông số khác`,
+    assumedExamples: (examples, rest) =>
+      `${examples.join(', ')} và ${rest} thông số nữa. Đồ của bạn khác thì kết quả lệch theo.`,
+    assumedShow: 'Xem tất cả',
+    assumedHide: 'Ẩn danh sách',
+    assumedEnter: 'Tự nhập các giá trị này',
     totalMass: 'Khối lượng tên ước tính',
     resetLabel: (label, value) => `Đặt lại ${label} về ${value}`,
     resetTitle: (value) => `Đặt lại về ${value}`,

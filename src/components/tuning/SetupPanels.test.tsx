@@ -114,6 +114,34 @@ describe('SetupPanels', () => {
     expect(setup().arrow.nockWeight).toBeCloseTo(convert(9, 'gr', 'g'), 9)
   })
 
+  it('names the hidden values that Simple mode assumes', async () => {
+    render(<SetupPanels />)
+    const assumed = screen.getByRole('region', { name: 'Simple mode assumes 13 more values' })
+    expect(assumed.textContent).toContain(
+      'Insert weight 12 gr, Nock weight 9.0 gr, Fletching weight 5.0 gr and 10 more',
+    )
+    expect(within(assumed).queryByText('Tiller')).toBeNull()
+
+    await userEvent.click(within(assumed).getByRole('button', { name: 'See all of them' }))
+    for (const parameter of PARAMETERS.filter((parameter) => parameter.tier === 'advanced')) {
+      expect(within(assumed).getByText(parameter.label), parameter.key).toBeTruthy()
+    }
+    expect(within(assumed).getByText('Normal')).toBeTruthy()
+
+    await userEvent.click(within(assumed).getByRole('button', { name: 'Enter my own values' }))
+    expect(useTuningStore.getState().mode).toBe('advanced')
+    expect(screen.queryByRole('region', { name: /Simple mode assumes/ })).toBeNull()
+  })
+
+  it('shows the assumed values in the chosen units', () => {
+    useTuningStore.setState({ units: 'metric' })
+    render(<SetupPanels />)
+    expect(screen.getByRole('region', { name: /Simple mode assumes/ }).textContent).toContain(
+      'Nock weight 0.58 g',
+    )
+    useTuningStore.setState({ units: 'archery' })
+  })
+
   it('opens Advanced mode from the notice', async () => {
     useTuningStore.getState().setParameter('bow.tiller', 8)
     render(<SetupPanels />)
