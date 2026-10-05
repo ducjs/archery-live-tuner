@@ -185,6 +185,8 @@ Goal: users record what really happened, and the model adjusts to it.
 
 > **Nói đơn giản:** Giống app ghi điểm: chấm vị trí từng mũi tên trên bia, đánh dấu mũi nào là bareshaft, mũi nào có cánh. Ứng dụng so cụm bareshaft với cụm fletched, kết hợp với setup đã nhập (coi như gần đúng), rồi đoán nguyên nhân và gợi ý nên chỉnh gì trước. Khác với gợi ý hiện tại ở chỗ: dữ liệu đến từ bia thật, không phải từ mô hình tự đoán.
 
+Why it matters: a setup can look tuned in the simulator and still shoot differently, because release, form and body differ from one archer to the next. The model cannot see that. The arrows in the target can, so advice has to be able to start from them.
+
 - [ ] Target face to tap arrow positions, with distance and face size
 - [ ] Mark each arrow as fletched or bare shaft; several ends can be added up
 - [ ] Group centers and spread; bare shaft offset from the fletched group, in cm and in clock direction
