@@ -12,7 +12,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M5 done; M6 next) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M5 done; M6, M7 left) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -21,6 +21,11 @@ How to use this file:
 | V1.0 | Stable public release | Not started |
 
 **Current phase:** V0.1
+
+Done ahead of their phase:
+- V0.2: bending stiffness and frequency from spine, string parameters in the model, bare shaft test
+- V0.3: a preview of the 3D setup viewer, on branch `preview/3d-bow` (center shot and nocking point height only)
+- V0.5: ranked tuning suggestions
 
 ---
 
@@ -89,7 +94,11 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 
 - [x] Top view: bow, arrow flex, oscillation, stabilization (§13)
 - [x] Side view: vertical attitude. Top, side or both together, in Simple and Advanced
-- [x] Play / pause / restart, speed, flex exaggeration (§23)
+- [x] Play / pause / restart, flex exaggeration (§23)
+- [x] Playback speed in Simple and Advanced: 1/48, 1/24, 1/12, 1/6 of real time, and real speed
+- [x] Moment slider: jump to any instant of the flight, with the time since release and distance travelled
+- [x] Target distance: 18, 30, 50, 70 or 90 m, with the flight time shown in the result
+- [x] Full-width page; on very wide screens inputs, animation and result sit in three columns
 - [x] "Not to scale" label
 - [x] Result panel (§12), with a vertical tendency (nock low / nock high) added
 - [x] Live update while dragging sliders (§15)
@@ -154,6 +163,8 @@ Goal: explore many setups at once, and pass a setup to someone else.
 ### 3D setup viewer
 
 > **Nói đơn giản:** Một cây cung 3D xoay được, làm bằng các bộ phận thật: riser, limb, dây, plunger, rest, stabilizer, mũi tên. Chỉnh thông số nào thì bộ phận đó chuyển động theo, camera tự bay tới chỗ đó và hiện thước đo. Ví dụ kéo center shot thì thấy đầu mũi tên dịch sang trái hoặc phải so với đường dây. Mục đích là hiểu "thông số này nằm ở đâu trên cung", không phải mô phỏng bay.
+
+Preview status: branch `preview/3d-bow` has a first version, opened with "Show: Bow in 3D" or `#3d` in the address. It covers center shot and nocking point height, the camera flying to the changed part, labels with real values, and 6× amplified offsets. The bow is a rough shape. Not merged into `master`.
 
 - [ ] React Three Fiber scene, loaded only when the viewer is opened
 - [ ] Bow built from code, not from a model file, so every part can move with its parameter

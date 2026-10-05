@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react'
 import {
   FlightView,
   PlaybackControls,
+  TimeScrubber,
   type ViewSettings,
 } from '../components/simulation/SimulationStage.tsx'
 import {
+  DEFAULT_DISTANCE,
   DEFAULT_EXAGGERATION,
   DEFAULT_SPEED,
   HOLD_SECONDS,
@@ -14,11 +16,12 @@ import { usePlayback } from '../components/simulation/usePlayback.ts'
 import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
 import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
 import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
-import { heuristicModel, suggestTuning } from '../engine/index.ts'
+import { DEFAULT_TRAJECTORY_OPTIONS, heuristicModel, suggestTuning } from '../engine/index.ts'
 import { useTuningStore } from '../state/tuningStore.ts'
 
 const DEFAULT_VIEW: ViewSettings = {
   view: 'top',
+  distance: DEFAULT_DISTANCE,
   speed: DEFAULT_SPEED,
   exaggeration: DEFAULT_EXAGGERATION,
 }
@@ -27,17 +30,24 @@ export function Simulator() {
   const setup = useTuningStore((state) => state.setup)
   const mode = useTuningStore((state) => state.mode)
   const setParameter = useTuningStore((state) => state.setParameter)
-  const comparison = useMemo(() => heuristicModel.compareBareShaft(setup), [setup])
+  const [bareShaft, setBareShaft] = useState(true)
+
+  // Amplification is an Advanced feature. Simple mode always uses its default,
+  // so a setting the user cannot see never changes what is shown.
+  const advanced = mode === 'advanced'
+  const [settings, setSettings] = useState(DEFAULT_VIEW)
+  const view = advanced ? settings : { ...settings, exaggeration: DEFAULT_EXAGGERATION }
+
+  const comparison = useMemo(
+    () =>
+      heuristicModel.compareBareShaft(setup, {
+        trajectory: { ...DEFAULT_TRAJECTORY_OPTIONS, distance: view.distance * 1000 },
+      }),
+    [setup, view.distance],
+  )
   const result = comparison.fletched
   // Simple mode only gets suggestions about values it can see.
   const advice = useMemo(() => suggestTuning(heuristicModel, setup, { tier: mode }), [setup, mode])
-  const [bareShaft, setBareShaft] = useState(true)
-
-  // Speed and amplification are Advanced features. Simple mode always uses their
-  // defaults, so a setting the user cannot see never changes what is shown.
-  const advanced = mode === 'advanced'
-  const [settings, setSettings] = useState(DEFAULT_VIEW)
-  const view = advanced ? settings : { ...DEFAULT_VIEW, view: settings.view }
 
   const playback = usePlayback(flightSeconds(result), HOLD_SECONDS, view.speed)
 
@@ -68,6 +78,12 @@ export function Simulator() {
               elapsed={playback.elapsed}
               exaggeration={view.exaggeration}
             />
+            <TimeScrubber
+              result={result}
+              elapsed={playback.elapsed}
+              flightSeconds={flightSeconds(result)}
+              onSeek={playback.seek}
+            />
             <div className="lg:hidden">
               <ResultSummary result={result} />
             </div>
@@ -81,8 +97,10 @@ export function Simulator() {
               onBareShaftChange={setBareShaft}
               settings={view}
               onSettingsChange={(next) =>
-                // Simple mode shows default speed and amplification; do not store those.
-                setSettings((current) => (advanced ? next : { ...current, view: next.view }))
+                // Simple mode shows the default amplification; do not store that.
+                setSettings((current) =>
+                  advanced ? next : { ...next, exaggeration: current.exaggeration },
+                )
               }
               advanced={advanced}
             />

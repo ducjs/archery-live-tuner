@@ -54,7 +54,7 @@ describe('bare shaft in the views', () => {
         onRestart={() => {}}
         bareShaft
         onBareShaftChange={onBareShaftChange}
-        settings={{ view: 'top', speed: 1, exaggeration: 3 }}
+        settings={{ view: 'top', distance: 18, speed: 1, exaggeration: 3 }}
         onSettingsChange={() => {}}
       />,
     )

@@ -3,7 +3,15 @@ import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { SegmentedControl } from '../common/SegmentedControl.tsx'
 import { SideView } from './SideView.tsx'
-import { MAX_EXAGGERATION, MIN_EXAGGERATION, SLOW_MOTION, SPEEDS } from './timing.ts'
+import { sampleTrajectory } from './arrowGeometry.ts'
+import {
+  DISTANCES,
+  MAX_EXAGGERATION,
+  MIN_EXAGGERATION,
+  SLOW_MOTION,
+  SPEEDS,
+  slowdown,
+} from './timing.ts'
 import { TopView } from './TopView.tsx'
 
 export type FlightViewKind = 'top' | 'side' | 'both'
@@ -102,10 +110,59 @@ const AMPLIFIED: Record<FlightViewKind, string> = {
   both: 'Bending, drift and arrow angle are',
 }
 
-const SPEED_OPTIONS = SPEEDS.map((speed) => ({ value: String(speed), label: `${speed}×` }))
+const DISTANCE_OPTIONS = DISTANCES.map((distance) => ({
+  value: String(distance),
+  label: `${distance} m`,
+}))
+
+const SPEED_OPTIONS = SPEEDS.map((speed) => ({
+  value: String(speed),
+  label: slowdown(speed) === 1 ? 'Real' : `1/${slowdown(speed)}`,
+}))
+
+type TimeScrubberProps = {
+  result: SimulationResult
+  /** s, time on screen since release, at normal playback speed */
+  elapsed: number
+  /** s, how long the whole flight takes on screen at normal playback speed */
+  flightSeconds: number
+  /** Jumps to a moment of the flight and pauses there. */
+  onSeek: (elapsed: number) => void
+}
+
+/** A slider over the whole flight, to go straight to a moment without waiting for it. */
+export function TimeScrubber({ result, elapsed, flightSeconds, onSeek }: TimeScrubberProps) {
+  const id = useId()
+  const time = elapsed / SLOW_MOTION
+  const travelled = sampleTrajectory(result.trajectory, time).x / 1000
+  return (
+    <div className="flex items-center gap-3">
+      <label htmlFor={id} className="font-medium whitespace-nowrap">
+        Moment
+      </label>
+      <input
+        id={id}
+        type="range"
+        min={0}
+        max={flightSeconds}
+        step={flightSeconds / 500}
+        value={elapsed}
+        onChange={(event) => onSeek(Number(event.target.value))}
+        aria-valuetext={`${(time * 1000).toFixed(0)} milliseconds after release, ${travelled.toFixed(1)} metres out`}
+        className="accent-accent focus-visible:outline-accent h-11 min-w-0 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+      />
+      <span className="w-32 text-right text-sm whitespace-nowrap">
+        <span className="font-semibold">{(time * 1000).toFixed(0)} ms</span>
+        <span className="text-ink-muted">, {travelled.toFixed(1)} m</span>
+      </span>
+    </div>
+  )
+}
 
 export type ViewSettings = {
   view: FlightViewKind
+  /** m, distance to the target */
+  distance: number
   speed: number
   exaggeration: number
 }
@@ -118,7 +175,7 @@ type PlaybackControlsProps = {
   onBareShaftChange: (shown: boolean) => void
   settings: ViewSettings
   onSettingsChange: (settings: ViewSettings) => void
-  /** Shows the speed and amplification controls. The view choice is always shown. */
+  /** Shows the amplification control. View, distance and speed are always shown. */
   advanced?: boolean
 }
 
@@ -167,14 +224,22 @@ export function PlaybackControls({
           onChange={(view) => onSettingsChange({ ...settings, view: view as FlightViewKind })}
         />
 
+        <SegmentedControl
+          label="Distance"
+          options={DISTANCE_OPTIONS}
+          value={String(settings.distance)}
+          onChange={(distance) => onSettingsChange({ ...settings, distance: Number(distance) })}
+        />
+
+        <SegmentedControl
+          label="Speed"
+          options={SPEED_OPTIONS}
+          value={String(settings.speed)}
+          onChange={(speed) => onSettingsChange({ ...settings, speed: Number(speed) })}
+        />
+
         {advanced && (
           <>
-            <SegmentedControl
-              label="Speed"
-              options={SPEED_OPTIONS}
-              value={String(settings.speed)}
-              onChange={(speed) => onSettingsChange({ ...settings, speed: Number(speed) })}
-            />
             <div className="flex min-w-56 flex-1 items-center gap-3">
               <label htmlFor={amplifyId} className="font-medium">
                 Amplify
@@ -198,8 +263,10 @@ export function PlaybackControls({
       </div>
 
       <p className="text-ink-muted max-w-prose text-sm">
-        Slowed {SLOW_MOTION / settings.speed} times. {subject} amplified, and the drawing is not to
-        scale.
+        {slowdown(settings.speed) === 1
+          ? 'Real speed.'
+          : `Slowed ${slowdown(settings.speed)} times.`}{' '}
+        {subject} amplified, and the drawing is not to scale.
       </p>
     </div>
   )

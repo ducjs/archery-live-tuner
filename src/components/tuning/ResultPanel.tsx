@@ -120,6 +120,7 @@ type ResultPanelProps = {
 export function ResultPanel({ result, comparison, handedness }: ResultPanelProps) {
   const { metrics, classification } = result
   const thresholds = HEURISTIC_V0.thresholds
+  const target = result.trajectory.at(-1)!
   const reading = comparison && bareShaftReading(comparison, handedness)
 
   return (
@@ -179,6 +180,8 @@ export function ResultPanel({ result, comparison, handedness }: ResultPanelProps
       <p className="mt-5">
         <span className="text-ink-muted">Estimated speed</span>{' '}
         <span className="font-semibold">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</span>
+        <span className="text-ink-muted">, reaching {(target.x / 1000).toFixed(0)} m in</span>{' '}
+        <span className="font-semibold">{target.t.toFixed(2)} s</span>
       </p>
       <p className="text-ink-muted mt-2 max-w-prose text-sm">
         These are tendencies from a simplified model that has not been checked against real

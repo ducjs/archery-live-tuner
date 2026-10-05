@@ -162,7 +162,7 @@ The UI has a global `Simple | Advanced` toggle that separates basic tuning from 
 | Bow | handedness, draw weight, draw length, brace height, nocking point height, center shot, plunger stiffness | tiller, plunger preload, bow mass, stabilizer mass/position, string (strand count, mass, nock fit) |
 | Arrow | length, spine, point weight | shaft GPI, shaft diameter, insert, nock and fletching weight |
 | Results | the four classifications, total arrow mass | numeric metrics, FOC, grains-per-pound, estimated speed, sensitivity chart, virtual tuning tests |
-| Views | top view, side view or both together, play/pause, bare shaft alongside | speed, flex exaggeration, tuning landscape |
+| Views | top view, side view or both together; play/pause, moment slider, playback speed, target distance; bare shaft alongside | flex exaggeration, tuning landscape |
 
 Rules:
 - The mode is a UI concern only. The engine always receives a complete `TuningSetup`; parameters hidden in Simple mode take their default values.
@@ -955,8 +955,14 @@ Controls:
 ```text
 [▶ Play] [⏸ Pause] [↻ Restart]
 
+Moment:
+release ──────●────────── target      85 ms, 4.9 m
+
 Speed:
-0.25x ───●─── 1x ───── 2x
+[1/48] [1/24] [1/12] [1/6] [Real]
+
+Distance:
+[18 m] [30 m] [50 m] [70 m] [90 m]
 
 Flex exaggeration:
 1x ─────●──── 5x

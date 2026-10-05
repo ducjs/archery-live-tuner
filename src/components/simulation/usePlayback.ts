@@ -8,7 +8,7 @@ function prefersReducedMotion(): boolean {
  * Drives a looping clock with requestAnimationFrame. `elapsed` runs from 0 to
  * `flightSeconds` at `rate` times real time, waits `holdSeconds` at the end,
  * then starts over. Does not start by itself when the user asks for reduced
- * motion.
+ * motion. `seek` jumps to a moment and stops there.
  */
 export function usePlayback(flightSeconds: number, holdSeconds: number, rate: number) {
   const [position, setPosition] = useState(0)
@@ -45,5 +45,10 @@ export function usePlayback(flightSeconds: number, holdSeconds: number, rate: nu
     setPlaying(true)
   }, [])
 
-  return { elapsed: Math.min(position, flightSeconds), playing, toggle, restart }
+  const seek = useCallback((seconds: number) => {
+    setPosition(Math.max(0, seconds))
+    setPlaying(false)
+  }, [])
+
+  return { elapsed: Math.min(position, flightSeconds), playing, toggle, restart, seek }
 }
