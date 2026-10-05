@@ -458,7 +458,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 - Chuyển động chậm: tốc độ thường là chậm 12 lần so với thật; các mức là 1/48, 1/24, 1/12, 1/6 và tốc độ thật.
 - Cung và mũi tên vẽ cùng một tỉ lệ: cung 68 in cao 187 đơn vị, nên tên 27 in dài khoảng 74 đơn vị. Cự ly tới bia, độ uốn và độ trôi mỗi thứ có tỉ lệ riêng, nên toàn cảnh vẫn không theo tỉ lệ.
 - Phóng đại độ uốn: 1× tới 5×, mặc định 2×. Ở 1×, tên cân (`flexAmplitude` 0.4) uốn lệch 3% chiều dài thân; công thức là `flex · 0.075 · chiều dài · mức phóng đại`.
-- Góc nhìn ngang kéo giãn chiều cao nhiều hơn chiều dài (tối đa 0,2 đơn vị mỗi mm, cung bay cao nhất 60 đơn vị), nên mũi tên trông chếch hơn góc bắn thật vài độ.
+- Góc nhìn ngang vẽ góc bắn gấp 3 lần thật: 1,5° ở 18 m thành 4,5°, 7,6° ở 90 m thành 23°. Chiều cao của đường bay được co giãn cho khớp với góc đó, nên cự ly càng xa cung càng ngửa và cung bay càng cao (tối đa 105 đơn vị). Đường bay là đường đi của nock: bắt đầu trên dây, kết thúc cách bia một chiều dài tên.
 - Dạng uốn của thân tên theo mode 1: điểm cách nock một phần `s` (0..1) lệch ngang `bend · cos(2π · (s − ½))`, tức giữa thân đi một phía, hai đầu đi phía kia.
 - Vị trí giữa hai mẫu đường bay được nội suy tuyến tính.
 

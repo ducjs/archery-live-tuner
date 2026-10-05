@@ -5,12 +5,13 @@ import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
 import { SCENE, drawBack, launchEase } from './timing.ts'
 
 // Visual amplification. The drawing is not to scale.
-const MAX_PIXELS_PER_MM = 0.2
 /**
- * Tallest the arc may be drawn. Height is stretched far more than distance, so
- * a tall arc tilts the arrow well beyond its real launch angle of a few degrees.
+ * How many times steeper than the real launch angle the bow and the start of
+ * the arc are drawn. The real angle is 1.5° at 18 m and under 8° at 90 m.
  */
-const MAX_RISE_PIXELS = 60
+const ELEVATION_GAIN = 3
+/** Tallest the arc may be drawn, so a long shot from a slow bow still fits. */
+const MAX_RISE_PIXELS = 105
 const ANGLE_GAIN = 3
 const DIRECTION_STEP = 0.004
 /** Size of the bow drawing; with it the bow is 187 units tall (see EQUIPMENT_SCALE). */
@@ -33,16 +34,23 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
 
-  // Both arrows share one vertical scale, small enough for the highest point of the arc.
-  const highest = Math.max(
-    ...[result, ...(bare ? [bare] : [])].flatMap((flight) =>
-      flight.trajectory.map((point) => Math.abs(point.y)),
-    ),
-  )
-  const pixelsPerMm = Math.min(MAX_PIXELS_PER_MM, MAX_RISE_PIXELS / Math.max(highest, 1))
+  // The path is that of the nock: it starts on the string and ends an arrow's
+  // length short of the target.
+  const startX = SCENE.bowX
+  const endX = SCENE.targetX - SCENE.arrowLength
 
-  const startX = SCENE.bowX + SCENE.arrowLength / 2
-  const endX = SCENE.targetX - SCENE.arrowLength / 2
+  // Height is scaled so that the arc sets off at the real launch angle times
+  // ELEVATION_GAIN. A longer shot then shows as a steeper bow and a taller arc.
+  // Both arrows share the scale.
+  const early = sampleTrajectory(result.trajectory, DIRECTION_STEP)
+  const elevation = Math.atan2(early.y, early.x)
+  const apex = Math.max(1, ...result.trajectory.map((point) => point.y))
+  const rise = Math.min(
+    MAX_RISE_PIXELS,
+    (Math.tan(Math.max(0, elevation) * ELEVATION_GAIN) * (endX - startX)) / 4,
+  )
+  const pixelsPerMm = rise / apex
+
   const project = (x: number, y: number): ScreenPoint => ({
     x: startX + (x / distance) * (endX - startX),
     y: SCENE.centerY - y * pixelsPerMm,
@@ -67,7 +75,7 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
   const fly = (flight: SimulationResult) => {
     const { trajectory } = flight
     const now = sampleTrajectory(trajectory, time)
-    const center = project(now.x, now.y)
+    const path = project(now.x, now.y)
 
     // Direction of travel on screen, from a short step along the path.
     const stepStart = Math.min(
@@ -85,24 +93,26 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
     // nose-down by a nocking point above square. The nock rides the string.
     // The tip is about one degree, so it is amplified less than the flight is.
     const resting = aim + flight.launch.nockAngle * exaggeration
-    const half = SCENE.arrowLength / 2
-    const onString = {
-      x: SCENE.bowX - pull * Math.cos(aim) + half * Math.cos(resting),
-      y: SCENE.centerY - pull * Math.sin(aim) + half * Math.sin(resting),
-    }
 
-    const away = launchEase(time)
+    // The nock is on the string until it leaves, then on the path. Only the
+    // attitude eases from one to the other, so the arrow does not jump.
+    const nock =
+      time > 0
+        ? path
+        : { x: SCENE.bowX - pull * Math.cos(aim), y: SCENE.centerY - pull * Math.sin(aim) }
+    const angle = resting + (flying - resting) * launchEase(time)
+    const half = SCENE.arrowLength / 2
     const pose: ArrowPose = {
-      centerX: onString.x + (center.x - onString.x) * away,
-      centerY: onString.y + (center.y - onString.y) * away,
+      centerX: nock.x + half * Math.cos(angle),
+      centerY: nock.y + half * Math.sin(angle),
       length: SCENE.arrowLength,
-      angle: resting + (flying - resting) * away,
+      angle,
       bend: 0,
     }
     const trail = trajectory
       .filter((point, index) => index % TRAIL_STEP === 0 && point.t <= time)
       .map((point) => project(point.x, point.y))
-    return { pose, trail: time > 0 ? [...trail, { x: pose.centerX, y: pose.centerY }] : [] }
+    return { pose, trail: time > 0 ? [...trail, nock] : [] }
   }
 
   const vertical =
