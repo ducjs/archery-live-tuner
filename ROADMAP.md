@@ -11,7 +11,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | Not started |
+| V0.1 | Basic simulator (MVP) | In progress (M1 done, M2 next) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -28,11 +28,12 @@ How to use this file:
 Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the result change. Heuristic model only.
 
 ### M1. Project scaffold
-- [ ] Vite + React + TypeScript (strict) + pnpm
-- [ ] Tailwind CSS + shadcn/ui
-- [ ] Vitest + fast-check
-- [ ] ESLint + Prettier + `eslint-plugin-boundaries` (`engine/` cannot import React)
-- [ ] Folder structure from §24
+- [x] Vite + React + TypeScript (strict) + npm
+- [x] Tailwind CSS
+- [ ] shadcn/ui (deferred to M4, when the first components are needed)
+- [x] Vitest + fast-check
+- [x] oxlint + Prettier, with `no-restricted-imports` so `engine/`, `models/`, `utils/` cannot import React or UI code
+- [ ] Folder structure from §24 (folders appear as their first files are written)
 
 ### M2. Data models and utilities
 - [ ] `BowSetup`, `ArrowSetup`, `TuningSetup`, `SimulationResult` types (§5, §6, §20)

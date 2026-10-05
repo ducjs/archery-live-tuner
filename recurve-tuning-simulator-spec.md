@@ -85,7 +85,7 @@ The simulation engine must be usable independently of React.
 | Layer | Choice | Notes |
 |---|---|---|
 | Language | TypeScript (strict) | |
-| Build | Vite + pnpm | |
+| Build | Vite + npm | |
 | UI | React | |
 | Styling | Tailwind CSS | |
 | Components | shadcn/ui (Radix) | Accessible slider, tabs, tooltip |
@@ -97,7 +97,7 @@ The simulation engine must be usable independently of React.
 | Heavy computation (V0.3) | Web Worker + Comlink | For the tuning landscape grid |
 | Tests | Vitest + fast-check | Property tests for monotonicity (heavier point → weaker) |
 | E2E (optional) | Playwright | |
-| Lint | ESLint + Prettier + `eslint-plugin-boundaries` | Blocks `engine/` from importing React |
+| Lint | oxlint + Prettier | `no-restricted-imports` blocks `engine/`, `models/`, `utils/` from importing React or UI code |
 | i18n | i18next | Vietnamese + English |
 | PWA | vite-plugin-pwa | Offline use at the range |
 | Deploy | Cloudflare Pages or GitHub Pages | Static, no backend |
