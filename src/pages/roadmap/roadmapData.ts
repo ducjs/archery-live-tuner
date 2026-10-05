@@ -163,6 +163,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done('Tốc độ phát: 1/48, 1/24, 1/12, 1/6 và tốc độ thật'),
           done('Thanh thời điểm: nhảy tới bất kỳ lúc nào của đường bay'),
           done('Chọn cự ly bia: 18, 30, 50, 70 hoặc 90 m, kèm thời gian bay'),
+          done(
+            'Mặt bia theo chuẩn World Archery cho từng cự ly (40, 80 hoặc 122 cm), vẽ cùng tỉ lệ với cung, đủ mười vòng',
+          ),
           done('Trang rộng hết màn hình; màn rất rộng chia ba cột'),
           done('Ghi rõ hình vẽ không theo tỉ lệ'),
           done('Bảng kết quả, thêm xu hướng dọc (nock thấp / nock cao)'),

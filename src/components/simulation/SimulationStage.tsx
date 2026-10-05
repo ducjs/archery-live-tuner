@@ -83,9 +83,9 @@ export function FlightView({
   )
 
   return (
-    // Side by side when there is room for two readable drawings, stacked otherwise.
+    // Two views go one above the other, so each keeps the full width for the flight.
     <div className="@container">
-      <div className={both ? 'grid gap-2 @4xl:grid-cols-2' : undefined}>
+      <div className={both ? 'grid gap-2' : undefined}>
         {view !== 'side' && (
           <div className={frameClass}>
             <TopView

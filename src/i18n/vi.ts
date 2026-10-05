@@ -206,6 +206,7 @@ export const vi: Messages = {
     distance: 'Cự ly',
     speed: 'Tốc độ',
     real: 'Thật',
+    bowAngle: (degrees) => `Cung ngửa ${degrees.replace('.', ',')}°`,
     moment: 'Thời điểm',
     momentText: (milliseconds, metres) =>
       `${milliseconds} mili giây sau khi rời dây, cách ${metres} mét`,

@@ -19,6 +19,16 @@ export function slowdown(speed: number): number {
 export const DISTANCES = [18, 30, 50, 70, 90]
 export const DEFAULT_DISTANCE = 18
 
+/**
+ * mm, diameter of the World Archery target face shot at a distance: 40 cm
+ * indoors at 18 m, 80 cm at 30 and 50 m, 122 cm at 70 and 90 m.
+ */
+export function targetFaceDiameter(distance: number): number {
+  if (distance <= 25_000) return 400
+  if (distance <= 50_000) return 800
+  return 1220
+}
+
 export const MIN_EXAGGERATION = 1
 export const MAX_EXAGGERATION = 5
 export const DEFAULT_EXAGGERATION = 2

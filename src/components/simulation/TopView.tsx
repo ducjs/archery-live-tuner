@@ -77,7 +77,7 @@ export function TopView({ result, bare, handedness, time, exaggeration }: Props)
       className="block h-auto w-full"
     >
       <AimLine fromX={SCENE.bowX} toX={SCENE.targetX} y={SCENE.centerY} />
-      <TargetEdge x={SCENE.targetX} centerY={SCENE.centerY} />
+      <TargetEdge x={SCENE.targetX} centerY={SCENE.centerY} distance={distance} />
 
       {/* Bow from above: riser, long rod forward, side rods back. */}
       <g

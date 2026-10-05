@@ -188,6 +188,7 @@ export const en = {
     distance: 'Distance',
     speed: 'Speed',
     real: 'Real',
+    bowAngle: (degrees: string) => `Bow raised ${degrees}°`,
     moment: 'Moment',
     momentText: (milliseconds: string, metres: string) =>
       `${milliseconds} milliseconds after leaving the string, ${metres} metres out`,

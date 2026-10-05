@@ -1,8 +1,10 @@
 import { pointOnArrow, shaftPath, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
+import { EQUIPMENT_SCALE, targetFaceDiameter } from './timing.ts'
 
-// World Archery target colors, from the center outward.
-const TARGET_BANDS = ['#ffd23f', '#e5383b', '#2d9cdb', '#22262b', '#f5f5f5']
-const BAND_HEIGHT = 16
+// World Archery target colors, from the center outward. Each color is two
+// scoring rings, and all ten rings are equally wide.
+const TARGET_COLORS = ['#ffe552', '#f0483e', '#3fb4e4', '#1b1e22', '#f5f5f5']
+const TARGET_THICKNESS = 12
 
 function toPoints(points: ScreenPoint[]): string {
   return points.map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
@@ -25,35 +27,70 @@ export function AimLine({ fromX, toX, y }: { fromX: number; toX: number; y: numb
   )
 }
 
-/** The target seen edge-on: each ring shows as a band on both sides of the center. */
-export function TargetEdge({ x, centerY }: { x: number; centerY: number }) {
-  const height = TARGET_BANDS.length * BAND_HEIGHT
+type TargetProps = {
+  x: number
+  centerY: number
+  /** mm, distance to the target; it decides which face is shot */
+  distance: number
+}
+
+/**
+ * The target face seen edge-on, at the scale of the bow: each color shows as a
+ * band on both sides of the center, with a line between its two rings.
+ */
+export function TargetEdge({ x, centerY, distance }: TargetProps) {
+  const diameter = targetFaceDiameter(distance)
+  const radius = (diameter * EQUIPMENT_SCALE) / 2
+  const band = radius / TARGET_COLORS.length
   return (
     <g>
-      {TARGET_BANDS.map((color, ring) =>
+      {TARGET_COLORS.map((color, index) =>
         [-1, 1].map((sideOfCenter) => (
           <rect
-            key={`${ring}-${sideOfCenter}`}
+            key={`${index}-${sideOfCenter}`}
             x={x}
-            y={
-              sideOfCenter === 1 ? centerY + ring * BAND_HEIGHT : centerY - (ring + 1) * BAND_HEIGHT
-            }
-            width="12"
-            height={BAND_HEIGHT}
+            y={sideOfCenter === 1 ? centerY + index * band : centerY - (index + 1) * band}
+            width={TARGET_THICKNESS}
+            height={band}
             fill={color}
           />
         )),
       )}
+      {/* Ring lines, left out when the face is drawn too small to show them. */}
+      {band >= 8 &&
+        Array.from({ length: 19 }, (_, index) => index - 9).map((ring) => (
+          <line
+            key={ring}
+            x1={x}
+            x2={x + TARGET_THICKNESS}
+            y1={centerY + (ring * band) / 2}
+            y2={centerY + (ring * band) / 2}
+            // Black rings need a light line to show.
+            stroke={Math.abs(ring) === 7 ? '#f5f5f5' : '#1b1e22'}
+            strokeWidth="0.5"
+            strokeOpacity="0.6"
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
       <rect
         x={x}
-        y={centerY - height}
-        width="12"
-        height={height * 2}
+        y={centerY - radius}
+        width={TARGET_THICKNESS}
+        height={radius * 2}
         fill="none"
         className="stroke-ink-muted"
         strokeWidth="1"
         vectorEffect="non-scaling-stroke"
       />
+      <text
+        x={x + TARGET_THICKNESS}
+        y={centerY + radius + 16}
+        textAnchor="end"
+        className="fill-ink-muted"
+        fontSize="13"
+      >
+        {`⌀ ${diameter / 10} cm`}
+      </text>
     </g>
   )
 }

@@ -17,6 +17,8 @@ const DIRECTION_STEP = 0.004
 /** Size of the bow drawing; with it the bow is 187 units tall (see EQUIPMENT_SCALE). */
 const BOW_SCALE = 0.86
 const TRAIL_STEP = 6
+/** Distance from the string at which the bow angle is marked, just past the long rod. */
+const ANGLE_MARK = 96
 
 type Props = {
   result: SimulationResult
@@ -34,10 +36,11 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
 
-  // The path is that of the nock: it starts on the string and ends an arrow's
-  // length short of the target.
+  // The path runs from the string to the face of the target. The arrow rides it
+  // by its nock at the start and by its point at the end, so that it leaves the
+  // string without a jump and its point lands where the path does.
   const startX = SCENE.bowX
-  const endX = SCENE.targetX - SCENE.arrowLength
+  const endX = SCENE.targetX
 
   // Height is scaled so that the arc sets off at the real launch angle times
   // ELEVATION_GAIN. A longer shot then shows as a steeper bow and a taller arc.
@@ -94,13 +97,15 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
     // The tip is about one degree, so it is amplified less than the flight is.
     const resting = aim + flight.launch.nockAngle * exaggeration
 
-    // The nock is on the string until it leaves, then on the path. Only the
-    // attitude eases from one to the other, so the arrow does not jump.
+    // The nock is on the string until it leaves. Only the attitude eases into
+    // flight, so the arrow does not jump.
+    const angle = resting + (flying - resting) * launchEase(time)
+    // How far along the shaft the path is held: the nock at first, the point at the end.
+    const held = (now.x / distance) * SCENE.arrowLength
     const nock =
       time > 0
-        ? path
+        ? { x: path.x - held * Math.cos(angle), y: path.y - held * Math.sin(angle) }
         : { x: SCENE.bowX - pull * Math.cos(aim), y: SCENE.centerY - pull * Math.sin(aim) }
-    const angle = resting + (flying - resting) * launchEase(time)
     const half = SCENE.arrowLength / 2
     const pose: ArrowPose = {
       centerX: nock.x + half * Math.cos(angle),
@@ -112,7 +117,7 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
     const trail = trajectory
       .filter((point, index) => index % TRAIL_STEP === 0 && point.t <= time)
       .map((point) => project(point.x, point.y))
-    return { pose, trail: time > 0 ? [...trail, nock] : [] }
+    return { pose, trail: time > 0 ? [...trail, path] : [] }
   }
 
   const vertical =
@@ -128,7 +133,7 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
       className="block h-auto w-full"
     >
       <AimLine fromX={SCENE.bowX} toX={SCENE.targetX} y={SCENE.centerY} />
-      <TargetEdge x={SCENE.targetX} centerY={SCENE.centerY} />
+      <TargetEdge x={SCENE.targetX} centerY={SCENE.centerY} distance={distance} />
 
       {/* Recurve bow from the side, tilted to where it aims: string, limbs, riser, long rod. */}
       <g
@@ -146,6 +151,23 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
         {/* The long rod is square to the string, so it shows where the bow points. */}
         <line x1="32" y1="19" x2="98" y2="19" strokeWidth="3" />
       </g>
+
+      {/* How far the bow is raised: the arc is drawn steeper, the number is the real angle. */}
+      <path
+        d={`M${SCENE.bowX + ANGLE_MARK} ${SCENE.centerY}A${ANGLE_MARK} ${ANGLE_MARK} 0 0 0 ${SCENE.bowX + ANGLE_MARK * Math.cos(aim)} ${SCENE.centerY + ANGLE_MARK * Math.sin(aim)}`}
+        fill="none"
+        className="stroke-accent"
+        strokeWidth="1.5"
+        vectorEffect="non-scaling-stroke"
+      />
+      <text
+        x={SCENE.bowX + ANGLE_MARK + 8}
+        y={SCENE.centerY + 18}
+        className="fill-ink"
+        fontSize="13"
+      >
+        {m.stage.bowAngle(((Math.max(0, elevation) * 180) / Math.PI).toFixed(1))}
+      </text>
 
       {bare && <FlyingArrow {...fly(bare)} bare />}
       <FlyingArrow {...fly(result)} />
