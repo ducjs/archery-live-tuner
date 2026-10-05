@@ -1,0 +1,358 @@
+import { Line, OrbitControls, RoundedBox } from '@react-three/drei'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { useEffect, useMemo, useRef, type RefObject } from 'react'
+import { CatmullRomCurve3, Quaternion, TubeGeometry, Vector3 } from 'three'
+import type { ArrowSetup } from '../../models/arrow.ts'
+import type { BowSetup } from '../../models/bow.ts'
+import {
+  RISER_HALF_LENGTH,
+  along,
+  bowGeometry,
+  centerShotText,
+  nockingPointText,
+  type BowGeometry,
+  type Vec3,
+} from './bowGeometry.ts'
+
+export type Focus = 'bow' | 'centerShot' | 'nockingPoint'
+
+type Props = {
+  bow: BowSetup
+  arrow: ArrowSetup
+  /** How many times the two offsets are enlarged. 1 is true scale. */
+  amplify: number
+  focus: Focus
+  /** Changes whenever the camera should fly to `focus` again. */
+  focusRequest: number
+}
+
+type Palette = {
+  ink: string
+  muted: string
+  accent: string
+  gold: string
+  weak: string
+}
+
+function readPalette(): Palette {
+  const style = getComputedStyle(document.documentElement)
+  const token = (name: string) => style.getPropertyValue(`--color-${name}`).trim()
+  return {
+    ink: token('ink'),
+    muted: token('ink-muted'),
+    accent: token('accent'),
+    gold: token('gold'),
+    weak: token('weak'),
+  }
+}
+
+const UP = new Vector3(0, 1, 0)
+
+/** Position, rotation and length of something that runs from one point to another. */
+function span(from: Vec3, to: Vec3) {
+  const start = new Vector3(...from)
+  const direction = new Vector3(...to).sub(start)
+  const length = direction.length()
+  const quaternion = new Quaternion().setFromUnitVectors(UP, direction.clone().normalize())
+  return { middle: start.add(direction.multiplyScalar(0.5)), quaternion, length }
+}
+
+type RodProps = {
+  from: Vec3
+  to: Vec3
+  radius: number
+  /** Radius at `to`. Defaults to `radius`; near 0 makes a cone. */
+  endRadius?: number
+  color: string
+}
+
+/** A cylinder or cone between two points. */
+function Rod({ from, to, radius, endRadius = radius, color }: RodProps) {
+  const { middle, quaternion, length } = span(from, to)
+  return (
+    <mesh position={middle} quaternion={quaternion}>
+      <cylinderGeometry args={[endRadius, radius, length, 16]} />
+      <meshStandardMaterial color={color} roughness={0.55} />
+    </mesh>
+  )
+}
+
+function Vanes({ from, to, radius, color }: Omit<RodProps, 'endRadius'>) {
+  const { middle, quaternion, length } = span(from, to)
+  return (
+    <group position={middle} quaternion={quaternion}>
+      {[0, 1, 2].map((index) => (
+        <group key={index} rotation={[0, (index * 2 * Math.PI) / 3 + Math.PI / 6, 0]}>
+          <mesh position={[0, 0, radius + 6]}>
+            <boxGeometry args={[0.8, length, 12]} />
+            <meshStandardMaterial color={color} roughness={0.7} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
+function Limb({ points, color }: { points: [number, number][]; color: string }) {
+  const geometry = useMemo(() => {
+    const curve = new CatmullRomCurve3(points.map(([x, y]) => new Vector3(x, y, 0)))
+    return new TubeGeometry(curve, 48, 5, 10)
+  }, [points])
+  useEffect(() => () => geometry.dispose(), [geometry])
+  // A round tube squashed sideways reads as a flat limb.
+  return (
+    <mesh geometry={geometry} scale={[1, 1, 3.6]}>
+      <meshStandardMaterial color={color} roughness={0.5} />
+    </mesh>
+  )
+}
+
+type Shot = { position: Vec3; target: Vec3 }
+
+function cameraShot(focus: Focus, geometry: BowGeometry): Shot {
+  const { side, stringX, point } = geometry
+  switch (focus) {
+    case 'centerShot': {
+      // Looking down on the front half of the arrow, where the offset is largest.
+      const x = stringX + (point[0] - stringX) * 0.6
+      return { position: [x, 820, -130 * side], target: [x, 0, 0] }
+    }
+    case 'nockingPoint':
+      // Level with the nock, from the open side of the bow.
+      return { position: [stringX + 90, 25, -560 * side], target: [stringX + 90, 10, 0] }
+    default:
+      // From the open side, so the arrow is in front of the riser.
+      return { position: [900, 250, -2900 * side], target: [120, 0, 0] }
+  }
+}
+
+type ControlsHandle = { target: Vector3; update: () => void }
+
+type RigProps = Pick<Props, 'focus' | 'focusRequest'> & { geometry: BowGeometry }
+
+function CameraRig({ focus, focusRequest, geometry }: RigProps) {
+  const controls = useRef<ControlsHandle | null>(null)
+  const flying = useRef(true)
+  const first = useRef(true)
+  const latest = useRef(geometry)
+  const { camera, invalidate } = useThree()
+
+  useEffect(() => {
+    latest.current = geometry
+  }, [geometry])
+
+  // A new request starts a flight. Geometry changes on their own do not, or the
+  // camera would fight the user while a slider is dragged.
+  const goal = useRef<{ position: Vector3; target: Vector3 } | null>(null)
+  useEffect(() => {
+    const shot = cameraShot(focus, latest.current)
+    goal.current = {
+      position: new Vector3(...shot.position),
+      target: new Vector3(...shot.target),
+    }
+    flying.current = true
+    invalidate()
+  }, [focus, focusRequest, geometry.side, invalidate])
+
+  useFrame((_, delta) => {
+    if (!flying.current || !controls.current || !goal.current) return
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const step = first.current || reduceMotion ? 1 : 1 - Math.exp(-5 * Math.min(delta, 0.1))
+    first.current = false
+
+    camera.position.lerp(goal.current.position, step)
+    controls.current.target.lerp(goal.current.target, step)
+    controls.current.update()
+
+    if (camera.position.distanceTo(goal.current.position) < 1) flying.current = false
+    else invalidate()
+  })
+
+  return (
+    <OrbitControls
+      ref={controls as never}
+      makeDefault
+      enableDamping={false}
+      minDistance={150}
+      maxDistance={6000}
+      onStart={() => {
+        // The user took over; stop steering the camera.
+        flying.current = false
+      }}
+    />
+  )
+}
+
+type Anchor = { element: RefObject<HTMLElement | null>; position: Vec3 }
+
+/** Keeps HTML labels pinned to points of the scene. */
+function LabelPins({ anchors }: { anchors: Anchor[] }) {
+  const projected = useMemo(() => new Vector3(), [])
+  useFrame(({ camera, size }) => {
+    for (const { element, position } of anchors) {
+      if (!element.current) continue
+      projected.set(...position).project(camera)
+      const visible = projected.z < 1
+      const x = (projected.x * 0.5 + 0.5) * size.width
+      const y = (-projected.y * 0.5 + 0.5) * size.height
+      // Written straight to the DOM: this runs every frame, outside React rendering.
+      // oxlint-disable-next-line react/immutability
+      element.current.style.visibility = visible ? 'visible' : 'hidden'
+      element.current.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -100%)`
+    }
+  })
+  return null
+}
+
+function Bow({ bow, geometry }: { bow: BowSetup; geometry: BowGeometry }) {
+  const palette = useMemo(() => readPalette(), [])
+  const { side, stringX, nock, point, atRest, shaftRadius, limb, string } = geometry
+  const lowerLimb = useMemo(() => limb.map(([x, y]): [number, number] => [x, -y]), [limb])
+
+  // Drawn a little thicker than life, or the shaft vanishes at this size.
+  const radius = shaftRadius * 1.4
+  const windowZ = side * 22
+  const rodEnd = 26 + bow.stabilizerPosition
+
+  return (
+    <group>
+      {/* Riser: lower part with the grip, sight window offset to one side, upper part. */}
+      <RoundedBox args={[32, 250, 30]} radius={6} position={[10, -175, 0]}>
+        <meshStandardMaterial color={palette.muted} roughness={0.45} metalness={0.3} />
+      </RoundedBox>
+      <RoundedBox args={[30, 250, 16]} radius={5} position={[10, 70, windowZ]}>
+        <meshStandardMaterial color={palette.muted} roughness={0.45} metalness={0.3} />
+      </RoundedBox>
+      <RoundedBox args={[32, 120, 30]} radius={6} position={[10, RISER_HALF_LENGTH - 60, 0]}>
+        <meshStandardMaterial color={palette.muted} roughness={0.45} metalness={0.3} />
+      </RoundedBox>
+      <RoundedBox args={[34, 80, 30]} radius={10} position={[-14, -85, 0]}>
+        <meshStandardMaterial color={palette.ink} roughness={0.8} />
+      </RoundedBox>
+
+      <Limb points={limb} color={palette.ink} />
+      <Limb points={lowerLimb} color={palette.ink} />
+      <Line points={string} color={palette.ink} lineWidth={1.5} />
+
+      {/* Long rod with its weight. */}
+      <Rod from={[26, -130, 0]} to={[rodEnd, -130, 0]} radius={7} color={palette.ink} />
+      <Rod from={[rodEnd, -130, 0]} to={[rodEnd + 40, -130, 0]} radius={13} color={palette.muted} />
+
+      {/* Plunger through the riser, touching the shaft. Rest wire under it. */}
+      <Rod
+        from={[0, 0, side * 52]}
+        to={[0, 0, atRest[2] + side * radius]}
+        radius={3.2}
+        color={palette.gold}
+      />
+      <Rod
+        from={[6, -radius - 1, windowZ]}
+        to={[6, -radius - 1, atRest[2] - side * 10]}
+        radius={1}
+        color={palette.ink}
+      />
+
+      {/* The reference: string line seen from above, square to the string seen from the side. */}
+      <Line
+        points={[
+          [stringX, 0, 0],
+          [point[0] + 90, 0, 0],
+        ]}
+        color={palette.gold}
+        lineWidth={2}
+        dashed
+        dashSize={18}
+        gapSize={12}
+      />
+
+      {/* Arrow: shaft, point, nock, three vanes. */}
+      <Rod from={nock} to={point} radius={radius} color={palette.ink} />
+      <Rod
+        from={point}
+        to={along(nock, point, 1.04)}
+        radius={radius * 1.3}
+        endRadius={0.2}
+        color={palette.muted}
+      />
+      <Rod from={along(nock, point, -0.015)} to={nock} radius={radius * 1.2} color={palette.weak} />
+      <Vanes
+        from={along(nock, point, 0.04)}
+        to={along(nock, point, 0.12)}
+        radius={radius}
+        color={palette.accent}
+      />
+
+      {/* Nocking point locators on the string. */}
+      {[-11, 5].map((offset) => (
+        <Rod
+          key={offset}
+          from={[stringX, nock[1] + offset, 0]}
+          to={[stringX, nock[1] + offset + 6, 0]}
+          radius={2.2}
+          color={palette.gold}
+        />
+      ))}
+
+      {/* The two offsets, drawn from the reference line to the arrow. */}
+      <Line
+        points={[
+          [stringX - 14, 0, 0],
+          [stringX - 14, nock[1], 0],
+        ]}
+        color={palette.accent}
+        lineWidth={4}
+      />
+      <Line
+        points={[
+          [point[0], 0, 0],
+          [point[0], 0, point[2]],
+        ]}
+        color={palette.accent}
+        lineWidth={4}
+      />
+    </group>
+  )
+}
+
+const labelClass =
+  'border-line bg-surface text-ink absolute top-0 left-0 rounded-md border px-2 py-1 text-sm font-medium whitespace-nowrap shadow-sm'
+
+export default function BowScene({ bow, arrow, amplify, focus, focusRequest }: Props) {
+  const geometry = useMemo(() => bowGeometry({ bow, arrow }, amplify), [bow, arrow, amplify])
+  const nockLabel = useRef<HTMLSpanElement>(null)
+  const pointLabel = useRef<HTMLSpanElement>(null)
+  const { nock, point, side } = geometry
+
+  const anchors: Anchor[] = [
+    { element: nockLabel, position: [nock[0], Math.max(nock[1], 0) + 30, 0] },
+    { element: pointLabel, position: [point[0], Math.max(point[1], 0) + 30, point[2]] },
+  ]
+
+  return (
+    <div className="relative h-full w-full overflow-hidden">
+      <Canvas
+        frameloop="demand"
+        dpr={[1, 2]}
+        camera={{ fov: 32, near: 20, far: 20000, position: [900, 250, -2900 * side] }}
+        aria-label="3D model of the bow. Drag to turn it, scroll or pinch to zoom."
+        role="img"
+      >
+        <ambientLight intensity={1.1} />
+        <directionalLight position={[800, 1600, -1200 * side]} intensity={2.2} />
+        <directionalLight position={[-900, -400, 900 * side]} intensity={0.7} />
+        <Bow bow={bow} geometry={geometry} />
+        <CameraRig focus={focus} focusRequest={focusRequest} geometry={geometry} />
+        <LabelPins anchors={anchors} />
+      </Canvas>
+
+      <div className="pointer-events-none absolute inset-0">
+        <span ref={nockLabel} className={labelClass}>
+          Nocking point: {nockingPointText(bow.nockingPointHeight)}
+        </span>
+        <span ref={pointLabel} className={labelClass}>
+          Center shot: {centerShotText(bow.centerShot)}
+        </span>
+      </div>
+    </div>
+  )
+}
