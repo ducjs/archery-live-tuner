@@ -1571,6 +1571,14 @@ Two marks fix only two unknowns, `offset` and `scale`. Without drag and at small
 
 The marks are real measurements of this bow and this arrow. Fitting them gives an arrow speed that can be set next to the model's own estimate, and stored as a real-world observation for calibration (section 18).
 
+## 38.6 The sight on the bow
+
+Once a mark is known for a distance, the sight can be drawn on the bow in the side view: the extension bar forward of the riser, the vertical bar, and the pin at the height the mark gives.
+
+The reason to draw it is clearance. The further the target, the lower the pin sits, and at long distance it comes down toward the path of the arrow. On a bow with a short sight extension or a low anchor the arrow or its vanes can strike the pin or the bar. The view would show how much room is left at each distance and warn when it is small.
+
+Needs, beyond the marks: the length of the sight extension, where zero on the scale sits relative to the arrow rest, and the size of the pin housing. The arrow's path past the sight is in the first few centimetres of flight, where the shaft is still bending, so the bend from the top view matters here too.
+
 ## 38.5 Limits
 
 - A predicted mark is a starting point to confirm by shooting, and must be shown with a range, wider the further it is from the known marks. Predicting 90 m from 18 m and 30 m is a long reach.

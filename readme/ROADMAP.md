@@ -239,6 +239,7 @@ Why it matters: every archer needs marks for distances they have not shot yet, a
 - [ ] Air drag in the flight path, since without it the long distances come out too low
 - [ ] A range for each predicted mark, wider the further it lies from the known ones, and a note that it is a starting point to confirm by shooting
 - [ ] The arrow speed that the known marks imply, shown next to the model's estimate and stored as a real-world observation
+- [ ] The sight drawn on the bow in the side view, with the pin where the mark for the chosen distance puts it, and a warning when the arrow or its vanes would pass too close to the pin or the sight bar (§38.6)
 
 **Exit criteria:** after a user logs observations for several setups, the calibrated model matches those observations better than the base model, and the user can always switch back to the base model.
 
