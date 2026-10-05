@@ -5,18 +5,19 @@ function prefersReducedMotion(): boolean {
 }
 
 /**
- * Drives a looping clock with requestAnimationFrame. `elapsed` is in seconds of
- * wall-clock time and wraps at `loopSeconds`. Does not start by itself when the
- * user asks for reduced motion.
+ * Drives a looping clock with requestAnimationFrame. `elapsed` runs from 0 to
+ * `flightSeconds` at `rate` times real time, waits `holdSeconds` at the end,
+ * then starts over. Does not start by itself when the user asks for reduced
+ * motion.
  */
-export function usePlayback(loopSeconds: number) {
-  const [elapsed, setElapsed] = useState(0)
+export function usePlayback(flightSeconds: number, holdSeconds: number, rate: number) {
+  const [position, setPosition] = useState(0)
   const [playing, setPlaying] = useState(() => !prefersReducedMotion())
-  const loopRef = useRef(loopSeconds)
+  const settings = useRef({ flightSeconds, holdSeconds, rate })
 
   useEffect(() => {
-    loopRef.current = loopSeconds
-  }, [loopSeconds])
+    settings.current = { flightSeconds, holdSeconds, rate }
+  }, [flightSeconds, holdSeconds, rate])
 
   useEffect(() => {
     if (!playing) return
@@ -26,7 +27,12 @@ export function usePlayback(loopSeconds: number) {
       // Cap the step so a background tab does not jump the animation on return.
       const delta = previous === null ? 0 : Math.min(0.1, (now - previous) / 1000)
       previous = now
-      setElapsed((current) => (current + delta) % loopRef.current)
+      setPosition((current) => {
+        const { flightSeconds: flight, holdSeconds: hold, rate: speed } = settings.current
+        // The hold at the end always takes the same time, whatever the speed.
+        const next = current + (current < flight ? delta * speed : delta)
+        return next >= flight + hold ? 0 : next
+      })
       frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
@@ -35,9 +41,9 @@ export function usePlayback(loopSeconds: number) {
 
   const toggle = useCallback(() => setPlaying((current) => !current), [])
   const restart = useCallback(() => {
-    setElapsed(0)
+    setPosition(0)
     setPlaying(true)
   }, [])
 
-  return { elapsed: Math.min(elapsed, loopSeconds), playing, toggle, restart }
+  return { elapsed: Math.min(position, flightSeconds), playing, toggle, restart }
 }

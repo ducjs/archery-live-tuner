@@ -12,7 +12,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M4 done; M5 next) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M5 done except the bareshaft overlay; M6 next) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -87,12 +87,13 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 
 > **Nói đơn giản:** Phần nhìn thấy được. Hoạt hình mũi tên rời cung, uốn, dao động rồi ổn định; kèm bảng kết quả. Kéo thanh trượt là hoạt hình và kết quả đổi theo, không cần bấm nút tính.
 
-- [ ] Top view: bow, string, arrow flex, oscillation, stabilization (§13)
-- [ ] Side view: vertical attitude (Advanced)
-- [ ] Play / pause / restart, speed, flex exaggeration (§23)
-- [ ] "Not to scale" label
-- [ ] Result panel (§12)
-- [ ] Live update while dragging sliders (§15)
+- [x] Top view: bow, arrow flex, oscillation, stabilization (§13)
+- [x] Side view: vertical attitude (Advanced)
+- [x] Play / pause / restart, speed, flex exaggeration (§23)
+- [x] "Not to scale" label
+- [x] Result panel (§12), with a vertical tendency (nock low / nock high) added
+- [x] Live update while dragging sliders (§15)
+- [ ] Bareshaft and fletched arrow flown together, to show where each lands
 
 ### M6. Snapshots and comparison
 

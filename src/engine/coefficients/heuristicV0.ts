@@ -118,6 +118,7 @@ export const HEURISTIC_V0 = {
   thresholds: {
     stiffnessNeutral: 0.2,
     lateralNeutral: 0.15,
+    verticalNeutral: 0.15,
     oscillationMedium: 0.35,
     oscillationHigh: 0.65,
     clearanceMedium: 0.33,

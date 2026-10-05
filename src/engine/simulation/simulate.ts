@@ -101,6 +101,7 @@ function evaluate(setup: SetupInput, c: Coefficients): Internals {
     oscillationFrequency: bendingFrequency(arrow, c),
     oscillationDecay,
     lateralDeviation,
+    verticalTendency,
     yaw: c.lateral.maxYaw * lateralDeviation,
     // Nock high leaves the bow tail-up, which is nose-down.
     pitch: -c.vertical.maxPitch * verticalTendency,

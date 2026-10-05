@@ -36,6 +36,7 @@ describe('reference setup', () => {
       oscillation: 'LOW',
       lateral: 'NEUTRAL',
       clearance: 'LOW',
+      vertical: 'NEUTRAL',
     })
   })
 
@@ -87,6 +88,16 @@ describe('tendencies at the reference setup', () => {
     expect(heuristicModel.analyze(weak).classification.lateral).toBe('RIGHT')
     const stiff = withDisplay(reference, 'arrow.spine', 500)
     expect(heuristicModel.analyze(stiff).classification.lateral).toBe('LEFT')
+  })
+
+  it('a high nocking point reads as nock high and tips the arrow nose-down', () => {
+    const high = heuristicModel.analyze(withDisplay(reference, 'bow.nockingPointHeight', 10))
+    expect(high.classification.vertical).toBe('NOCK_HIGH')
+    expect(high.metrics.pitch).toBeLessThan(0)
+
+    const low = heuristicModel.analyze(withDisplay(reference, 'bow.nockingPointHeight', -2))
+    expect(low.classification.vertical).toBe('NOCK_LOW')
+    expect(low.metrics.pitch).toBeGreaterThan(0)
   })
 
   it('a longer arrow bends at a lower frequency', () => {

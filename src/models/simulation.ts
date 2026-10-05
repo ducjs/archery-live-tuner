@@ -3,6 +3,7 @@ export type TuningClassification = {
   oscillation: 'LOW' | 'MEDIUM' | 'HIGH'
   lateral: 'LEFT' | 'NEUTRAL' | 'RIGHT'
   clearance: 'LOW' | 'MEDIUM' | 'HIGH'
+  vertical: 'NOCK_LOW' | 'NEUTRAL' | 'NOCK_HIGH'
 }
 
 export type TrajectoryPoint = {
@@ -35,6 +36,8 @@ export type SimulationMetrics = {
   oscillationDecay: number
   /** -1 = far left, +1 = far right */
   lateralDeviation: number
+  /** -1 = nock far too low, +1 = nock far too high */
+  verticalTendency: number
   /** rad */
   yaw: number
   /** rad */

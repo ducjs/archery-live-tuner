@@ -6,7 +6,8 @@ export function classify(
   coefficients: Coefficients,
 ): TuningClassification {
   const t = coefficients.thresholds
-  const { dynamicBehavior, oscillation, lateralDeviation, clearanceRisk } = metrics
+  const { dynamicBehavior, oscillation, lateralDeviation, clearanceRisk, verticalTendency } =
+    metrics
 
   return {
     stiffness:
@@ -33,5 +34,11 @@ export function classify(
         : clearanceRisk >= t.clearanceMedium
           ? 'MEDIUM'
           : 'LOW',
+    vertical:
+      verticalTendency < -t.verticalNeutral
+        ? 'NOCK_LOW'
+        : verticalTendency > t.verticalNeutral
+          ? 'NOCK_HIGH'
+          : 'NEUTRAL',
   }
 }

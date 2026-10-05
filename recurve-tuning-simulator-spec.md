@@ -556,6 +556,7 @@ type TuningClassification = {
   oscillation: "LOW" | "MEDIUM" | "HIGH"
   lateral: "LEFT" | "NEUTRAL" | "RIGHT"
   clearance: "LOW" | "MEDIUM" | "HIGH"
+  vertical: "NOCK_LOW" | "NEUTRAL" | "NOCK_HIGH"
 }
 ```
 

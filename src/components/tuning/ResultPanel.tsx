@@ -10,6 +10,8 @@ const WORDS: Record<string, string> = {
   HIGH: 'High',
   LEFT: 'Left',
   RIGHT: 'Right',
+  NOCK_LOW: 'Nock low',
+  NOCK_HIGH: 'Nock high',
 }
 
 type GaugeProps = {
@@ -132,6 +134,14 @@ export function ResultPanel({ result }: { result: SimulationResult }) {
           neutral={thresholds.lateralNeutral}
           lowLabel="Left"
           highLabel="Right"
+        />
+        <DivergingGauge
+          title="Vertical tendency"
+          word={WORDS[classification.vertical]!}
+          value={metrics.verticalTendency}
+          neutral={thresholds.verticalNeutral}
+          lowLabel="Nock low"
+          highLabel="Nock high"
         />
         <LevelMeter
           title="Oscillation"
