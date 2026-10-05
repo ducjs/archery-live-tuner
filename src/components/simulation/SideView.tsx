@@ -62,13 +62,14 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
   )
   const pixelsPerMm = rise / apex
 
-  // As in the top view: one scale for both arrows, whether the bare shaft is
-  // shown or not.
+  // As in the top view: the fletched arrows are sighted in on the center, and
+  // a bare shaft is drawn by how far it lands from them.
   const driftScale = driftPixels(distance) / result.fullDrift.vertical
+  const sightedIn = landing(result)
 
   const project = (flight: SimulationResult, point: TrajectoryPoint): ScreenPoint => {
     const along = point.x / distance
-    const drift = landing(flight) * driftScale * along
+    const drift = (landing(flight) - sightedIn) * driftScale * along
     return {
       x: startX + along * (endX - startX),
       y: SCENE.centerY - arc(flight, point) * pixelsPerMm - drift,

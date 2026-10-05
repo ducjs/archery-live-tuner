@@ -602,6 +602,8 @@ Show:
 5. forward movement
 6. gradual stabilization
 
+The fletched arrow is the reference: it is drawn as sighted in on the center of the target, and a bare shaft is drawn by how far it lands from it, as in a real bare shaft test. A setup that is out of tune still hits the center; it shows in the bare shaft, in the attitude of the arrow in flight and in the model result.
+
 As built: the clip opens at full draw and waits there; nothing plays until the user presses play. The string then pushes the arrow over the power stroke, and the arrow leaves it straight, bending toward the riser first. Top and side view are shown together by default. In the side view the bow is tilted to where it aims, the long rod is square to the string, and the arrow on the string is tipped nose-down by the nocking point height. Bow and arrow share one scale.
 
 Concept:

@@ -219,9 +219,9 @@ export const vi: Messages = {
     realSpeed: 'Tốc độ thật.',
     slowed: (times) => `Chậm ${times} lần.`,
     amplified: {
-      top: 'Độ uốn và độ lệch được phóng đại, hình vẽ không theo tỉ lệ.',
-      side: 'Góc của tên được phóng đại, hình vẽ không theo tỉ lệ.',
-      both: 'Độ uốn, độ lệch và góc của tên được phóng đại, hình vẽ không theo tỉ lệ.',
+      top: 'Độ uốn và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ. Tên có cánh được coi là đã chỉnh thước vào tâm.',
+      side: 'Góc của tên và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ. Tên có cánh được coi là đã chỉnh thước vào tâm.',
+      both: 'Độ uốn, góc của tên và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ. Tên có cánh được coi là đã chỉnh thước vào tâm.',
     },
     topViewLabel: (stiffness, oscillation, lateral) =>
       `Tên bay từ cung tới bia, nhìn từ trên. Độ cứng động: ${stiffness}. Dao động: ${oscillation}. Lệch ngang: ${lateral}.`,

@@ -202,9 +202,9 @@ export const en = {
     realSpeed: 'Real speed.',
     slowed: (times: number) => `Slowed ${times} times.`,
     amplified: {
-      top: 'Bending and drift are amplified, and the drawing is not to scale.',
-      side: 'The arrow angle is amplified, and the drawing is not to scale.',
-      both: 'Bending, drift and arrow angle are amplified, and the drawing is not to scale.',
+      top: 'Bending and the bare shaft offset are amplified, and the drawing is not to scale. The fletched arrow is taken as sighted in on the center.',
+      side: 'The arrow angle and the bare shaft offset are amplified, and the drawing is not to scale. The fletched arrow is taken as sighted in on the center.',
+      both: 'Bending, arrow angle and the bare shaft offset are amplified, and the drawing is not to scale. The fletched arrow is taken as sighted in on the center.',
     },
     topViewLabel: (stiffness: string, oscillation: string, lateral: string) =>
       `Top view of the arrow flying from the bow to the target. The arrow is ${stiffness}, with ${oscillation} oscillation and a ${lateral} lateral tendency.`,

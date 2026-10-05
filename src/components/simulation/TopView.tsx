@@ -28,15 +28,18 @@ export function TopView({ result, bare, handedness, time, exaggeration }: Props)
   const m = useMessages()
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
-  // One scale for both arrows, whether the bare shaft is shown or not.
+  // The fletched arrows are the reference, as in a bare shaft test: the sight
+  // is set so that they hit the center, and a bare shaft is read against them.
+  // So the drift of the fletched arrow is taken out of both paths.
   const driftScale = driftPixels(distance) / result.fullDrift.lateral
+  const sightedIn = result.trajectory.at(-1)!.z ?? 0
 
   const startX = SCENE.bowX + SCENE.arrowLength / 2
   const endX = SCENE.targetX - SCENE.arrowLength / 2
   const project = (x: number, z: number): ScreenPoint => ({
     x: startX + (x / distance) * (endX - startX),
     // Shooting to the right of the screen, so the archer's right is down.
-    y: SCENE.centerY + z * driftScale,
+    y: SCENE.centerY + (z - (sightedIn * x) / distance) * driftScale,
   })
 
   const fly = (flight: SimulationResult) => {
