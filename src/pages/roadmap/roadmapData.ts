@@ -268,7 +268,9 @@ export const ROADMAP: RoadmapPhase[] = [
           todo('Thông số thả dây'),
           todo('Hỗ trợ barebow'),
           todo('Chi tiết thêm cho tên: chiều dài point, vị trí cánh'),
-          done('Gợi ý tune có thứ tự ưu tiên, kèm nút thử ngay'),
+          done(
+            'Gợi ý tune có thứ tự ưu tiên, kèm nút thử ngay, chia hai nhóm: chỉnh trực tiếp và thiết bị',
+          ),
           todo('Gợi ý cả một chuỗi bước, không chỉ bước kế tiếp'),
         ],
       },

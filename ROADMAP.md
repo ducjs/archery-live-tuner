@@ -222,7 +222,7 @@ Goal: cover more equipment detail and suggest what to try next.
 - [ ] Release parameters (§7)
 - [ ] Barebow support (§1)
 - [ ] Extra arrow detail: point length, fletching position (§6)
-- [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button)
+- [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button, shown in two groups: "Adjust directly" on the bow, and "Equipment")
 - [ ] Recommendations that plan a sequence of changes, not only the next single step
 
 **Exit criteria:** every new parameter is in the Advanced tier with a default, Simple mode is unchanged, and each recommendation is one the landscape shows as an improvement.

@@ -777,7 +777,14 @@ change an arrow part   (point weight, nock weight)
 needs new arrows       (spine, arrow length)
 ```
 
-So a free adjustment that helps is listed before a purchase that helps more. Every item shows what the model reports after the change and has a "Try it" action that applies it. In Simple mode only Simple parameters are suggested.
+The panel shows two separate groups, each ranked on its own and counting from 1, with up to three items:
+
+```text
+Adjust directly   everything in "adjust on the bow"
+Equipment         "change an arrow part" and "needs new arrows", each item saying which
+```
+
+A group with nothing useful says so. Inside the equipment group a cheap part still ranks before new arrows that help more. Every item shows what the model reports after the change and has a "Try it" action that applies it. In Simple mode only Simple parameters are suggested.
 
 ## 17.2 Diagnosis from a target plot (V0.4)
 

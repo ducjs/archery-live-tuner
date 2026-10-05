@@ -117,7 +117,12 @@ export const en = {
     tuned: 'The model reads this setup as tuned. There is nothing to suggest.',
     none: 'No single change within reach improves this setup much. Try a different shaft or a larger change than one step.',
     intro:
-      'In order of priority: what helps most for the least effort. Each one is a single change from the setup as it is now, so try one, then look at the list again.',
+      'Each group is in order of priority: what helps most for the least effort. Each item is a single change from the setup as it is now, so try one, then look at the lists again.',
+    groups: {
+      adjust: { title: 'Adjust directly', about: 'Set on the bow itself. Nothing to buy.' },
+      equipment: { title: 'Equipment', about: 'Change a part of the arrow, or the arrows.' },
+    },
+    emptyGroup: 'Nothing in this group helps much.',
     tryIt: 'Try it',
     tryLabel: (action: string) => `Try it: ${action}`,
     footnote: 'Suggestions come from the same simplified model, not from tested tuning advice.',

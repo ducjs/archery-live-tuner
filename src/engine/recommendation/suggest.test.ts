@@ -9,7 +9,7 @@ import {
 import { setupArbitrary } from '../../models/setup.arbitrary.ts'
 import { createDefaultSetup, type TuningSetup } from '../../models/setup.ts'
 import { heuristicModel } from '../simulation/simulate.ts'
-import { suggestTuning } from './suggest.ts'
+import { suggestTuning, suggestionGroup } from './suggest.ts'
 
 const reference = createDefaultSetup('Reference')
 
@@ -29,6 +29,14 @@ function errorOf(setup: TuningSetup): number {
     0.3 * fletched.oscillation
   )
 }
+
+describe('suggestionGroup', () => {
+  it('puts what is set on the bow apart from what has to be changed or bought', () => {
+    expect(suggestionGroup('bow')).toBe('adjust')
+    expect(suggestionGroup('arrowPart')).toBe('equipment')
+    expect(suggestionGroup('newArrows')).toBe('equipment')
+  })
+})
 
 describe('suggestTuning', () => {
   it('has nothing to suggest for the reference setup', () => {

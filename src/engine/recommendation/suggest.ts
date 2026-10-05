@@ -13,6 +13,13 @@ import type { SetupInput, SimulationModel } from '../simulation/simulate.ts'
 /** How much work a change is. Free adjustments are suggested before purchases. */
 export type Effort = 'bow' | 'arrowPart' | 'newArrows'
 
+/** The two kinds of advice: set something on the bow, or change what is shot. */
+export type SuggestionGroup = 'adjust' | 'equipment'
+
+export function suggestionGroup(effort: Effort): SuggestionGroup {
+  return effort === 'bow' ? 'adjust' : 'equipment'
+}
+
 type Candidate = {
   key: string
   effort: Effort

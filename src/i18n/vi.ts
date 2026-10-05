@@ -138,7 +138,12 @@ export const vi: Messages = {
     tuned: 'Mô hình đọc setup này là đã cân. Không có gì cần gợi ý.',
     none: 'Không có thay đổi đơn lẻ nào trong tầm chỉnh cải thiện được nhiều. Thử thân tên khác, hoặc đổi nhiều hơn một bước.',
     intro:
-      'Xếp theo thứ tự ưu tiên: lợi nhiều nhất mà tốn công ít nhất. Mỗi gợi ý là một thay đổi riêng lẻ tính từ setup hiện tại, nên hãy thử một cái rồi xem lại danh sách.',
+      'Mỗi nhóm xếp theo thứ tự ưu tiên: lợi nhiều nhất mà tốn công ít nhất. Mỗi gợi ý là một thay đổi riêng lẻ tính từ setup hiện tại, nên hãy thử một cái rồi xem lại danh sách.',
+    groups: {
+      adjust: { title: 'Chỉnh trực tiếp', about: 'Chỉnh ngay trên cung. Không phải mua gì.' },
+      equipment: { title: 'Thiết bị', about: 'Đổi một bộ phận của tên, hoặc đổi tên.' },
+    },
+    emptyGroup: 'Nhóm này không có thay đổi nào giúp được nhiều.',
     tryIt: 'Thử',
     tryLabel: (action) => `Thử: ${action}`,
     footnote:

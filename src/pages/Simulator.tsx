@@ -69,8 +69,12 @@ export function Simulator() {
     [setup, trajectory],
   )
   const result = comparison.fletched
-  // Simple mode only gets suggestions about values it can see.
-  const advice = useMemo(() => suggestTuning(heuristicModel, setup, { tier: mode }), [setup, mode])
+  // Simple mode only gets suggestions about values it can see. All of them are
+  // asked for: the panel sorts them into its two groups and trims each.
+  const advice = useMemo(
+    () => suggestTuning(heuristicModel, setup, { tier: mode, limit: Infinity }),
+    [setup, mode],
+  )
 
   const [stage, setStage] = useState<Stage>(() =>
     window.location.hash === '#3d' ? 'bow' : 'flight',
