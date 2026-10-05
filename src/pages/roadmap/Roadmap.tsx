@@ -154,6 +154,12 @@ function Phase({ phase }: { phase: RoadmapPhase }) {
       <p className="text-ink-muted mt-3 max-w-prose text-sm">
         <span className="text-ink font-medium">Khi nào coi là xong:</span> {phase.exit}
       </p>
+      <a
+        href={`#demo-${phase.id}`}
+        className="text-accent focus-visible:outline-accent mt-1 inline-flex min-h-11 items-center rounded font-medium underline underline-offset-4 focus-visible:outline-2"
+      >
+        Xem bản dựng thử của {phase.version}
+      </a>
     </section>
   )
 }

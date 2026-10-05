@@ -1221,6 +1221,8 @@ Only then improve the mathematical model.
 
 Detailed tasks, exit criteria and current status for each phase are tracked in [ROADMAP.md](ROADMAP.md).
 
+The app also has a previews page ("Xem trước") with a demo of every remaining phase. Demos exist to judge an idea before building it. They may use fake data or a simple stand-in calculation, must say so on the card, and do not count as the feature being done.
+
 ### V0.1
 Basic simulator.
 

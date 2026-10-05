@@ -1,4 +1,6 @@
 import { useSyncExternalStore } from 'react'
+import { Demos } from './pages/demos/Demos.tsx'
+import { isDemoHash } from './pages/demos/demoTabs.ts'
 import { Roadmap } from './pages/roadmap/Roadmap.tsx'
 import { Simulator } from './pages/Simulator.tsx'
 
@@ -16,11 +18,12 @@ function App() {
   const hash = useSyncExternalStore(subscribeToHash, () => window.location.hash)
   // Anchors inside the roadmap page (#v0-1 and so on) keep that page open.
   const onRoadmap = hash === ROADMAP_HASH || /^#v\d/.test(hash)
+  const onDemos = isDemoHash(hash)
 
   return (
     <>
       <nav aria-label="Pages" className="border-line flex gap-5 border-b px-4 sm:px-6 lg:px-8">
-        <a href="#" aria-current={onRoadmap ? undefined : 'page'} className={linkClass}>
+        <a href="#" aria-current={onRoadmap || onDemos ? undefined : 'page'} className={linkClass}>
           Simulator
         </a>
         <a
@@ -31,8 +34,16 @@ function App() {
         >
           Lộ trình
         </a>
+        <a
+          href="#demo-v0-1"
+          lang="vi"
+          aria-current={onDemos ? 'page' : undefined}
+          className={linkClass}
+        >
+          Xem trước
+        </a>
       </nav>
-      {onRoadmap ? <Roadmap /> : <Simulator />}
+      {onDemos ? <Demos hash={hash} /> : onRoadmap ? <Roadmap /> : <Simulator />}
     </>
   )
 }

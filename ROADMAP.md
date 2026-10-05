@@ -23,6 +23,8 @@ How to use this file:
 
 **Current phase:** V0.1
 
+Every phase has a demo on the "Xem trước" page of the app (`#demo-v0-1` to `#demo-v1-0`, one tab per phase). Each demo card says whether it runs on the current model, on a simple stand-in calculation, or on fake data. A demo does not tick its roadmap item: the items below stay open until the real feature is built.
+
 Done ahead of their phase:
 - V0.2: bending stiffness and frequency from spine, string parameters in the model, bare shaft test
 - V0.3: a preview of the 3D setup viewer (center shot and nocking point height only)

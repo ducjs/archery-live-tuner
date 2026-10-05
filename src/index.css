@@ -15,6 +15,10 @@
   --color-gold: #e3a900;
   --color-weak: #c8323a;
   --color-stiff: #1f6fae;
+
+  /* Chart fills for the same two poles. Checked with the dataviz palette validator. */
+  --color-chart-weak: #c8323a;
+  --color-chart-stiff: #1f6fae;
 }
 
 @layer base {
@@ -33,6 +37,8 @@
       --color-gold: #f2c230;
       --color-weak: #f0666c;
       --color-stiff: #62aee6;
+      --color-chart-weak: #e0555c;
+      --color-chart-stiff: #4f9ad6;
     }
   }
 

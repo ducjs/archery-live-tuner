@@ -15,6 +15,7 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 
 - A preview of the bow in 3D, showing where center shot and nocking point height sit
 - A roadmap page in Vietnamese ("Lộ trình")
+- A previews page in Vietnamese ("Xem trước"), with one tab of demos per remaining phase: compare setups, derived metrics, paper tear and walk-back, tuning landscape, sensitivity, share link, target plot diagnosis, tuning plan, stabilizer builder, and mock-ups of accounts and history. Each card is marked as model-driven, a simple stand-in, or fake data
 
 ## Requirements
 
