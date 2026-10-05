@@ -1,4 +1,5 @@
 import { Component, Suspense, lazy, type ReactNode } from 'react'
+import { useMessages } from '../../i18n/useMessages.ts'
 import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
 import type { Focus } from './BowScene.tsx'
@@ -9,16 +10,14 @@ const BowScene = lazy(() => import('./BowScene.tsx'))
 
 const AMPLIFY = 6
 
-const FOCUS_BUTTONS: { focus: Focus; label: string }[] = [
-  { focus: 'bow', label: 'Whole bow' },
-  { focus: 'centerShot', label: 'Center shot' },
-  { focus: 'nockingPoint', label: 'Nocking point' },
-]
+const FOCUSES: Focus[] = ['bow', 'centerShot', 'nockingPoint']
 
 const buttonClass =
   'border-line bg-surface focus-visible:outline-accent aria-pressed:bg-ink aria-pressed:text-surface min-h-11 cursor-pointer rounded-md border px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2'
 
-class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+type BoundaryProps = { children: ReactNode; message: string }
+
+class SceneBoundary extends Component<BoundaryProps, { failed: boolean }> {
   state = { failed: false }
 
   static getDerivedStateFromError() {
@@ -27,12 +26,7 @@ class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean
 
   render() {
     if (this.state.failed) {
-      return (
-        <p className="p-4">
-          The 3D view could not start. It needs WebGL, which this browser or device has turned off.
-          The arrow flight views work without it.
-        </p>
-      )
+      return <p className="p-4">{this.props.message}</p>
     }
     return this.props.children
   }
@@ -45,10 +39,11 @@ type BowViewerProps = {
 }
 
 export function BowViewer({ bow, arrow, viewer }: BowViewerProps) {
+  const m = useMessages()
   return (
     <div className="border-line bg-surface h-[38vh] min-h-56 overflow-hidden rounded-lg border lg:h-[54vh]">
-      <SceneBoundary>
-        <Suspense fallback={<p className="text-ink-muted p-4">Loading the 3D view.</p>}>
+      <SceneBoundary message={m.viewer.failed}>
+        <Suspense fallback={<p className="text-ink-muted p-4">{m.viewer.loading}</p>}>
           <BowScene
             bow={bow}
             arrow={arrow}
@@ -63,11 +58,12 @@ export function BowViewer({ bow, arrow, viewer }: BowViewerProps) {
 }
 
 export function BowViewerControls({ viewer }: { viewer: BowViewerState }) {
+  const m = useMessages()
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Look at">
-          {FOCUS_BUTTONS.map(({ focus, label }) => (
+        <div className="flex flex-wrap gap-2" role="group" aria-label={m.viewer.lookAt}>
+          {FOCUSES.map((focus) => (
             <button
               key={focus}
               type="button"
@@ -75,7 +71,7 @@ export function BowViewerControls({ viewer }: { viewer: BowViewerState }) {
               aria-pressed={viewer.focus === focus}
               className={buttonClass}
             >
-              {label}
+              {m.viewer.focus[focus]}
             </button>
           ))}
         </div>
@@ -86,15 +82,10 @@ export function BowViewerControls({ viewer }: { viewer: BowViewerState }) {
             onChange={(event) => viewer.setAmplified(event.target.checked)}
             className="accent-accent focus-visible:outline-accent size-5 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
           />
-          Draw offsets {AMPLIFY} times larger
+          {m.viewer.amplify(AMPLIFY)}
         </label>
       </div>
-      <p className="text-ink-muted max-w-prose text-sm">
-        Preview: only center shot and nocking point height move the model so far. Change either one
-        and the camera goes to it. Drag to turn the bow, scroll or pinch to zoom. The dashed gold
-        line is the string line from above and the line square to the string from the side. Labels
-        show real values; the bow is a simplified shape, not your equipment.
-      </p>
+      <p className="text-ink-muted max-w-prose text-sm">{m.viewer.about}</p>
     </div>
   )
 }

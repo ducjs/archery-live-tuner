@@ -1,3 +1,4 @@
+import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
@@ -29,6 +30,7 @@ function fullDrift(result: SimulationResult): number {
 
 /** The flight seen from above. This is the view that shows the shaft bending. */
 export function TopView({ result, bare, handedness, time, exaggeration }: Props) {
+  const m = useMessages()
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
   // Both arrows share one scale, so their offset from each other is drawn true.
@@ -65,7 +67,11 @@ export function TopView({ result, bare, handedness, time, exaggeration }: Props)
     <svg
       viewBox={`0 0 ${SCENE.width} ${SCENE.height}`}
       role="img"
-      aria-label={`Top view of the arrow flying from the bow to the target. The arrow is ${classification.stiffness.toLowerCase()}, with ${classification.oscillation.toLowerCase()} oscillation and a ${classification.lateral.toLowerCase()} lateral tendency.`}
+      aria-label={m.stage.topViewLabel(
+        m.rating[classification.stiffness].toLowerCase(),
+        m.rating[classification.oscillation].toLowerCase(),
+        m.rating[classification.lateral].toLowerCase(),
+      )}
       className="block h-auto w-full"
     >
       <AimLine fromX={SCENE.bowX} toX={SCENE.targetX} y={SCENE.centerY} />

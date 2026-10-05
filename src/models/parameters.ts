@@ -1,4 +1,4 @@
-import { convert, type Unit } from '../utils/units.ts'
+import { convert, unitLabel, type Unit } from '../utils/units.ts'
 import type { ArrowSetup } from './arrow.ts'
 import type { BowSetup } from './bow.ts'
 
@@ -324,6 +324,66 @@ export function modifiedParameters(setup: SetupValues, tier?: ParameterTier): Pa
     if (parameter.kind === 'enum') return value !== parameter.default
     return Math.abs((value as number) - parameter.default) > 1e-9
   })
+}
+
+/** Which units the UI shows. `archery` is lb, inch and grain; `metric` is kg, cm and gram. */
+export type UnitSystem = 'archery' | 'metric'
+
+// The metric stand-in for each archery unit, with a slider step that suits it.
+// Nocks, inserts and vanes weigh a gram or two, so they get a finer step.
+const METRIC: Partial<Record<Unit, { unit: Unit; step: (largest: number) => number }>> = {
+  lbf: { unit: 'kgf', step: () => 0.1 },
+  in: { unit: 'cm', step: () => 0.5 },
+  gr: { unit: 'g', step: (largest) => (largest < 4 ? 0.01 : 0.1) },
+  gpi: { unit: 'g/m', step: () => 0.5 },
+}
+
+export type ParameterDisplay = {
+  unit: Unit | null
+  step: number
+  decimals: number
+  /** Bounds in the shown unit, moved inward to a whole number of steps. */
+  min: number
+  max: number
+}
+
+function decimalsOf(step: number): number {
+  const text = String(step)
+  const dot = text.indexOf('.')
+  return dot === -1 ? 0 : text.length - dot - 1
+}
+
+/** How a parameter is shown in a unit system: unit, step and bounds. */
+export function displayOf(
+  parameter: NumberParameter,
+  system: UnitSystem = 'archery',
+): ParameterDisplay {
+  const metric = system === 'metric' && parameter.displayUnit && METRIC[parameter.displayUnit]
+  const unit = metric ? metric.unit : parameter.displayUnit
+  const step = metric
+    ? metric.step(toDisplay(parameter, parameter.max, metric.unit))
+    : parameter.step
+  const decimals = decimalsOf(step)
+  const inSteps = (value: number) => toDisplay(parameter, value, unit ?? undefined) / step
+  const snap = (steps: number) => Number((steps * step).toFixed(decimals))
+  return {
+    unit,
+    step,
+    decimals,
+    min: snap(Math.ceil(inSteps(parameter.min) - 1e-6)),
+    max: snap(Math.floor(inSteps(parameter.max) + 1e-6)),
+  }
+}
+
+/** A value with its unit, as the UI writes it. */
+export function formatValue(
+  parameter: NumberParameter,
+  value: number,
+  system: UnitSystem = 'archery',
+): string {
+  const { unit, decimals } = displayOf(parameter, system)
+  const text = toDisplay(parameter, value, unit ?? undefined).toFixed(decimals)
+  return unit ? `${text} ${unitLabel(unit)}` : text
 }
 
 export function toDisplay(parameter: NumberParameter, value: number, unit?: Unit): number {

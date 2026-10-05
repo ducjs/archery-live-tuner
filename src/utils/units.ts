@@ -26,6 +26,7 @@ const UNITS = {
   ms: { dimension: 'time', toBase: 0.001, label: 'ms' },
 
   'g/mm': { dimension: 'linearDensity', toBase: 1, label: 'g/mm' },
+  'g/m': { dimension: 'linearDensity', toBase: 0.001, label: 'g/m' },
   gpi: { dimension: 'linearDensity', toBase: GRAMS_PER_GRAIN / MM_PER_INCH, label: 'gpi' },
 } as const satisfies Record<string, { dimension: Dimension; toBase: number; label: string }>
 

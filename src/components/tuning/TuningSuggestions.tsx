@@ -1,4 +1,6 @@
 import type { TuningAdvice } from '../../engine/index.ts'
+import { useMessages } from '../../i18n/useMessages.ts'
+import { useTuningStore } from '../../state/tuningStore.ts'
 import { describeSuggestion, type Reading } from './suggestionText.ts'
 
 type Props = {
@@ -10,34 +12,27 @@ type Props = {
 }
 
 export function TuningSuggestions({ advice, before, onTry }: Props) {
+  const m = useMessages()
+  const units = useTuningStore((state) => state.units)
+  const text = m.suggestions
   return (
     <section aria-labelledby="suggestions-heading" className="border-line border-t pt-4">
       <h2 id="suggestions-heading" className="font-display text-xl font-semibold">
-        Tuning suggestions
+        {text.heading}
       </h2>
 
-      {advice.tuned && (
-        <p className="mt-2 max-w-prose">
-          The model reads this setup as tuned. There is nothing to suggest.
-        </p>
-      )}
+      {advice.tuned && <p className="mt-2 max-w-prose">{text.tuned}</p>}
 
       {!advice.tuned && advice.suggestions.length === 0 && (
-        <p className="mt-2 max-w-prose">
-          No single change within reach improves this setup much. Try a different shaft or a larger
-          change than one step.
-        </p>
+        <p className="mt-2 max-w-prose">{text.none}</p>
       )}
 
       {advice.suggestions.length > 0 && (
         <>
-          <p className="text-ink-muted mt-1 max-w-prose text-sm">
-            In order of priority: what helps most for the least effort. Each one is a single change
-            from the setup as it is now, so try one, then look at the list again.
-          </p>
+          <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.intro}</p>
           <ol className="mt-3 grid gap-3">
             {advice.suggestions.map((suggestion, index) => {
-              const text = describeSuggestion(suggestion, before)
+              const item = describeSuggestion(suggestion, before, m, units)
               return (
                 <li
                   key={suggestion.parameterKey}
@@ -47,18 +42,18 @@ export function TuningSuggestions({ advice, before, onTry }: Props) {
                     {index + 1}
                   </span>
                   <div className="min-w-0">
-                    <p className="font-semibold">{text.action}</p>
-                    <p>{text.value}</p>
-                    <p className="text-ink-muted mt-1 text-sm">{text.effects.join(' ')}</p>
+                    <p className="font-semibold">{item.action}</p>
+                    <p>{item.value}</p>
+                    <p className="text-ink-muted mt-1 text-sm">{item.effects.join(' ')}</p>
                     <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-ink-muted text-sm">{text.effort}</span>
+                      <span className="text-ink-muted text-sm">{item.effort}</span>
                       <button
                         type="button"
                         onClick={() => onTry(suggestion.parameterKey, suggestion.to)}
-                        aria-label={`Try it: ${text.action}`}
+                        aria-label={text.tryLabel(item.action)}
                         className="border-line focus-visible:outline-accent min-h-11 cursor-pointer rounded-md border px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2"
                       >
-                        Try it
+                        {text.tryIt}
                       </button>
                     </div>
                   </div>
@@ -69,9 +64,7 @@ export function TuningSuggestions({ advice, before, onTry }: Props) {
         </>
       )}
 
-      <p className="text-ink-muted mt-3 max-w-prose text-sm">
-        Suggestions come from the same simplified model, not from tested tuning advice.
-      </p>
+      <p className="text-ink-muted mt-3 max-w-prose text-sm">{text.footnote}</p>
     </section>
   )
 }

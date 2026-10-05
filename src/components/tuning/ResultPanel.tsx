@@ -1,20 +1,8 @@
 import { HEURISTIC_V0 } from '../../engine/index.ts'
+import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { BareShaftComparison, SimulationResult } from '../../models/simulation.ts'
 import { bareShaftReading } from './bareShaftReading.ts'
-
-const WORDS: Record<string, string> = {
-  WEAK: 'Weak',
-  NEUTRAL: 'Neutral',
-  STIFF: 'Stiff',
-  LOW: 'Low',
-  MEDIUM: 'Medium',
-  HIGH: 'High',
-  LEFT: 'Left',
-  RIGHT: 'Right',
-  NOCK_LOW: 'Nock low',
-  NOCK_HIGH: 'Nock high',
-}
 
 type GaugeProps = {
   title: string
@@ -91,19 +79,20 @@ function LevelMeter({ title, word, value }: MeterProps) {
 
 /** One-line version for small screens, shown next to the animation. */
 export function ResultSummary({ result }: { result: SimulationResult }) {
+  const m = useMessages()
   const { classification } = result
   const items = [
-    ['Behavior', classification.stiffness],
-    ['Oscillation', classification.oscillation],
-    ['Lateral', classification.lateral],
-    ['Clearance', classification.clearance],
+    [m.result.short.stiffness, classification.stiffness],
+    [m.result.short.oscillation, classification.oscillation],
+    [m.result.short.lateral, classification.lateral],
+    [m.result.short.clearance, classification.clearance],
   ] as const
   return (
-    <dl aria-label="Model result" className="grid grid-cols-4 gap-2">
+    <dl aria-label={m.result.heading} className="grid grid-cols-4 gap-2">
       {items.map(([title, value]) => (
         <div key={title} className="min-w-0">
           <dt className="text-ink-muted truncate text-sm">{title}</dt>
-          <dd className="font-semibold">{WORDS[value]}</dd>
+          <dd className="font-semibold">{m.rating[value]}</dd>
         </div>
       ))}
     </dl>
@@ -121,72 +110,68 @@ export function ResultPanel({ result, comparison, handedness }: ResultPanelProps
   const { metrics, classification } = result
   const thresholds = HEURISTIC_V0.thresholds
   const target = result.trajectory.at(-1)!
-  const reading = comparison && bareShaftReading(comparison, handedness)
+  const m = useMessages()
+  const text = m.result
+  const reading = comparison && bareShaftReading(comparison, handedness, m)
 
   return (
     <section aria-labelledby="result-heading" className="@container">
       <h2 id="result-heading" className="font-display text-xl font-semibold">
-        Model result
+        {text.heading}
       </h2>
       <dl className="mt-3 grid gap-x-8 gap-y-5 @lg:grid-cols-2">
         <DivergingGauge
-          title="Dynamic behavior"
-          word={WORDS[classification.stiffness]!}
+          title={text.stiffness}
+          word={m.rating[classification.stiffness]}
           value={metrics.dynamicBehavior}
           neutral={thresholds.stiffnessNeutral}
-          lowLabel="Weak"
-          highLabel="Stiff"
+          lowLabel={m.rating.WEAK}
+          highLabel={m.rating.STIFF}
           tuningScale
         />
         <DivergingGauge
-          title="Lateral tendency"
-          word={WORDS[classification.lateral]!}
+          title={text.lateral}
+          word={m.rating[classification.lateral]}
           value={metrics.lateralDeviation}
           neutral={thresholds.lateralNeutral}
-          lowLabel="Left"
-          highLabel="Right"
+          lowLabel={m.rating.LEFT}
+          highLabel={m.rating.RIGHT}
         />
         <DivergingGauge
-          title="Vertical tendency"
-          word={WORDS[classification.vertical]!}
+          title={text.vertical}
+          word={m.rating[classification.vertical]}
           value={metrics.verticalTendency}
           neutral={thresholds.verticalNeutral}
-          lowLabel="Nock low"
-          highLabel="Nock high"
+          lowLabel={m.rating.NOCK_LOW}
+          highLabel={m.rating.NOCK_HIGH}
         />
         <LevelMeter
-          title="Oscillation"
-          word={WORDS[classification.oscillation]!}
+          title={text.oscillation}
+          word={m.rating[classification.oscillation]}
           value={metrics.oscillation}
         />
         <LevelMeter
-          title="Clearance sensitivity"
-          word={WORDS[classification.clearance]!}
+          title={text.clearance}
+          word={m.rating[classification.clearance]}
           value={metrics.clearanceRisk}
         />
       </dl>
       {reading && (
         <div className="border-line mt-5 border-t pt-4">
-          <h3 className="font-semibold">Bare shaft test</h3>
+          <h3 className="font-semibold">{text.bareShaftHeading}</h3>
           <p className="mt-1 max-w-prose">
             {reading.landing} {reading.meaning}
           </p>
-          <p className="text-ink-muted mt-1 max-w-prose text-sm">
-            The bare shaft is weighted to match. Plunger and center shot move it sideways too, not
-            only spine.
-          </p>
+          <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.bareShaftNote}</p>
         </div>
       )}
       <p className="mt-5">
-        <span className="text-ink-muted">Estimated speed</span>{' '}
+        <span className="text-ink-muted">{text.speed}</span>{' '}
         <span className="font-semibold">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</span>
-        <span className="text-ink-muted">, reaching {(target.x / 1000).toFixed(0)} m in</span>{' '}
+        <span className="text-ink-muted">{text.reaching((target.x / 1000).toFixed(0))}</span>{' '}
         <span className="font-semibold">{target.t.toFixed(2)} s</span>
       </p>
-      <p className="text-ink-muted mt-2 max-w-prose text-sm">
-        These are tendencies from a simplified model that has not been checked against real
-        shooting. Test on your own bow before changing equipment.
-      </p>
+      <p className="text-ink-muted mt-2 max-w-prose text-sm">{text.note}</p>
     </section>
   )
 }

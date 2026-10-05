@@ -1,3 +1,4 @@
+import { useMessages } from '../../i18n/useMessages.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
@@ -23,6 +24,7 @@ type Props = {
 
 /** The flight seen from the side. Shaft bending is sideways, so none is drawn here. */
 export function SideView({ result, bare, time, exaggeration }: Props) {
+  const m = useMessages()
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
 
@@ -72,16 +74,14 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
 
   const vertical =
     classification.vertical === 'NEUTRAL'
-      ? 'level'
-      : classification.vertical === 'NOCK_HIGH'
-        ? 'nock high'
-        : 'nock low'
+      ? m.stage.level
+      : m.rating[classification.vertical].toLowerCase()
 
   return (
     <svg
       viewBox={`0 0 ${SCENE.width} ${SCENE.height}`}
       role="img"
-      aria-label={`Side view of the arrow flying from the bow to the target. The arrow leaves the bow ${vertical}.`}
+      aria-label={m.stage.sideViewLabel(vertical)}
       className="block h-auto w-full"
     >
       <AimLine fromX={SCENE.bowX} toX={SCENE.targetX} y={SCENE.centerY} />

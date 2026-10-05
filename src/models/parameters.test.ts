@@ -4,6 +4,8 @@ import { arrowTotalMass } from './arrow.ts'
 import {
   PARAMETERS,
   defaultValues,
+  displayOf,
+  formatValue,
   fromDisplay,
   getParameter,
   getValue,
@@ -140,5 +142,44 @@ describe('arrowTotalMass', () => {
     // 27 in x 6 gpi = 162 gr shaft, plus 120 + 12 + 9 + 5 gr of components.
     const { arrow } = defaultValues()
     expect(convert(arrowTotalMass(arrow), 'g', 'gr')).toBeCloseTo(308, 6)
+  })
+})
+
+describe('unit systems', () => {
+  it('keeps the archery units by default', () => {
+    const drawWeight = numberParameter('bow.drawWeight')
+    expect(displayOf(drawWeight)).toEqual({ unit: 'lbf', step: 0.5, decimals: 1, min: 10, max: 80 })
+    expect(formatValue(drawWeight, drawWeight.default)).toBe('38.0 lb')
+    expect(displayOf(numberParameter('arrow.length'))).toMatchObject({ min: 20, max: 35 })
+    expect(displayOf(numberParameter('bow.braceHeight'))).toMatchObject({ min: 15, max: 30 })
+  })
+
+  it('shows kg, cm and gram in the metric system', () => {
+    const shown = (key: string) => {
+      const parameter = numberParameter(key)
+      return formatValue(parameter, parameter.default, 'metric')
+    }
+    expect(shown('bow.drawWeight')).toBe('17.2 kg')
+    expect(shown('arrow.length')).toBe('68.6 cm')
+    expect(shown('arrow.pointWeight')).toBe('7.8 g')
+    expect(shown('arrow.shaftGpi')).toBe('15.3 g/m')
+    expect(shown('arrow.nockWeight')).toBe('0.58 g')
+    // Values without an archery unit stay as they are.
+    expect(shown('bow.braceHeight')).toBe('22.0 cm')
+    expect(shown('arrow.spine')).toBe('700')
+  })
+
+  it('keeps the bounds of every unit system inside the real bounds, with room to move', () => {
+    for (const system of ['archery', 'metric'] as const) {
+      for (const parameter of PARAMETERS) {
+        if (parameter.kind !== 'number') continue
+        const { unit, step, min, max } = displayOf(parameter, system)
+        const low = fromDisplay(parameter, min, unit ?? undefined)
+        const high = fromDisplay(parameter, max, unit ?? undefined)
+        expect(low, parameter.key).toBeGreaterThanOrEqual(parameter.min - 1e-6)
+        expect(high, parameter.key).toBeLessThanOrEqual(parameter.max + 1e-6)
+        expect((max - min) / step, parameter.key).toBeGreaterThanOrEqual(14)
+      }
+    }
   })
 })

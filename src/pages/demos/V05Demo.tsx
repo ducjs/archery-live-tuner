@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { describeSuggestion } from '../../components/tuning/suggestionText.ts'
 import { heuristicModel } from '../../engine/index.ts'
+import { vi } from '../../i18n/vi.ts'
 import {
   fromDisplay,
   getParameter,
@@ -36,11 +37,15 @@ function PlanDemo() {
         const before = heuristicModel.compareBareShaft(
           index === 0 ? start : plan.steps[index - 1]!.setup,
         )
-        return describeSuggestion(step.suggestion, {
-          classification: before.fletched.classification,
-          horizontal: before.horizontal,
-          vertical: before.vertical,
-        })
+        return describeSuggestion(
+          step.suggestion,
+          {
+            classification: before.fletched.classification,
+            horizontal: before.horizontal,
+            vertical: before.vertical,
+          },
+          vi,
+        )
       }),
     [plan, start],
   )
@@ -74,7 +79,6 @@ function PlanDemo() {
             <li
               key={index}
               className="border-line grid grid-cols-[auto_1fr] gap-x-3 rounded-lg border p-3"
-              lang="en"
             >
               <span className="font-display text-ink-muted text-xl font-semibold">{index + 1}</span>
               <div>
@@ -90,7 +94,7 @@ function PlanDemo() {
         {plan.tuned
           ? `Sau ${plan.steps.length} bước, mô hình đọc setup là đã cân.`
           : 'Sau các bước này vẫn chưa cân hẳn; cần đổi lớn hơn một bước mỗi lần.'}{' '}
-        Mỗi bước tính lại từ kết quả của bước trước. Lời mô tả đang lấy từ mục gợi ý tiếng Anh.
+        Mỗi bước tính lại từ kết quả của bước trước.
       </p>
     </div>
   )

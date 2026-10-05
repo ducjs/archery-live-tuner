@@ -50,6 +50,6 @@ describe('Vietnamese roadmap', () => {
   })
 
   it('counts done and total items', () => {
-    expect(countItems(ROADMAP[0]!.groups)).toEqual({ done: 39, total: 47 })
+    expect(countItems(ROADMAP[0]!.groups)).toEqual({ done: 46, total: 47 })
   })
 })

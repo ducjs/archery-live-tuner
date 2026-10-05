@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { SegmentedControl } from '../common/SegmentedControl.tsx'
@@ -25,6 +26,10 @@ type FlightViewProps = {
   /** s, time on screen since the loop started, at normal playback speed */
   elapsed: number
   exaggeration: number
+  /** Names the drawing, when several are shown together. */
+  caption?: string
+  /** Keeps the drawing short, to leave room for another one. */
+  compact?: boolean
 }
 
 function LegendItem({ label, bare = false }: { label: string; bare?: boolean }) {
@@ -54,17 +59,26 @@ export function FlightView({
   handedness,
   elapsed,
   exaggeration,
+  caption,
+  compact = false,
 }: FlightViewProps) {
+  const m = useMessages()
   const time = elapsed / SLOW_MOTION
   const both = view === 'both'
   // Keeps the drawing from pushing everything else off a wide, short screen.
-  const heightLimit = both ? '[&>svg]:max-h-[30vh]' : '[&>svg]:max-h-[46vh]'
+  const heightLimit = both || compact ? '[&>svg]:max-h-[30vh]' : '[&>svg]:max-h-[46vh]'
   const frameClass = `border-line bg-surface relative overflow-hidden rounded-lg border ${heightLimit}`
-  const legend = bare && (
+  const legend = bare ? (
     <div className="text-ink-muted absolute top-2 right-8 flex gap-4 text-sm">
-      <LegendItem label="Fletched" />
-      <LegendItem label="Bare shaft" bare />
+      <LegendItem label={m.stage.fletched} />
+      <LegendItem label={m.stage.bareShaft} bare />
     </div>
+  ) : (
+    caption && (
+      <span className="absolute top-2 right-8 max-w-[55%] truncate text-sm font-semibold">
+        {caption}
+      </span>
+    )
   )
 
   return (
@@ -80,16 +94,20 @@ export function FlightView({
               time={time}
               exaggeration={exaggeration}
             />
-            <span className="text-ink-muted absolute top-2 left-3 text-sm">Archer's left</span>
-            <span className="text-ink-muted absolute bottom-2 left-3 text-sm">Archer's right</span>
+            <span className="text-ink-muted absolute top-2 left-3 text-sm">
+              {m.stage.archerLeft}
+            </span>
+            <span className="text-ink-muted absolute bottom-2 left-3 text-sm">
+              {m.stage.archerRight}
+            </span>
             {legend}
           </div>
         )}
         {view !== 'top' && (
           <div className={frameClass}>
             <SideView result={result} bare={bare} time={time} exaggeration={exaggeration} />
-            <span className="text-ink-muted absolute top-2 left-3 text-sm">High</span>
-            <span className="text-ink-muted absolute bottom-2 left-3 text-sm">Low</span>
+            <span className="text-ink-muted absolute top-2 left-3 text-sm">{m.stage.high}</span>
+            <span className="text-ink-muted absolute bottom-2 left-3 text-sm">{m.stage.low}</span>
             {!both && legend}
           </div>
         )}
@@ -98,26 +116,11 @@ export function FlightView({
   )
 }
 
-const VIEWS = [
-  { value: 'top', label: 'Top' },
-  { value: 'side', label: 'Side' },
-  { value: 'both', label: 'Both' },
-]
-
-const AMPLIFIED: Record<FlightViewKind, string> = {
-  top: 'Bending and drift are',
-  side: 'The arrow angle is',
-  both: 'Bending, drift and arrow angle are',
-}
+const VIEWS: FlightViewKind[] = ['top', 'side', 'both']
 
 const DISTANCE_OPTIONS = DISTANCES.map((distance) => ({
   value: String(distance),
   label: `${distance} m`,
-}))
-
-const SPEED_OPTIONS = SPEEDS.map((speed) => ({
-  value: String(speed),
-  label: slowdown(speed) === 1 ? 'Real' : `1/${slowdown(speed)}`,
 }))
 
 type TimeScrubberProps = {
@@ -133,12 +136,13 @@ type TimeScrubberProps = {
 /** A slider over the whole flight, to go straight to a moment without waiting for it. */
 export function TimeScrubber({ result, elapsed, flightSeconds, onSeek }: TimeScrubberProps) {
   const id = useId()
+  const m = useMessages()
   const time = elapsed / SLOW_MOTION
   const travelled = sampleTrajectory(result.trajectory, time).x / 1000
   return (
     <div className="flex items-center gap-3">
       <label htmlFor={id} className="font-medium whitespace-nowrap">
-        Moment
+        {m.stage.moment}
       </label>
       <input
         id={id}
@@ -148,7 +152,7 @@ export function TimeScrubber({ result, elapsed, flightSeconds, onSeek }: TimeScr
         step={flightSeconds / 500}
         value={elapsed}
         onChange={(event) => onSeek(Number(event.target.value))}
-        aria-valuetext={`${(time * 1000).toFixed(0)} milliseconds after release, ${travelled.toFixed(1)} metres out`}
+        aria-valuetext={m.stage.momentText((time * 1000).toFixed(0), travelled.toFixed(1))}
         className="accent-accent focus-visible:outline-accent h-11 min-w-0 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
       />
       <span className="w-32 text-right text-sm whitespace-nowrap">
@@ -171,12 +175,15 @@ type PlaybackControlsProps = {
   playing: boolean
   onToggle: () => void
   onRestart: () => void
-  bareShaft: boolean
-  onBareShaftChange: (shown: boolean) => void
+  bareShaft?: boolean
+  /** Leave out to hide the bare shaft switch. */
+  onBareShaftChange?: (shown: boolean) => void
   settings: ViewSettings
   onSettingsChange: (settings: ViewSettings) => void
   /** Shows the amplification control. View, distance and speed are always shown. */
   advanced?: boolean
+  /** The views on offer. All of them when left out. */
+  views?: readonly FlightViewKind[]
 }
 
 const buttonClass =
@@ -186,54 +193,61 @@ export function PlaybackControls({
   playing,
   onToggle,
   onRestart,
-  bareShaft,
+  bareShaft = false,
   onBareShaftChange,
   settings,
   onSettingsChange,
   advanced = false,
+  views = VIEWS,
 }: PlaybackControlsProps) {
   const amplifyId = useId()
-  const subject = AMPLIFIED[settings.view]
+  const m = useMessages()
+  const text = m.stage
 
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="flex gap-2">
           <button type="button" onClick={onToggle} className={buttonClass}>
-            {playing ? 'Pause' : 'Play'}
+            {playing ? text.pause : text.play}
           </button>
           <button type="button" onClick={onRestart} className={buttonClass}>
-            Restart
+            {text.restart}
           </button>
         </div>
 
-        <label className="flex min-h-11 cursor-pointer items-center gap-2 font-medium">
-          <input
-            type="checkbox"
-            checked={bareShaft}
-            onChange={(event) => onBareShaftChange(event.target.checked)}
-            className="accent-accent focus-visible:outline-accent size-5 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
-          />
-          Fly a bare shaft too
-        </label>
+        {onBareShaftChange && (
+          <label className="flex min-h-11 cursor-pointer items-center gap-2 font-medium">
+            <input
+              type="checkbox"
+              checked={bareShaft}
+              onChange={(event) => onBareShaftChange(event.target.checked)}
+              className="accent-accent focus-visible:outline-accent size-5 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+            />
+            {text.flyBare}
+          </label>
+        )}
 
         <SegmentedControl
-          label="View"
-          options={VIEWS}
+          label={text.view}
+          options={views.map((view) => ({ value: view, label: text.views[view] }))}
           value={settings.view}
           onChange={(view) => onSettingsChange({ ...settings, view: view as FlightViewKind })}
         />
 
         <SegmentedControl
-          label="Distance"
+          label={text.distance}
           options={DISTANCE_OPTIONS}
           value={String(settings.distance)}
           onChange={(distance) => onSettingsChange({ ...settings, distance: Number(distance) })}
         />
 
         <SegmentedControl
-          label="Speed"
-          options={SPEED_OPTIONS}
+          label={text.speed}
+          options={SPEEDS.map((speed) => ({
+            value: String(speed),
+            label: slowdown(speed) === 1 ? text.real : `1/${slowdown(speed)}`,
+          }))}
           value={String(settings.speed)}
           onChange={(speed) => onSettingsChange({ ...settings, speed: Number(speed) })}
         />
@@ -242,7 +256,7 @@ export function PlaybackControls({
           <>
             <div className="flex min-w-56 flex-1 items-center gap-3">
               <label htmlFor={amplifyId} className="font-medium">
-                Amplify
+                {text.amplify}
               </label>
               <input
                 id={amplifyId}
@@ -263,10 +277,8 @@ export function PlaybackControls({
       </div>
 
       <p className="text-ink-muted max-w-prose text-sm">
-        {slowdown(settings.speed) === 1
-          ? 'Real speed.'
-          : `Slowed ${slowdown(settings.speed)} times.`}{' '}
-        {subject} amplified, and the drawing is not to scale.
+        {slowdown(settings.speed) === 1 ? text.realSpeed : text.slowed(slowdown(settings.speed))}{' '}
+        {text.amplified[settings.view]}
       </p>
     </div>
   )

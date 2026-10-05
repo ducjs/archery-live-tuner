@@ -2,14 +2,13 @@ import { Line, OrbitControls, RoundedBox } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, type RefObject } from 'react'
 import { CatmullRomCurve3, Quaternion, TubeGeometry, Vector3 } from 'three'
+import { useMessages } from '../../i18n/useMessages.ts'
 import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
 import {
   RISER_HALF_LENGTH,
   along,
   bowGeometry,
-  centerShotText,
-  nockingPointText,
   type BowGeometry,
   type Vec3,
 } from './bowGeometry.ts'
@@ -318,6 +317,7 @@ const labelClass =
   'border-line bg-surface text-ink absolute top-0 left-0 rounded-md border px-2 py-1 text-sm font-medium whitespace-nowrap shadow-sm'
 
 export default function BowScene({ bow, arrow, amplify, focus, focusRequest }: Props) {
+  const m = useMessages()
   const geometry = useMemo(() => bowGeometry({ bow, arrow }, amplify), [bow, arrow, amplify])
   const nockLabel = useRef<HTMLSpanElement>(null)
   const pointLabel = useRef<HTMLSpanElement>(null)
@@ -334,7 +334,7 @@ export default function BowScene({ bow, arrow, amplify, focus, focusRequest }: P
         frameloop="demand"
         dpr={[1, 2]}
         camera={{ fov: 32, near: 20, far: 20000, position: [900, 250, -2900 * side] }}
-        aria-label="3D model of the bow. Drag to turn it, scroll or pinch to zoom."
+        aria-label={m.viewer.sceneLabel}
         role="img"
       >
         <ambientLight intensity={1.1} />
@@ -347,10 +347,10 @@ export default function BowScene({ bow, arrow, amplify, focus, focusRequest }: P
 
       <div className="pointer-events-none absolute inset-0">
         <span ref={nockLabel} className={labelClass}>
-          Nocking point: {nockingPointText(bow.nockingPointHeight)}
+          {m.viewer.nockingPoint}: {m.viewer.nockingPointValue(bow.nockingPointHeight)}
         </span>
         <span ref={pointLabel} className={labelClass}>
-          Center shot: {centerShotText(bow.centerShot)}
+          {m.viewer.centerShot}: {m.viewer.centerShotValue(bow.centerShot)}
         </span>
       </div>
     </div>

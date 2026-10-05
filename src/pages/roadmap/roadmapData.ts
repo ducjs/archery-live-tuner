@@ -125,9 +125,15 @@ export const ROADMAP: RoadmapPhase[] = [
         summary:
           'Lưu lại setup đang có, đổi vài thông số, rồi đặt hai bản cạnh nhau để so trước và sau. Dữ liệu lưu ngay trên trình duyệt, chưa cần tài khoản.',
         items: [
-          todo('Lớp lưu trữ, bản đầu lưu trên trình duyệt'),
-          todo('Lưu, mở, đổi tên, xoá setup'),
-          todo('So sánh hai setup, hoạt hình trước và sau'),
+          done(
+            'Lớp lưu trữ, bản đầu lưu trên trình duyệt; sau này đổi sang máy chủ không phải sửa giao diện',
+          ),
+          done(
+            'Lưu, mở, đổi tên, xoá setup; lưu thành bản mới; setup đang mở được giữ lại khi tải lại trang',
+          ),
+          done(
+            'So sánh hai setup: bản đã lưu và bản đang mở bay cạnh nhau, kèm bảng những chỗ khác nhau',
+          ),
         ],
       },
       {
@@ -135,11 +141,11 @@ export const ROADMAP: RoadmapPhase[] = [
         summary:
           'Hoàn thiện để đưa cho người khác dùng: chạy tốt trên điện thoại, có tiếng Việt và tiếng Anh, đổi được đơn vị, có lời nhắc đây chỉ là mô hình gần đúng, và có đường link công khai.',
         items: [
-          todo('Bố cục cho điện thoại'),
-          todo('Hai ngôn ngữ: tiếng Việt và tiếng Anh'),
-          todo('Đổi đơn vị hiển thị'),
-          todo('Lời nhắc về giới hạn của mô hình'),
-          todo('Đưa lên mạng với đường link công khai'),
+          done('Bố cục cho điện thoại'),
+          done('Hai ngôn ngữ: tiếng Việt và tiếng Anh, đổi ngay trên thanh trên cùng'),
+          done('Đổi đơn vị hiển thị: lb, inch, grain hoặc kg, cm, gram'),
+          done('Lời nhắc về giới hạn của mô hình, ở cuối trang mô phỏng'),
+          todo('Đưa lên mạng với đường link công khai (để sau)'),
         ],
       },
     ],

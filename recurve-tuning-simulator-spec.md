@@ -89,7 +89,7 @@ The simulation engine must be usable independently of React.
 | UI | React | |
 | Styling | Tailwind CSS | |
 | Components | Native inputs, own styling | shadcn/ui (Radix) only if dialogs or menus are needed |
-| State | Zustand + `persist` middleware | Snapshots saved to localStorage |
+| State | Zustand + `persist` middleware | The setup on screen, language and units are remembered; saved setups go through `SetupRepository` |
 | Validation | Zod | Input bounds (section 22), parsing imported JSON and URL state |
 | 2D rendering | SVG + `requestAnimationFrame` | Few elements, easy to style; use Canvas only if many trails are drawn |
 | Landscape heatmap | Hand-drawn SVG | No chart library needed |
@@ -97,8 +97,8 @@ The simulation engine must be usable independently of React.
 | Heavy computation (V0.3) | Web Worker + Comlink | For the tuning landscape grid |
 | Tests | Vitest + fast-check + Testing Library (jsdom) | Property tests for monotonicity (heavier point → weaker) |
 | E2E (optional) | Playwright | |
-| Lint | oxlint + Prettier | `no-restricted-imports` blocks `engine/`, `models/`, `utils/` from importing React or UI code |
-| i18n | i18next | Vietnamese + English |
+| Lint | oxlint + Prettier | `no-restricted-imports` blocks `engine/`, `models/`, `utils/`, `storage/` from importing React or UI code |
+| i18n | Own typed dictionaries (`src/i18n/en.ts`, `vi.ts`) | Vietnamese + English. The compiler rejects a dictionary with a missing text; i18next was not needed for two languages |
 | PWA | vite-plugin-pwa | Offline use at the range |
 | Deploy | Cloudflare Pages or GitHub Pages | Static, no backend |
 | Later | React Three Fiber + Three.js | Only for a future 3D mode |
@@ -175,6 +175,9 @@ Rules:
 The layout must be responsive. Archers tune at the range with a phone, so the panels above should stack vertically on narrow screens, with the simulation view kept visible while a slider is dragged.
 
 The UI is bilingual (Vietnamese / English) and has a unit toggle (lb/kg, inch/cm, grain/gram).
+
+- Language: the simulator starts in the browser's language when that is Vietnamese, in English otherwise, and remembers the choice. Names of parts that Vietnamese archers keep in English (spine, point, plunger, nocking point, brace height, tiller, bareshaft) are not translated. The roadmap and previews pages are Vietnamese only.
+- Units: one switch between "lb, in, gr" and "kg, cm, g". It changes inputs, suggestions, saved setup summaries and the comparison table. Values that have no archery unit (brace height in cm, offsets in mm, bow mass in kg) look the same in both. Setups are always stored in internal units, so switching never changes a setup.
 
 ---
 
@@ -682,6 +685,8 @@ Setup C
 ```
 
 and switch between them.
+
+As built (M6): the page has a "Your setups" section (name, save, save as new, new setup, and a list with open, compare, rename, delete). A "Compare" view flies the chosen saved setup and the setup on screen at the same moment, each in its own drawing, and lists the input values that differ and the model result of each. Comparing a saved setup with its own unsaved changes is the before / after case. Opening another setup, or starting a new one, asks first when unsaved changes would be lost.
 
 ---
 

@@ -13,7 +13,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M5 done; M6, M7 left) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M6 done; M7 done except the deploy) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -44,7 +44,7 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 
 - [x] Vite + React + TypeScript (strict) + npm
 - [x] Tailwind CSS
-- [x] UI components: native inputs with our own styling. shadcn/ui was not adopted; revisit when dialogs or menus are needed (M6)
+- [x] UI components: native inputs with our own styling. shadcn/ui was not adopted; M6 did not need dialogs (confirmations are inline), so revisit only when menus or dialogs are needed
 - [x] Vitest + fast-check
 - [x] oxlint + Prettier, with `no-restricted-imports` so `engine/`, `models/`, `utils/` cannot import React or UI code
 - [x] Folder structure from §24
@@ -111,19 +111,19 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 
 > **Nói đơn giản:** Lưu lại setup đang có, đổi vài thông số, rồi đặt hai bản cạnh nhau để so trước và sau. Dữ liệu lưu ngay trên trình duyệt, chưa cần tài khoản.
 
-- [ ] `SetupRepository` interface + localStorage implementation (§35)
-- [ ] Save / load / rename / delete setups
-- [ ] Compare two setups, before/after animation (§14)
+- [x] `SetupRepository` interface + localStorage implementation (§35). Async, so a server can replace it later; stored entries are validated on the way in
+- [x] Save / load / rename / delete setups, plus "save as new" and "new setup". The setup on screen is kept as a draft across reloads, and replacing unsaved changes asks first
+- [x] Compare two setups, before/after animation (§14): a "Compare" view flies the saved setup and the one on screen together, and lists the values and model results that differ
 
 ### M7. Release
 
 > **Nói đơn giản:** Hoàn thiện để đưa cho người khác dùng: chạy tốt trên điện thoại, có tiếng Việt và tiếng Anh, đổi được đơn vị, có lời nhắc đây chỉ là mô hình gần đúng, và có đường link công khai.
 
-- [ ] Responsive layout for phone (§4.2)
-- [ ] i18n: Vietnamese + English
-- [ ] Unit toggle
-- [ ] Scientific disclaimer (§26)
-- [ ] Deploy to static hosting
+- [x] Responsive layout for phone (§4.2), checked at 400 px wide in both languages
+- [x] i18n: Vietnamese + English, with our own typed dictionaries instead of i18next. The simulator follows the browser language at first and remembers the choice. The roadmap and previews pages stay Vietnamese only
+- [x] Unit toggle: lb / inch / grain or kg / cm / gram, for inputs, suggestions, saved setups and the comparison. Setups are stored in internal units either way
+- [x] Scientific disclaimer (§26), at the foot of the simulator, next to the note under the model result
+- [ ] Deploy to static hosting (left for later, on request)
 
 **Exit criteria:** all ten points of §33 pass, and the engine runs in tests without React.
 

@@ -12,6 +12,9 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 - Play, pause, a slider to jump to any moment, playback from 1/48 of real time up to real speed, and target distances from 18 m to 90 m
 - Model result: dynamic behavior, lateral and vertical tendency, oscillation, clearance sensitivity, bare shaft test
 - Tuning suggestions in order of priority, each with a button to try it
+- Saved setups: save, open, rename, delete, save as new. They are kept in this browser, and the setup on screen survives a reload
+- Compare: the saved setup and the one on screen fly together, with a table of the values and model results that differ
+- English and Vietnamese, and a choice of lb / inch / grain or kg / cm / gram
 
 - A preview of the bow in 3D, showing where center shot and nocking point height sit
 - A roadmap page in Vietnamese ("Lộ trình")
@@ -42,10 +45,11 @@ src/
 ├── engine/      simulation model, pure TypeScript
 ├── models/      data types and parameter metadata
 ├── utils/       unit conversion, validation
-├── state/       Zustand store
-├── storage/     setup persistence
+├── i18n/        English and Vietnamese texts
+├── state/       Zustand stores: the setup on screen, the saved setups
+├── storage/     setup persistence behind a `SetupRepository` interface
 ├── components/  React UI
 └── pages/
 ```
 
-`engine/`, `models/` and `utils/` must not import React or UI code. The lint config enforces this.
+`engine/`, `models/`, `utils/` and `storage/` must not import React or UI code. The lint config enforces this.

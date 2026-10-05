@@ -87,15 +87,3 @@ export function along(from: Vec3, to: Vec3, fraction: number): Vec3 {
     from[2] + (to[2] - from[2]) * fraction,
   ]
 }
-
-/** Plain-words value of the center shot, in real millimetres. */
-export function centerShotText(centerShot: number): string {
-  if (Math.abs(centerShot) < 0.05) return 'on the string line'
-  return `${Math.abs(centerShot).toFixed(1)} mm ${centerShot < 0 ? 'left' : 'right'} of the string line`
-}
-
-/** Plain-words value of the nocking point height, in real millimetres. */
-export function nockingPointText(height: number): string {
-  if (Math.abs(height) < 0.05) return 'square to the string'
-  return `${Math.abs(height).toFixed(1)} mm ${height > 0 ? 'above' : 'below'} square`
-}

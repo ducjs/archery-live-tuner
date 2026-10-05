@@ -1,3 +1,4 @@
+import type { Messages } from '../../i18n/index.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { BareShaftComparison } from '../../models/simulation.ts'
 
@@ -12,36 +13,30 @@ export type BareShaftReading = {
 export function bareShaftReading(
   comparison: Pick<BareShaftComparison, 'horizontal' | 'vertical'>,
   handedness: Handedness,
+  m: Messages,
 ): BareShaftReading {
   const { horizontal, vertical } = comparison
+  const text = m.bareShaft
 
   if (horizontal === 'TOGETHER' && vertical === 'TOGETHER') {
-    return {
-      landing: 'The bare shaft lands with the fletched arrows.',
-      meaning: 'That reads as a matched setup.',
-    }
+    return { landing: text.together, meaning: text.matched }
   }
 
   const where: string[] = []
-  if (vertical !== 'TOGETHER') where.push(vertical === 'HIGH' ? 'above' : 'below')
+  if (vertical !== 'TOGETHER') where.push(vertical === 'HIGH' ? text.above : text.below)
   if (horizontal !== 'TOGETHER') {
-    where.push(horizontal === 'LEFT' ? 'to the left of' : 'to the right of')
+    where.push(horizontal === 'LEFT' ? text.left : text.right)
   }
 
   const conclusions: string[] = []
   if (horizontal !== 'TOGETHER') {
     // A weak arrow sends the bare shaft away from the riser side of the archer.
     const weakSide = handedness === 'RH' ? 'RIGHT' : 'LEFT'
-    conclusions.push(horizontal === weakSide ? 'a weak arrow' : 'a stiff arrow')
+    conclusions.push(horizontal === weakSide ? text.weak : text.stiff)
   }
   if (vertical !== 'TOGETHER') {
-    conclusions.push(
-      vertical === 'LOW' ? 'a nocking point that is too high' : 'a nocking point that is too low',
-    )
+    conclusions.push(vertical === 'LOW' ? text.nockHigh : text.nockLow)
   }
 
-  return {
-    landing: `The bare shaft lands ${where.join(' and ')} the fletched arrows.`,
-    meaning: `That reads as ${conclusions.join(' and ')}.`,
-  }
+  return { landing: text.landing(where), meaning: text.meaning(conclusions) }
 }

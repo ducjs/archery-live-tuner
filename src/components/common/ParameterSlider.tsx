@@ -1,5 +1,8 @@
 import { useId, useState } from 'react'
-import { fromDisplay, toDisplay, type NumberParameter } from '../../models/parameters.ts'
+import { parameterText } from '../../i18n/index.ts'
+import { useMessages } from '../../i18n/useMessages.ts'
+import { displayOf, fromDisplay, toDisplay, type NumberParameter } from '../../models/parameters.ts'
+import { useTuningStore } from '../../state/tuningStore.ts'
 import { unitLabel } from '../../utils/units.ts'
 import { clampValue } from '../../utils/validation.ts'
 
@@ -11,42 +14,40 @@ type Props = {
   onReset: () => void
 }
 
-function decimalsOf(step: number): number {
-  const text = String(step)
-  const dot = text.indexOf('.')
-  return dot === -1 ? 0 : text.length - dot - 1
-}
-
 export function ParameterSlider({ parameter, value, onChange, onReset }: Props) {
   const id = useId()
   // Text being typed. Kept apart from the value so half-typed numbers are not rejected.
   const [draft, setDraft] = useState<string | null>(null)
 
-  const decimals = decimalsOf(parameter.step)
+  const m = useMessages()
+  const units = useTuningStore((state) => state.units)
+  const { label, hint } = parameterText(m, parameter)
+
+  const display = displayOf(parameter, units)
+  const { decimals, min, max, step } = display
+  const shownUnit = display.unit ?? undefined
   const round = (displayValue: number) => Number(displayValue.toFixed(Math.max(decimals, 2)))
-  const min = round(toDisplay(parameter, parameter.min))
-  const max = round(toDisplay(parameter, parameter.max))
-  const shown = toDisplay(parameter, value)
-  const unit = parameter.displayUnit ? unitLabel(parameter.displayUnit) : null
+  const shown = toDisplay(parameter, value, shownUnit)
+  const unit = display.unit ? unitLabel(display.unit) : null
   const isDefault = Math.abs(value - parameter.default) < 1e-9
-  const defaultText = toDisplay(parameter, parameter.default).toFixed(decimals)
+  const defaultText = toDisplay(parameter, parameter.default, shownUnit).toFixed(decimals)
 
   const commit = (displayValue: number) =>
-    onChange(clampValue(parameter, fromDisplay(parameter, displayValue)))
+    onChange(clampValue(parameter, fromDisplay(parameter, displayValue, shownUnit)))
 
   return (
     <div>
       <div className="flex items-center justify-between gap-2">
         <label htmlFor={`${id}-number`} className="font-medium">
-          {parameter.label}
+          {label}
         </label>
         <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={onReset}
             disabled={isDefault}
-            aria-label={`Reset ${parameter.label} to ${defaultText}${unit ? ` ${unit}` : ''}`}
-            title={`Reset to ${defaultText}`}
+            aria-label={m.panels.resetLabel(label, `${defaultText}${unit ? ` ${unit}` : ''}`)}
+            title={m.panels.resetTitle(defaultText)}
             className="text-ink-muted hover:text-accent focus-visible:outline-accent grid size-11 cursor-pointer place-items-center rounded-md focus-visible:outline-2 disabled:invisible"
           >
             <svg viewBox="0 0 20 20" className="size-4.5" fill="none" aria-hidden="true">
@@ -65,7 +66,7 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
             inputMode="decimal"
             min={min}
             max={max}
-            step={parameter.step}
+            step={step}
             value={draft ?? shown.toFixed(decimals)}
             onChange={(event) => {
               const text = event.target.value
@@ -82,7 +83,7 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
             }}
             className="border-line bg-surface focus-visible:outline-accent h-10 w-20 rounded-md border px-2 text-right text-lg font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
           />
-          <span className="text-ink-muted w-7 text-sm">{unit}</span>
+          <span className="text-ink-muted w-8 text-sm">{unit}</span>
         </div>
       </div>
 
@@ -90,10 +91,10 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
         <span>{min}</span>
         <input
           type="range"
-          aria-label={`${parameter.label} slider`}
+          aria-label={m.panels.slider(label)}
           min={min}
           max={max}
-          step={parameter.step}
+          step={step}
           value={round(shown)}
           onChange={(event) => {
             setDraft(null)
@@ -104,7 +105,7 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
         <span>{max}</span>
       </div>
 
-      {parameter.hint && <p className="text-ink-muted -mt-1 text-sm">{parameter.hint}</p>}
+      {hint && <p className="text-ink-muted -mt-1 text-sm">{hint}</p>}
     </div>
   )
 }

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { defaultValues, getParameter, setValue } from '../../models/parameters.ts'
-import { along, bowGeometry, centerShotText, nockingPointText } from './bowGeometry.ts'
+import { en } from '../../i18n/en.ts'
+import { vi } from '../../i18n/vi.ts'
+import { along, bowGeometry } from './bowGeometry.ts'
+
+const { centerShotValue: centerShotText, nockingPointValue: nockingPointText } = en.viewer
 
 const reference = defaultValues()
 const withValue = (key: string, value: number | string) =>
@@ -75,5 +79,10 @@ describe('value text', () => {
     expect(nockingPointText(0)).toBe('square to the string')
     expect(nockingPointText(4)).toBe('4.0 mm above square')
     expect(nockingPointText(-2)).toBe('2.0 mm below square')
+  })
+
+  it('describes both in Vietnamese', () => {
+    expect(vi.viewer.centerShotValue(-1.5)).toBe('lệch trái đường dây 1.5 mm')
+    expect(vi.viewer.nockingPointValue(4)).toBe('cao hơn đường vuông góc 4.0 mm')
   })
 })

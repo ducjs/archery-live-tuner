@@ -7,7 +7,7 @@
   },
   "overrides": [
     {
-      "files": ["src/engine/**", "src/models/**", "src/utils/**"],
+      "files": ["src/engine/**", "src/models/**", "src/utils/**", "src/storage/**"],
       "rules": {
         "no-restricted-imports": [
           "error",

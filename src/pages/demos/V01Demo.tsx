@@ -189,14 +189,14 @@ export function V01Demo() {
       <DemoCard
         title="M6. Lưu và so sánh setup"
         kind="model"
-        intro="Đặt hai setup cạnh nhau để thấy đổi gì thì kết quả đổi ra sao. Ba setup đã lưu ở đây là dựng sẵn; bản thật sẽ lưu setup của chính bạn trên trình duyệt."
+        intro="Đặt hai setup cạnh nhau để thấy đổi gì thì kết quả đổi ra sao. Ba setup đã lưu ở đây là dựng sẵn. Bản thật đã có ở trang Mô phỏng: mục Setup của bạn và nút So sánh."
       >
         <CompareDemo />
       </DemoCard>
       <DemoCard
         title="M7. Ngôn ngữ và đơn vị"
         kind="simple"
-        intro="Cùng một setup, hiển thị bằng tiếng Việt hoặc tiếng Anh, theo hệ lb/inch/grain hoặc kg/cm/gram. Số bên dưới lấy từ setup đang mở."
+        intro="Cùng một setup, hiển thị bằng tiếng Việt hoặc tiếng Anh, theo hệ lb/inch/grain hoặc kg/cm/gram. Số bên dưới lấy từ setup đang mở. Bản thật đã có ở trang Mô phỏng: hai nút chuyển trên thanh trên cùng."
       >
         <UnitsDemo />
       </DemoCard>

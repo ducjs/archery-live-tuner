@@ -33,7 +33,7 @@ describe('SetupPanels', () => {
     for (const parameter of PARAMETERS) {
       expect(screen.queryAllByText(parameter.label).length, parameter.key).toBeGreaterThan(0)
     }
-    expect(JSON.parse(localStorage.getItem('tuner.ui')!).state).toEqual({ mode: 'advanced' })
+    expect(JSON.parse(localStorage.getItem('tuner.ui')!).state).toMatchObject({ mode: 'advanced' })
   })
 
   it('updates the setup from the number input, in display units', async () => {
