@@ -13,7 +13,16 @@ const noop = () => {}
 
 describe('PlaybackControls', () => {
   it('shows only play and restart without a settings handler', () => {
-    render(<PlaybackControls playing onToggle={noop} onRestart={noop} settings={settings} />)
+    render(
+      <PlaybackControls
+        playing
+        onToggle={noop}
+        onRestart={noop}
+        bareShaft
+        onBareShaftChange={noop}
+        settings={settings}
+      />,
+    )
     expect(screen.getByRole('button', { name: 'Pause' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Restart' })).toBeTruthy()
     expect(screen.queryByRole('radio')).toBeNull()
@@ -27,6 +36,8 @@ describe('PlaybackControls', () => {
         playing={false}
         onToggle={noop}
         onRestart={noop}
+        bareShaft
+        onBareShaftChange={noop}
         settings={settings}
         onSettingsChange={onSettingsChange}
       />,
@@ -49,6 +60,8 @@ describe('PlaybackControls', () => {
         playing
         onToggle={noop}
         onRestart={noop}
+        bareShaft
+        onBareShaftChange={noop}
         settings={{ ...settings, speed: 0.25 }}
       />,
     )

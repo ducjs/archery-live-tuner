@@ -1,5 +1,7 @@
 import { HEURISTIC_V0 } from '../../engine/index.ts'
-import type { SimulationResult } from '../../models/simulation.ts'
+import type { Handedness } from '../../models/bow.ts'
+import type { BareShaftComparison, SimulationResult } from '../../models/simulation.ts'
+import { bareShaftReading } from './bareShaftReading.ts'
 
 const WORDS: Record<string, string> = {
   WEAK: 'Weak',
@@ -108,9 +110,17 @@ export function ResultSummary({ result }: { result: SimulationResult }) {
   )
 }
 
-export function ResultPanel({ result }: { result: SimulationResult }) {
+type ResultPanelProps = {
+  result: SimulationResult
+  /** Leave out to hide the bare shaft test. */
+  comparison?: BareShaftComparison
+  handedness: Handedness
+}
+
+export function ResultPanel({ result, comparison, handedness }: ResultPanelProps) {
   const { metrics, classification } = result
   const thresholds = HEURISTIC_V0.thresholds
+  const reading = comparison && bareShaftReading(comparison, handedness)
 
   return (
     <section aria-labelledby="result-heading">
@@ -154,6 +164,18 @@ export function ResultPanel({ result }: { result: SimulationResult }) {
           value={metrics.clearanceRisk}
         />
       </dl>
+      {reading && (
+        <div className="border-line mt-5 border-t pt-4">
+          <h3 className="font-semibold">Bare shaft test</h3>
+          <p className="mt-1 max-w-prose">
+            {reading.landing} {reading.meaning}
+          </p>
+          <p className="text-ink-muted mt-1 max-w-prose text-sm">
+            The bare shaft is weighted to match. Plunger and center shot move it sideways too, not
+            only spine.
+          </p>
+        </div>
+      )}
       <p className="mt-5">
         <span className="text-ink-muted">Estimated speed</span>{' '}
         <span className="font-semibold">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</span>

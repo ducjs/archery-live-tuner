@@ -1,17 +1,19 @@
-import { useMemo } from 'react'
 import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
-import { AimLine, ArrowShape, TargetEdge, Trail } from './sceneParts.tsx'
+import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
 import { SCENE } from './timing.ts'
 
 // Visual amplification per unit of exaggeration. The drawing is not to scale.
 const BEND_PIXELS = 9
 const ANGLE_GAIN = 3
 const DRIFT_PIXELS = 62
+const TRAIL_STEP = 6
 
 type Props = {
   result: SimulationResult
+  /** A bare shaft to fly alongside. */
+  bare?: SimulationResult
   handedness: Handedness
   /** s, simulated time since release */
   time: number
@@ -19,41 +21,41 @@ type Props = {
   exaggeration: number
 }
 
+/** mm of lateral drift at the target that a full-scale deviation produces. */
+function fullDrift(result: SimulationResult): number {
+  const deviation = Math.abs(result.metrics.lateralDeviation)
+  return deviation > 1e-9 ? Math.abs(result.trajectory.at(-1)!.z ?? 0) / deviation : 0
+}
+
 /** The flight seen from above. This is the view that shows the shaft bending. */
-export function TopView({ result, handedness, time, exaggeration }: Props) {
-  const { trajectory, classification } = result
-  const last = trajectory[trajectory.length - 1]!
-  const distance = last.x
-  // Lateral drift at the target for a full-scale deviation; maps it to the outer ring.
-  const fullDrift =
-    Math.abs(last.z ?? 0) / Math.max(Math.abs(result.metrics.lateralDeviation), 1e-9)
+export function TopView({ result, bare, handedness, time, exaggeration }: Props) {
+  const { classification } = result
+  const distance = result.trajectory.at(-1)!.x
+  // Both arrows share one scale, so their offset from each other is drawn true.
+  const driftScale = Math.max(fullDrift(result), bare ? fullDrift(bare) : 0)
 
-  const project = useMemo(() => {
-    const startX = SCENE.bowX + SCENE.arrowLength / 2
-    const endX = SCENE.targetX - SCENE.arrowLength / 2
-    return (x: number, z: number): ScreenPoint => ({
-      x: startX + (x / distance) * (endX - startX),
-      // Shooting to the right of the screen, so the archer's right is down.
-      y: SCENE.centerY + (fullDrift > 0 ? z / fullDrift : 0) * DRIFT_PIXELS,
-    })
-  }, [distance, fullDrift])
+  const startX = SCENE.bowX + SCENE.arrowLength / 2
+  const endX = SCENE.targetX - SCENE.arrowLength / 2
+  const project = (x: number, z: number): ScreenPoint => ({
+    x: startX + (x / distance) * (endX - startX),
+    // Shooting to the right of the screen, so the archer's right is down.
+    y: SCENE.centerY + (driftScale > 0 ? z / driftScale : 0) * DRIFT_PIXELS,
+  })
 
-  const trail = useMemo(
-    () =>
-      trajectory
-        .filter((_, index) => index % 6 === 0 || index === trajectory.length - 1)
-        .map((point) => ({ t: point.t, ...project(point.x, point.z ?? 0) })),
-    [trajectory, project],
-  )
-
-  const now = sampleTrajectory(trajectory, time)
-  const center = project(now.x, now.z ?? 0)
-  const pose: ArrowPose = {
-    centerX: center.x,
-    centerY: center.y,
-    length: SCENE.arrowLength,
-    angle: (now.yaw ?? 0) * ANGLE_GAIN * exaggeration,
-    bend: (now.flex ?? 0) * BEND_PIXELS * exaggeration,
+  const fly = (flight: SimulationResult) => {
+    const now = sampleTrajectory(flight.trajectory, time)
+    const center = project(now.x, now.z ?? 0)
+    const pose: ArrowPose = {
+      centerX: center.x,
+      centerY: center.y,
+      length: SCENE.arrowLength,
+      angle: (now.yaw ?? 0) * ANGLE_GAIN * exaggeration,
+      bend: (now.flex ?? 0) * BEND_PIXELS * exaggeration,
+    }
+    const trail = flight.trajectory
+      .filter((point, index) => index % TRAIL_STEP === 0 && point.t <= time)
+      .map((point) => project(point.x, point.z ?? 0))
+    return { pose, trail: [...trail, center] }
   }
 
   // Seen from above, a right-handed bow has the arrow on the left of the riser.
@@ -91,8 +93,8 @@ export function TopView({ result, handedness, time, exaggeration }: Props) {
         />
       </g>
 
-      <Trail points={trail.filter((point) => point.t <= time)} />
-      <ArrowShape pose={pose} />
+      {bare && <FlyingArrow {...fly(bare)} bare />}
+      <FlyingArrow {...fly(result)} />
     </svg>
   )
 }

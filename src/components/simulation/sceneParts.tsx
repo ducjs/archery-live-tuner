@@ -58,22 +58,16 @@ export function TargetEdge({ x, centerY }: { x: number; centerY: number }) {
   )
 }
 
-/** The path flown so far. */
-export function Trail({ points }: { points: ScreenPoint[] }) {
-  if (points.length < 2) return null
-  return (
-    <polyline
-      points={toPoints(points)}
-      fill="none"
-      className="stroke-accent"
-      strokeWidth="1.5"
-      strokeOpacity="0.45"
-      vectorEffect="non-scaling-stroke"
-    />
-  )
+type ArrowProps = {
+  pose: ArrowPose
+  /** Path flown so far. */
+  trail: ScreenPoint[]
+  /** Draws a bare shaft: no vanes, lighter line, dashed trail. */
+  bare?: boolean
 }
 
-export function ArrowShape({ pose }: { pose: ArrowPose }) {
+/** One arrow in flight, with the path behind it. */
+export function FlyingArrow({ pose, trail, bare = false }: ArrowProps) {
   const point = [
     pointOnArrow(pose, 1.03),
     pointOnArrow(pose, 0.95, 3.2),
@@ -85,20 +79,42 @@ export function ArrowShape({ pose }: { pose: ArrowPose }) {
     pointOnArrow(pose, 0.15, sideOfShaft * 7),
     pointOnArrow(pose, 0.18),
   ])
+  const tone = bare ? 'stroke-ink-muted' : 'stroke-ink'
+
   return (
-    <g className="stroke-ink" fill="none" strokeLinecap="round" strokeLinejoin="round">
-      {vanes.map((vane, index) => (
-        <polygon
-          key={index}
-          points={toPoints(vane)}
-          className="fill-accent stroke-accent"
-          strokeWidth="1"
-          fillOpacity="0.55"
+    <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+      {trail.length > 1 && (
+        <polyline
+          points={toPoints(trail)}
+          className={bare ? 'stroke-ink-muted' : 'stroke-accent'}
+          strokeWidth="1.5"
+          strokeOpacity="0.5"
+          strokeDasharray={bare ? '5 5' : undefined}
           vectorEffect="non-scaling-stroke"
         />
-      ))}
-      <path d={shaftPath(pose)} strokeWidth="3" vectorEffect="non-scaling-stroke" />
-      <polygon points={toPoints(point)} className="fill-ink" strokeWidth="1" />
+      )}
+      {!bare &&
+        vanes.map((vane, index) => (
+          <polygon
+            key={index}
+            points={toPoints(vane)}
+            className="fill-accent stroke-accent"
+            strokeWidth="1"
+            fillOpacity="0.55"
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+      <path
+        d={shaftPath(pose)}
+        className={tone}
+        strokeWidth={bare ? 2.5 : 3}
+        vectorEffect="non-scaling-stroke"
+      />
+      <polygon
+        points={toPoints(point)}
+        className={bare ? 'fill-ink-muted stroke-ink-muted' : 'fill-ink stroke-ink'}
+        strokeWidth="1"
+      />
     </g>
   )
 }

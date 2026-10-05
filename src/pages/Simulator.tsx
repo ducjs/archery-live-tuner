@@ -25,7 +25,9 @@ const DEFAULT_VIEW: ViewSettings = {
 export function Simulator() {
   const setup = useTuningStore((state) => state.setup)
   const mode = useTuningStore((state) => state.mode)
-  const result = useMemo(() => heuristicModel.simulate(setup), [setup])
+  const comparison = useMemo(() => heuristicModel.compareBareShaft(setup), [setup])
+  const result = comparison.fletched
+  const [bareShaft, setBareShaft] = useState(true)
 
   // View settings are an Advanced feature. Simple mode always uses the defaults,
   // so a setting the user cannot see never changes what is shown.
@@ -53,6 +55,7 @@ export function Simulator() {
             <FlightView
               view={view.view}
               result={result}
+              bare={bareShaft ? comparison.bare : undefined}
               handedness={setup.bow.handedness}
               elapsed={playback.elapsed}
               exaggeration={view.exaggeration}
@@ -66,12 +69,18 @@ export function Simulator() {
               playing={playback.playing}
               onToggle={playback.toggle}
               onRestart={playback.restart}
+              bareShaft={bareShaft}
+              onBareShaftChange={setBareShaft}
               settings={view}
               onSettingsChange={mode === 'advanced' ? setAdvancedView : undefined}
             />
           </div>
           <div className="order-4 min-w-0 lg:mt-6">
-            <ResultPanel result={result} />
+            <ResultPanel
+              result={result}
+              comparison={bareShaft ? comparison : undefined}
+              handedness={setup.bow.handedness}
+            />
           </div>
         </div>
 

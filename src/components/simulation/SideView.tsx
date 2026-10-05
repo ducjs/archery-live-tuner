@@ -1,16 +1,18 @@
-import { useMemo } from 'react'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
-import { AimLine, ArrowShape, TargetEdge, Trail } from './sceneParts.tsx'
+import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
 import { SCENE } from './timing.ts'
 
 // Visual amplification. The drawing is not to scale.
 const PIXELS_PER_MM = 0.3
 const ANGLE_GAIN = 3
 const DIRECTION_STEP = 0.004
+const TRAIL_STEP = 6
 
 type Props = {
   result: SimulationResult
+  /** A bare shaft to fly alongside. */
+  bare?: SimulationResult
   /** s, simulated time since release */
   time: number
   /** 1..5, how much the arrow's attitude is amplified */
@@ -18,46 +20,44 @@ type Props = {
 }
 
 /** The flight seen from the side. Shaft bending is sideways, so none is drawn here. */
-export function SideView({ result, time, exaggeration }: Props) {
-  const { trajectory, classification } = result
-  const last = trajectory[trajectory.length - 1]!
-  const distance = last.x
+export function SideView({ result, bare, time, exaggeration }: Props) {
+  const { classification } = result
+  const distance = result.trajectory.at(-1)!.x
 
-  const project = useMemo(() => {
-    const startX = SCENE.bowX + SCENE.arrowLength / 2
-    const endX = SCENE.targetX - SCENE.arrowLength / 2
-    return (x: number, y: number): ScreenPoint => ({
-      x: startX + (x / distance) * (endX - startX),
-      y: SCENE.centerY - y * PIXELS_PER_MM,
-    })
-  }, [distance])
+  const startX = SCENE.bowX + SCENE.arrowLength / 2
+  const endX = SCENE.targetX - SCENE.arrowLength / 2
+  const project = (x: number, y: number): ScreenPoint => ({
+    x: startX + (x / distance) * (endX - startX),
+    y: SCENE.centerY - y * PIXELS_PER_MM,
+  })
 
-  const trail = useMemo(
-    () =>
-      trajectory
-        .filter((_, index) => index % 6 === 0 || index === trajectory.length - 1)
-        .map((point) => ({ t: point.t, ...project(point.x, point.y) })),
-    [trajectory, project],
-  )
+  const fly = (flight: SimulationResult) => {
+    const { trajectory } = flight
+    const now = sampleTrajectory(trajectory, time)
+    const center = project(now.x, now.y)
 
-  const now = sampleTrajectory(trajectory, time)
-  const center = project(now.x, now.y)
+    // Direction of travel on screen, from a short step along the path.
+    const stepStart = Math.min(
+      Math.max(0, time - DIRECTION_STEP / 2),
+      trajectory.at(-1)!.t - DIRECTION_STEP,
+    )
+    const from = sampleTrajectory(trajectory, stepStart)
+    const to = sampleTrajectory(trajectory, stepStart + DIRECTION_STEP)
+    const a = project(from.x, from.y)
+    const b = project(to.x, to.y)
 
-  // Direction of travel on screen, from a short step along the path.
-  const stepStart = Math.min(Math.max(0, time - DIRECTION_STEP / 2), last.t - DIRECTION_STEP)
-  const a = sampleTrajectory(trajectory, stepStart)
-  const b = sampleTrajectory(trajectory, stepStart + DIRECTION_STEP)
-  const from = project(a.x, a.y)
-  const to = project(b.x, b.y)
-  const travelAngle = Math.atan2(to.y - from.y, to.x - from.x)
-
-  const pose: ArrowPose = {
-    centerX: center.x,
-    centerY: center.y,
-    length: SCENE.arrowLength,
-    // Screen y points down, so a nose-up pitch is a negative screen angle.
-    angle: travelAngle - (now.pitch ?? 0) * ANGLE_GAIN * exaggeration,
-    bend: 0,
+    const pose: ArrowPose = {
+      centerX: center.x,
+      centerY: center.y,
+      length: SCENE.arrowLength,
+      // Screen y points down, so a nose-up pitch is a negative screen angle.
+      angle: Math.atan2(b.y - a.y, b.x - a.x) - (now.pitch ?? 0) * ANGLE_GAIN * exaggeration,
+      bend: 0,
+    }
+    const trail = trajectory
+      .filter((point, index) => index % TRAIL_STEP === 0 && point.t <= time)
+      .map((point) => project(point.x, point.y))
+    return { pose, trail: [...trail, center] }
   }
 
   const vertical =
@@ -92,8 +92,8 @@ export function SideView({ result, time, exaggeration }: Props) {
         <line x1="32" y1="12" x2="98" y2="15" strokeWidth="3" />
       </g>
 
-      <Trail points={trail.filter((point) => point.t <= time)} />
-      <ArrowShape pose={pose} />
+      {bare && <FlyingArrow {...fly(bare)} bare />}
+      <FlyingArrow {...fly(result)} />
     </svg>
   )
 }

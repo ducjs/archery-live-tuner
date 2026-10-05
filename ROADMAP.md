@@ -12,7 +12,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M5 done except the bareshaft overlay; M6 next) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M5 done; M6 next) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -93,7 +93,7 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [x] "Not to scale" label
 - [x] Result panel (§12), with a vertical tendency (nock low / nock high) added
 - [x] Live update while dragging sliders (§15)
-- [ ] Bareshaft and fletched arrow flown together, to show where each lands
+- [x] Bare shaft and fletched arrow flown together in both views, with the reading in plain words (weak / stiff, nocking point too high / too low)
 
 ### M6. Snapshots and comparison
 
@@ -129,7 +129,8 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 - [ ] Clearance from oscillation phase vs time on string (§34.2)
 - [x] String parameters feed the model (§5)
 - [ ] Derived metrics: FOC, grains per pound with warning, estimated speed (§34.4)
-- [ ] Virtual tuning tests: bareshaft, paper tear, walk-back (§34.3)
+- [x] Virtual tuning test: bare shaft (done early in M5)
+- [ ] Virtual tuning tests: paper tear, walk-back (§34.3)
 - [ ] Spine chart sanity test (§25 Test 8)
 
 **Exit criteria:** the new model sits behind the same `SimulationModel` interface with no UI rewrite, all §25 tests pass, and the NEUTRAL zone agrees with a manufacturer spine chart for the reference setups.

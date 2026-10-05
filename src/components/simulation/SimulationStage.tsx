@@ -11,20 +11,55 @@ export type FlightViewKind = 'top' | 'side'
 type FlightViewProps = {
   view: FlightViewKind
   result: SimulationResult
+  /** A bare shaft to fly alongside the fletched arrow. */
+  bare?: SimulationResult
   handedness: Handedness
   /** s, time on screen since the loop started, at normal playback speed */
   elapsed: number
   exaggeration: number
 }
 
-export function FlightView({ view, result, handedness, elapsed, exaggeration }: FlightViewProps) {
+function LegendItem({ label, bare = false }: { label: string; bare?: boolean }) {
+  return (
+    <span className="flex items-center gap-1.5">
+      <svg viewBox="0 0 24 8" className="h-2 w-6" aria-hidden="true">
+        <line
+          x1="1"
+          y1="4"
+          x2="23"
+          y2="4"
+          className={bare ? 'stroke-ink-muted' : 'stroke-ink'}
+          strokeWidth={bare ? 2 : 3}
+          strokeDasharray={bare ? '5 4' : undefined}
+          strokeLinecap="round"
+        />
+      </svg>
+      {label}
+    </span>
+  )
+}
+
+export function FlightView({
+  view,
+  result,
+  bare,
+  handedness,
+  elapsed,
+  exaggeration,
+}: FlightViewProps) {
   const time = elapsed / SLOW_MOTION
   return (
     <div className="border-line bg-surface relative overflow-hidden rounded-lg border">
       {view === 'top' ? (
-        <TopView result={result} handedness={handedness} time={time} exaggeration={exaggeration} />
+        <TopView
+          result={result}
+          bare={bare}
+          handedness={handedness}
+          time={time}
+          exaggeration={exaggeration}
+        />
       ) : (
-        <SideView result={result} time={time} exaggeration={exaggeration} />
+        <SideView result={result} bare={bare} time={time} exaggeration={exaggeration} />
       )}
       <span className="text-ink-muted absolute top-2 left-3 text-sm">
         {view === 'top' ? "Archer's left" : 'High'}
@@ -32,6 +67,12 @@ export function FlightView({ view, result, handedness, elapsed, exaggeration }: 
       <span className="text-ink-muted absolute bottom-2 left-3 text-sm">
         {view === 'top' ? "Archer's right" : 'Low'}
       </span>
+      {bare && (
+        <div className="text-ink-muted absolute top-2 right-8 flex gap-4 text-sm">
+          <LegendItem label="Fletched" />
+          <LegendItem label="Bare shaft" bare />
+        </div>
+      )}
     </div>
   )
 }
@@ -53,6 +94,8 @@ type PlaybackControlsProps = {
   playing: boolean
   onToggle: () => void
   onRestart: () => void
+  bareShaft: boolean
+  onBareShaftChange: (shown: boolean) => void
   settings: ViewSettings
   /** Leave out to hide the view, speed and amplification controls. */
   onSettingsChange?: (settings: ViewSettings) => void
@@ -65,6 +108,8 @@ export function PlaybackControls({
   playing,
   onToggle,
   onRestart,
+  bareShaft,
+  onBareShaftChange,
   settings,
   onSettingsChange,
 }: PlaybackControlsProps) {
@@ -82,6 +127,16 @@ export function PlaybackControls({
             Restart
           </button>
         </div>
+
+        <label className="flex min-h-11 cursor-pointer items-center gap-2 font-medium">
+          <input
+            type="checkbox"
+            checked={bareShaft}
+            onChange={(event) => onBareShaftChange(event.target.checked)}
+            className="accent-accent focus-visible:outline-accent size-5 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+          />
+          Fly a bare shaft too
+        </label>
 
         {onSettingsChange && (
           <>
