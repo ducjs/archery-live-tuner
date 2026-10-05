@@ -7,6 +7,7 @@ How to use this file:
 - update the status table when a phase starts or finishes
 - a phase is done only when its exit criteria are met, not when all boxes are ticked
 - each phase and milestone opens with a **Nói đơn giản** note: what it is for, without jargon
+- the app has a Vietnamese roadmap page ("Lộ trình", `#roadmap`) built from `src/pages/roadmap/roadmapData.ts`. When an item here is added, removed or ticked, make the same change there; a test fails until both match
 
 ## Status
 
@@ -24,7 +25,7 @@ How to use this file:
 
 Done ahead of their phase:
 - V0.2: bending stiffness and frequency from spine, string parameters in the model, bare shaft test
-- V0.3: a preview of the 3D setup viewer, on branch `preview/3d-bow` (center shot and nocking point height only)
+- V0.3: a preview of the 3D setup viewer (center shot and nocking point height only)
 - V0.5: ranked tuning suggestions
 
 ---
@@ -164,7 +165,7 @@ Goal: explore many setups at once, and pass a setup to someone else.
 
 > **Nói đơn giản:** Một cây cung 3D xoay được, làm bằng các bộ phận thật: riser, limb, dây, plunger, rest, stabilizer, mũi tên. Chỉnh thông số nào thì bộ phận đó chuyển động theo, camera tự bay tới chỗ đó và hiện thước đo. Ví dụ kéo center shot thì thấy đầu mũi tên dịch sang trái hoặc phải so với đường dây. Mục đích là hiểu "thông số này nằm ở đâu trên cung", không phải mô phỏng bay.
 
-Preview status: branch `preview/3d-bow` has a first version, opened with "Show: Bow in 3D" or `#3d` in the address. It covers center shot and nocking point height, the camera flying to the changed part, labels with real values, and 6× amplified offsets. The bow is a rough shape. Not merged into `master`.
+Preview status: a first version is in the app, opened with "Show: Bow in 3D" or `#3d` in the address. It covers center shot and nocking point height, the camera flying to the changed part, labels with real values, and 6× amplified offsets. The bow is a rough shape. The items below stay open until the full viewer is built.
 
 - [ ] React Three Fiber scene, loaded only when the viewer is opened
 - [ ] Bow built from code, not from a model file, so every part can move with its parameter

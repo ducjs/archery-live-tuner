@@ -13,7 +13,8 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 - Model result: dynamic behavior, lateral and vertical tendency, oscillation, clearance sensitivity, bare shaft test
 - Tuning suggestions in order of priority, each with a button to try it
 
-A 3D view of the bow is being tried out on the `preview/3d-bow` branch.
+- A preview of the bow in 3D, showing where center shot and nocking point height sit
+- A roadmap page in Vietnamese ("Lộ trình")
 
 ## Requirements
 
