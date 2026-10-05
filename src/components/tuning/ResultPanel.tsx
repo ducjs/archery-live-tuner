@@ -85,6 +85,27 @@ function LevelMeter({ title, word, value }: MeterProps) {
   )
 }
 
+/** One-line version for small screens, shown next to the animation. */
+export function ResultSummary({ result }: { result: SimulationResult }) {
+  const { classification } = result
+  const items = [
+    ['Behavior', classification.stiffness],
+    ['Oscillation', classification.oscillation],
+    ['Lateral', classification.lateral],
+    ['Clearance', classification.clearance],
+  ] as const
+  return (
+    <dl aria-label="Model result" className="grid grid-cols-4 gap-2">
+      {items.map(([title, value]) => (
+        <div key={title} className="min-w-0">
+          <dt className="text-ink-muted truncate text-sm">{title}</dt>
+          <dd className="font-semibold">{WORDS[value]}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
 export function ResultPanel({ result }: { result: SimulationResult }) {
   const { metrics, classification } = result
   const thresholds = HEURISTIC_V0.thresholds
@@ -123,7 +144,11 @@ export function ResultPanel({ result }: { result: SimulationResult }) {
           value={metrics.clearanceRisk}
         />
       </dl>
-      <p className="text-ink-muted mt-5 max-w-prose text-sm">
+      <p className="mt-5">
+        <span className="text-ink-muted">Estimated speed</span>{' '}
+        <span className="font-semibold">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</span>
+      </p>
+      <p className="text-ink-muted mt-2 max-w-prose text-sm">
         These are tendencies from a simplified model that has not been checked against real
         shooting. Test on your own bow before changing equipment.
       </p>

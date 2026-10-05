@@ -11,6 +11,8 @@ type ParameterBase = {
   group: ParameterGroup
   tier: ParameterTier
   label: string
+  /** Short note on the convention the value follows. */
+  hint?: string
 }
 
 export type NumberParameter = ParameterBase & {
@@ -31,6 +33,7 @@ export type NumberParameter = ParameterBase & {
 export type EnumParameter = ParameterBase & {
   kind: 'enum'
   options: readonly string[]
+  optionLabels: Readonly<Record<string, string>>
   default: string
 }
 
@@ -47,6 +50,19 @@ type NumberSpec = {
   integer?: boolean
 }
 
+const HINTS: Record<string, string> = {
+  'bow.drawWeight': 'Weight on the fingers at full draw.',
+  'bow.nockingPointHeight': 'Height above square.',
+  'bow.centerShot': 'Arrow point from the string line. Negative is left, positive is right.',
+  'bow.plungerStiffness': '0 is very soft, 1 is medium, 2 is very stiff.',
+  'bow.tiller': 'Top tiller minus bottom tiller.',
+  'bow.bowMass': 'Everything held in the bow hand, stabilizers included.',
+  'bow.stabilizerPosition': 'How far in front of the riser the weight sits.',
+  'arrow.length': 'Nock groove to the end of the shaft, without the point.',
+  'arrow.spine': 'A lower number is a stiffer shaft.',
+  'arrow.fletchingWeight': 'All vanes together.',
+}
+
 function groupOf(key: string): ParameterGroup {
   return key.startsWith('arrow.') ? 'arrow' : 'bow'
 }
@@ -61,6 +77,7 @@ function num(key: string, tier: ParameterTier, label: string, spec: NumberSpec):
     group: groupOf(key),
     tier,
     label,
+    hint: HINTS[key],
     unit,
     displayUnit,
     min: toInternal(spec.min),
@@ -75,15 +92,25 @@ function choice(
   key: string,
   tier: ParameterTier,
   label: string,
-  options: readonly string[],
+  optionLabels: Readonly<Record<string, string>>,
   defaultOption: string,
 ): EnumParameter {
-  return { kind: 'enum', key, group: groupOf(key), tier, label, options, default: defaultOption }
+  return {
+    kind: 'enum',
+    key,
+    group: groupOf(key),
+    tier,
+    label,
+    hint: HINTS[key],
+    options: Object.keys(optionLabels),
+    optionLabels,
+    default: defaultOption,
+  }
 }
 
 // Defaults follow the development reference setup (spec §19). Tiers follow spec §4.1.
 export const PARAMETERS: readonly Parameter[] = [
-  choice('bow.handedness', 'simple', 'Handedness', ['RH', 'LH'], 'RH'),
+  choice('bow.handedness', 'simple', 'Handedness', { RH: 'Right-handed', LH: 'Left-handed' }, 'RH'),
   num('bow.drawWeight', 'simple', 'Draw weight', {
     units: ['N', 'lbf'],
     min: 10,
@@ -174,7 +201,13 @@ export const PARAMETERS: readonly Parameter[] = [
     default: 105,
     step: 1,
   }),
-  choice('bow.string.nockFit', 'advanced', 'Nock fit', ['LOOSE', 'NORMAL', 'TIGHT'], 'NORMAL'),
+  choice(
+    'bow.string.nockFit',
+    'advanced',
+    'Nock fit',
+    { LOOSE: 'Loose', NORMAL: 'Normal', TIGHT: 'Tight' },
+    'NORMAL',
+  ),
 
   num('arrow.length', 'simple', 'Arrow length', {
     units: ['mm', 'in'],
@@ -227,6 +260,14 @@ export const PARAMETERS: readonly Parameter[] = [
     step: 0.5,
   }),
 ]
+
+/** Parameters of one panel, in display order. Simple mode hides the advanced tier. */
+export function visibleParameters(group: ParameterGroup, mode: ParameterTier): Parameter[] {
+  return PARAMETERS.filter(
+    (parameter) =>
+      parameter.group === group && (mode === 'advanced' || parameter.tier === 'simple'),
+  )
+}
 
 const BY_KEY = new Map(PARAMETERS.map((parameter) => [parameter.key, parameter]))
 

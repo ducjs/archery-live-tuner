@@ -29,20 +29,38 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
   const shown = toDisplay(parameter, value)
   const unit = parameter.displayUnit ? unitLabel(parameter.displayUnit) : null
   const isDefault = Math.abs(value - parameter.default) < 1e-9
+  const defaultText = toDisplay(parameter, parameter.default).toFixed(decimals)
 
   const commit = (displayValue: number) =>
     onChange(clampValue(parameter, fromDisplay(parameter, displayValue)))
 
   return (
     <div>
-      <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={id} className="font-medium">
+      <div className="flex items-center justify-between gap-2">
+        <label htmlFor={`${id}-number`} className="font-medium">
           {parameter.label}
         </label>
-        <div className="flex items-baseline gap-1.5">
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={onReset}
+            disabled={isDefault}
+            aria-label={`Reset ${parameter.label} to ${defaultText}${unit ? ` ${unit}` : ''}`}
+            title={`Reset to ${defaultText}`}
+            className="text-ink-muted hover:text-accent focus-visible:outline-accent grid size-11 cursor-pointer place-items-center rounded-md focus-visible:outline-2 disabled:invisible"
+          >
+            <svg viewBox="0 0 20 20" className="size-4.5" fill="none" aria-hidden="true">
+              <path
+                d="M4.5 10a5.5 5.5 0 1 0 1.8-4.07M4.5 3.5v3h3"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
           <input
             id={`${id}-number`}
-            aria-label={`${parameter.label}${unit ? ` in ${unit}` : ''}`}
             type="number"
             inputMode="decimal"
             min={min}
@@ -62,44 +80,31 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
               if (draft !== null && draft !== '' && Number.isFinite(typed)) commit(typed)
               setDraft(null)
             }}
-            className="border-line bg-surface focus-visible:outline-accent h-11 w-20 rounded-md border px-2 text-right text-lg font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="border-line bg-surface focus-visible:outline-accent h-10 w-20 rounded-md border px-2 text-right text-lg font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
           />
-          {unit && <span className="text-ink-muted w-6 text-sm">{unit}</span>}
+          <span className="text-ink-muted w-7 text-sm">{unit}</span>
         </div>
       </div>
 
-      <input
-        id={id}
-        type="range"
-        min={min}
-        max={max}
-        step={parameter.step}
-        value={round(shown)}
-        onChange={(event) => {
-          setDraft(null)
-          commit(Number(event.target.value))
-        }}
-        className="accent-accent focus-visible:outline-accent mt-1 h-11 w-full cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
-      />
-
-      <div className="text-ink-muted flex items-center justify-between text-sm">
-        <span>
-          {min}
-          {unit ? ` ${unit}` : ''}
-        </span>
-        <button
-          type="button"
-          onClick={onReset}
-          disabled={isDefault}
-          className="text-accent focus-visible:outline-accent -my-2 min-h-11 cursor-pointer rounded-md px-2 underline-offset-4 hover:underline focus-visible:outline-2 disabled:cursor-default disabled:opacity-0"
-        >
-          Reset to {toDisplay(parameter, parameter.default).toFixed(decimals)}
-        </button>
-        <span>
-          {max}
-          {unit ? ` ${unit}` : ''}
-        </span>
+      <div className="text-ink-muted -mt-1 flex items-center gap-2 text-sm">
+        <span>{min}</span>
+        <input
+          type="range"
+          aria-label={`${parameter.label} slider`}
+          min={min}
+          max={max}
+          step={parameter.step}
+          value={round(shown)}
+          onChange={(event) => {
+            setDraft(null)
+            commit(Number(event.target.value))
+          }}
+          className="accent-accent focus-visible:outline-accent h-11 min-w-0 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+        />
+        <span>{max}</span>
       </div>
+
+      {parameter.hint && <p className="text-ink-muted -mt-1 text-sm">{parameter.hint}</p>}
     </div>
   )
 }

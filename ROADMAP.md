@@ -12,7 +12,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M3 done, first demo slice works; M4 next) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M4 done; M5 next) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -36,10 +36,10 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 
 - [x] Vite + React + TypeScript (strict) + npm
 - [x] Tailwind CSS
-- [ ] shadcn/ui (deferred to M4, when the first components are needed)
+- [x] UI components: native inputs with our own styling. shadcn/ui was not adopted; revisit when dialogs or menus are needed (M6)
 - [x] Vitest + fast-check
 - [x] oxlint + Prettier, with `no-restricted-imports` so `engine/`, `models/`, `utils/` cannot import React or UI code
-- [ ] Folder structure from §24 (folders appear as their first files are written)
+- [x] Folder structure from §24
 
 ### M2. Data models and utilities
 
@@ -76,11 +76,12 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 
 > **Nói đơn giản:** Màn hình nhập liệu. Hai bảng Cung và Tên, mỗi thông số có ô nhập số và thanh trượt. Có nút chuyển Simple/Advanced để người mới chỉ thấy những thông số cơ bản.
 
-- [ ] Bow and Arrow panels rendered from the parameter metadata
-- [ ] Numeric input + slider + unit + reset per parameter
-- [ ] Simple / Advanced toggle, with "advanced values modified" notice (§4.1)
+- [x] Bow and Arrow panels rendered from the parameter metadata
+- [x] Numeric input + slider + unit + reset per parameter, with min/max and a hint on the convention
+- [x] Simple / Advanced toggle, remembered in the browser, with "advanced values changed" notice (§4.1)
 - [x] Zustand store
-- [ ] Estimated total arrow mass
+- [x] Estimated total arrow mass
+- [x] Component tests for the panels (jsdom + Testing Library)
 
 ### M5. Visualization
 

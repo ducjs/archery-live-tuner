@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 }
 
 /**

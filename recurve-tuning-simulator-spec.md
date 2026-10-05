@@ -88,14 +88,14 @@ The simulation engine must be usable independently of React.
 | Build | Vite + npm | |
 | UI | React | |
 | Styling | Tailwind CSS | |
-| Components | shadcn/ui (Radix) | Accessible slider, tabs, tooltip |
+| Components | Native inputs, own styling | shadcn/ui (Radix) only if dialogs or menus are needed |
 | State | Zustand + `persist` middleware | Snapshots saved to localStorage |
 | Validation | Zod | Input bounds (section 22), parsing imported JSON and URL state |
 | 2D rendering | SVG + `requestAnimationFrame` | Few elements, easy to style; use Canvas only if many trails are drawn |
 | Landscape heatmap | Hand-drawn SVG | No chart library needed |
 | Engine | Pure TypeScript, zero dependencies | Behind a `SimulationModel` interface so it can be replaced |
 | Heavy computation (V0.3) | Web Worker + Comlink | For the tuning landscape grid |
-| Tests | Vitest + fast-check | Property tests for monotonicity (heavier point → weaker) |
+| Tests | Vitest + fast-check + Testing Library (jsdom) | Property tests for monotonicity (heavier point → weaker) |
 | E2E (optional) | Playwright | |
 | Lint | oxlint + Prettier | `no-restricted-imports` blocks `engine/`, `models/`, `utils/` from importing React or UI code |
 | i18n | i18next | Vietnamese + English |
