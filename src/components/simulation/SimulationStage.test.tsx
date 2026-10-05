@@ -12,7 +12,8 @@ const settings: ViewSettings = { view: 'top', speed: 1, exaggeration: 3 }
 const noop = () => {}
 
 describe('PlaybackControls', () => {
-  it('shows only play and restart without a settings handler', () => {
+  it('offers the view choice, but not speed or amplification, outside Advanced', async () => {
+    const onSettingsChange = vi.fn()
     render(
       <PlaybackControls
         playing
@@ -21,12 +22,20 @@ describe('PlaybackControls', () => {
         bareShaft
         onBareShaftChange={noop}
         settings={settings}
+        onSettingsChange={onSettingsChange}
       />,
     )
     expect(screen.getByRole('button', { name: 'Pause' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Restart' })).toBeTruthy()
-    expect(screen.queryByRole('radio')).toBeNull()
+    expect(screen.getAllByRole('radio').map((radio) => radio.parentElement?.textContent)).toEqual([
+      'Top',
+      'Side',
+      'Both',
+    ])
     expect(screen.queryByRole('slider')).toBeNull()
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Both' }))
+    expect(onSettingsChange).toHaveBeenLastCalledWith({ ...settings, view: 'both' })
   })
 
   it('reports view, speed and amplification changes', async () => {
@@ -40,6 +49,7 @@ describe('PlaybackControls', () => {
         onBareShaftChange={noop}
         settings={settings}
         onSettingsChange={onSettingsChange}
+        advanced
       />,
     )
     expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
@@ -63,6 +73,7 @@ describe('PlaybackControls', () => {
         bareShaft
         onBareShaftChange={noop}
         settings={{ ...settings, speed: 0.25 }}
+        onSettingsChange={noop}
       />,
     )
     expect(screen.getByText(/Slowed 48 times/)).toBeTruthy()

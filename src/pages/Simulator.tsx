@@ -29,10 +29,11 @@ export function Simulator() {
   const result = comparison.fletched
   const [bareShaft, setBareShaft] = useState(true)
 
-  // View settings are an Advanced feature. Simple mode always uses the defaults,
-  // so a setting the user cannot see never changes what is shown.
-  const [advancedView, setAdvancedView] = useState(DEFAULT_VIEW)
-  const view = mode === 'advanced' ? advancedView : DEFAULT_VIEW
+  // Speed and amplification are Advanced features. Simple mode always uses their
+  // defaults, so a setting the user cannot see never changes what is shown.
+  const advanced = mode === 'advanced'
+  const [settings, setSettings] = useState(DEFAULT_VIEW)
+  const view = advanced ? settings : { ...DEFAULT_VIEW, view: settings.view }
 
   const playback = usePlayback(flightSeconds(result), HOLD_SECONDS, view.speed)
 
@@ -75,7 +76,8 @@ export function Simulator() {
               bareShaft={bareShaft}
               onBareShaftChange={setBareShaft}
               settings={view}
-              onSettingsChange={mode === 'advanced' ? setAdvancedView : undefined}
+              onSettingsChange={setSettings}
+              advanced={advanced}
             />
           </div>
           <div className="order-4 min-w-0 lg:mt-6 2xl:col-start-2 2xl:row-span-2 2xl:row-start-1 2xl:mt-0">

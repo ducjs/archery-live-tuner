@@ -88,7 +88,7 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 > **Nói đơn giản:** Phần nhìn thấy được. Hoạt hình mũi tên rời cung, uốn, dao động rồi ổn định; kèm bảng kết quả. Kéo thanh trượt là hoạt hình và kết quả đổi theo, không cần bấm nút tính.
 
 - [x] Top view: bow, arrow flex, oscillation, stabilization (§13)
-- [x] Side view: vertical attitude (Advanced)
+- [x] Side view: vertical attitude. Top, side or both together, in Simple and Advanced
 - [x] Play / pause / restart, speed, flex exaggeration (§23)
 - [x] "Not to scale" label
 - [x] Result panel (§12), with a vertical tendency (nock low / nock high) added

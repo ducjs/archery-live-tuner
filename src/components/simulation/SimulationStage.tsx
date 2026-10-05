@@ -117,8 +117,9 @@ type PlaybackControlsProps = {
   bareShaft: boolean
   onBareShaftChange: (shown: boolean) => void
   settings: ViewSettings
-  /** Leave out to hide the view, speed and amplification controls. */
-  onSettingsChange?: (settings: ViewSettings) => void
+  onSettingsChange: (settings: ViewSettings) => void
+  /** Shows the speed and amplification controls. The view choice is always shown. */
+  advanced?: boolean
 }
 
 const buttonClass =
@@ -132,6 +133,7 @@ export function PlaybackControls({
   onBareShaftChange,
   settings,
   onSettingsChange,
+  advanced = false,
 }: PlaybackControlsProps) {
   const amplifyId = useId()
   const subject = AMPLIFIED[settings.view]
@@ -158,14 +160,15 @@ export function PlaybackControls({
           Fly a bare shaft too
         </label>
 
-        {onSettingsChange && (
+        <SegmentedControl
+          label="View"
+          options={VIEWS}
+          value={settings.view}
+          onChange={(view) => onSettingsChange({ ...settings, view: view as FlightViewKind })}
+        />
+
+        {advanced && (
           <>
-            <SegmentedControl
-              label="View"
-              options={VIEWS}
-              value={settings.view}
-              onChange={(view) => onSettingsChange({ ...settings, view: view as FlightViewKind })}
-            />
             <SegmentedControl
               label="Speed"
               options={SPEED_OPTIONS}

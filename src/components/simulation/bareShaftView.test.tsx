@@ -55,6 +55,7 @@ describe('bare shaft in the views', () => {
         bareShaft
         onBareShaftChange={onBareShaftChange}
         settings={{ view: 'top', speed: 1, exaggeration: 3 }}
+        onSettingsChange={() => {}}
       />,
     )
     await userEvent.click(screen.getByRole('checkbox', { name: 'Fly a bare shaft too' }))
