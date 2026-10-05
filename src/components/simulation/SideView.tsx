@@ -1,8 +1,8 @@
 import { useMessages } from '../../i18n/useMessages.ts'
-import type { SimulationResult } from '../../models/simulation.ts'
+import type { SimulationResult, TrajectoryPoint } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
-import { SCENE, drawBack, launchEase } from './timing.ts'
+import { DRIFT_PIXELS, SCENE, drawBack, launchEase } from './timing.ts'
 
 // Visual amplification. The drawing is not to scale.
 /**
@@ -44,26 +44,44 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
 
   // Height is scaled so that the arc sets off at the real launch angle times
   // ELEVATION_GAIN. A longer shot then shows as a steeper bow and a taller arc.
-  // Both arrows share the scale.
+  //
+  // A flight is the arc aimed at the center plus a drift away from it that
+  // grows evenly with distance. The two are drawn on scales of their own: on
+  // the scale of the arc, the gap between a bare shaft and the fletched arrows
+  // would be a couple of units and could not be read.
+  const landing = (flight: SimulationResult) => flight.trajectory.at(-1)!.y
+  const arc = (flight: SimulationResult, point: TrajectoryPoint) =>
+    point.y - (landing(flight) * point.x) / distance
+
   const early = sampleTrajectory(result.trajectory, DIRECTION_STEP)
-  const elevation = Math.atan2(early.y, early.x)
-  const apex = Math.max(1, ...result.trajectory.map((point) => point.y))
+  const elevation = Math.atan2(arc(result, early), early.x)
+  const apex = Math.max(1, ...result.trajectory.map((point) => arc(result, point)))
   const rise = Math.min(
     MAX_RISE_PIXELS,
     (Math.tan(Math.max(0, elevation) * ELEVATION_GAIN) * (endX - startX)) / 4,
   )
   const pixelsPerMm = rise / apex
 
-  const project = (x: number, y: number): ScreenPoint => ({
-    x: startX + (x / distance) * (endX - startX),
-    y: SCENE.centerY - y * pixelsPerMm,
-  })
+  // As in the top view, a full-scale vertical tendency lands DRIFT_PIXELS from
+  // the center, and both arrows share the scale so their gap is drawn true.
+  const fullDrift = Math.max(
+    ...[result, ...(bare ? [bare] : [])].map((flight) => {
+      const tendency = Math.abs(flight.metrics.verticalTendency)
+      return tendency > 1e-9 ? Math.abs(landing(flight)) / tendency : 0
+    }),
+  )
 
-  // Where the bow points: the direction the arrow sets off in, as drawn.
-  const first = project(0, 0)
-  const next = sampleTrajectory(result.trajectory, DIRECTION_STEP)
-  const ahead = project(next.x, next.y)
-  const aim = Math.atan2(ahead.y - first.y, ahead.x - first.x)
+  const project = (flight: SimulationResult, point: TrajectoryPoint): ScreenPoint => {
+    const along = point.x / distance
+    const drift = fullDrift > 0 ? (landing(flight) / fullDrift) * DRIFT_PIXELS * along : 0
+    return {
+      x: startX + along * (endX - startX),
+      y: SCENE.centerY - arc(flight, point) * pixelsPerMm - drift,
+    }
+  }
+
+  // Where the bow points: up the start of the arc, as drawn.
+  const aim = -Math.atan((4 * rise) / (endX - startX))
   const pull = drawBack(result, time)
 
   // The bow in its own frame: string at x = 1, limb tips 100 above and below.
@@ -78,7 +96,7 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
   const fly = (flight: SimulationResult) => {
     const { trajectory } = flight
     const now = sampleTrajectory(trajectory, time)
-    const path = project(now.x, now.y)
+    const path = project(flight, now)
 
     // Direction of travel on screen, from a short step along the path.
     const stepStart = Math.min(
@@ -87,8 +105,8 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
     )
     const from = sampleTrajectory(trajectory, stepStart)
     const to = sampleTrajectory(trajectory, stepStart + DIRECTION_STEP)
-    const a = project(from.x, from.y)
-    const b = project(to.x, to.y)
+    const a = project(flight, from)
+    const b = project(flight, to)
     // Screen y points down, so a nose-up pitch is a negative screen angle.
     const flying = Math.atan2(b.y - a.y, b.x - a.x) - (now.pitch ?? 0) * ANGLE_GAIN * exaggeration
 
@@ -116,7 +134,7 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
     }
     const trail = trajectory
       .filter((point, index) => index % TRAIL_STEP === 0 && point.t <= time)
-      .map((point) => project(point.x, point.y))
+      .map((point) => project(flight, point))
     return { pose, trail: time > 0 ? [...trail, path] : [] }
   }
 

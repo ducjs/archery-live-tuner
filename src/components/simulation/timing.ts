@@ -52,6 +52,13 @@ export function launchEase(time: number): number {
   return share * share * (3 - 2 * share)
 }
 
+/**
+ * SVG units from the center at which an arrow lands when its lateral or
+ * vertical tendency is at full scale. The model gives tendencies, not
+ * centimetres, so this is for reading the direction and comparing two arrows.
+ */
+export const DRIFT_PIXELS = 62
+
 /** Shared drawing area of the top and side views, in SVG units. */
 export const SCENE = {
   width: 800,

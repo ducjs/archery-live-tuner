@@ -3,14 +3,13 @@ import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
-import { SCENE, drawBack, launchEase } from './timing.ts'
+import { DRIFT_PIXELS, SCENE, drawBack, launchEase } from './timing.ts'
 
 // Visual amplification per unit of exaggeration. The drawing is not to scale.
 // Sideways movement of the middle of the shaft, as a share of its length, at
 // full flex. A matched arrow (flex 0.4) bends by 3 % of its length at 1×.
 const BEND_SHARE = 0.075
 const ANGLE_GAIN = 3
-const DRIFT_PIXELS = 62
 const TRAIL_STEP = 6
 
 type Props = {
