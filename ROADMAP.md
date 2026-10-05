@@ -12,7 +12,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M3 done; M4 next) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M3 done, first demo slice works; M4 next) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -62,6 +62,16 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [x] Trajectory generator (§9)
 - [x] Consistency tests 1–7 (§25), with property tests over random valid setups
 
+### Demo slice (between M3 and M4)
+
+> **Nói đơn giản:** Bản xem thử đầu tiên. Chỉ một thanh trượt point weight, nhưng đi trọn đường: kéo thanh trượt, bộ não tính lại, mũi tên trên màn hình bay khác đi và bảng kết quả đổi theo. Mục đích là chứng minh cả chuỗi chạy được trước khi làm đủ các bảng nhập.
+
+- [x] Point weight slider with number input and reset
+- [x] Top view animation: bow, arrow flex, drift, target
+- [x] Result panel with the four classifications
+- [x] Play / pause / restart, reduced-motion respected
+- [x] Design tokens for light and dark, self-hosted Barlow fonts
+
 ### M4. Input UI
 
 > **Nói đơn giản:** Màn hình nhập liệu. Hai bảng Cung và Tên, mỗi thông số có ô nhập số và thanh trượt. Có nút chuyển Simple/Advanced để người mới chỉ thấy những thông số cơ bản.
@@ -69,7 +79,7 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [ ] Bow and Arrow panels rendered from the parameter metadata
 - [ ] Numeric input + slider + unit + reset per parameter
 - [ ] Simple / Advanced toggle, with "advanced values modified" notice (§4.1)
-- [ ] Zustand store
+- [x] Zustand store
 - [ ] Estimated total arrow mass
 
 ### M5. Visualization

@@ -1,1 +1,45 @@
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Barlow', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', ui-sans-serif, sans-serif;
+
+  --color-paper: #f2f4f3;
+  --color-surface: #ffffff;
+  --color-ink: #13202e;
+  --color-ink-muted: #51606c;
+  --color-line: #d2d9d8;
+  --color-accent: #17689e;
+
+  /* Tuning scale: gold is the middle of the target, so gold means in tune. */
+  --color-gold: #e3a900;
+  --color-weak: #c8323a;
+  --color-stiff: #1f6fae;
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-paper: #0f1a24;
+      --color-surface: #17242f;
+      --color-ink: #e8edef;
+      --color-ink-muted: #9aa8b2;
+      --color-line: #2c3c49;
+      --color-accent: #5bb0e4;
+      --color-gold: #f2c230;
+      --color-weak: #f0666c;
+      --color-stiff: #62aee6;
+    }
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+}
