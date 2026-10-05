@@ -5,6 +5,7 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 - Specification: [readme/recurve-tuning-simulator-spec.md](readme/recurve-tuning-simulator-spec.md)
 - Phase tracker: [readme/ROADMAP.md](readme/ROADMAP.md)
 - Physics and calculations of the model, in Vietnamese: [readme/physics-and-calculations.md](readme/physics-and-calculations.md)
+- Tuning references and how the model compares with them, in Vietnamese: [readme/tuning-references.md](readme/tuning-references.md)
 - Working rules for the AI assistant on this project: [readme/memory/](readme/memory/MEMORY.md)
 
 ## What it does today

@@ -35,7 +35,13 @@ export const HEURISTIC_V0 = {
    */
   requiredSpine: {
     drawWeight: 1.0,
-    powerStroke: 0.5,
+    drawLength: 0.72,
+    /**
+     * A higher brace height makes the arrow shoot weaker, and the whole usable
+     * range of a recurve is worth about 20 gr of point weight (Easton, Arrow
+     * Tuning and Maintenance Guide, "Brace Height").
+     */
+    braceHeight: 0.3,
     arrowLength: 2.5,
     frontMass: 0.3,
     tailMass: -0.1,

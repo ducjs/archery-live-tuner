@@ -144,7 +144,7 @@ describe('properties over all valid setups', () => {
     ['bow.drawLength', 'weaker'],
     ['arrow.length', 'weaker'],
     ['arrow.spine', 'weaker'],
-    ['bow.braceHeight', 'stiffer'],
+    ['bow.braceHeight', 'weaker'],
     ['bow.plungerStiffness', 'stiffer'],
   ]
 

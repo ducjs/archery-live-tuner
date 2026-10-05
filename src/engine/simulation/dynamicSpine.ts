@@ -2,7 +2,6 @@ import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
 import type { Coefficients } from '../coefficients/heuristicV0.ts'
 import { frontMass, tailMass } from './arrowModel.ts'
-import { powerStroke } from './bowModel.ts'
 
 /**
  * The spine rating that would be neutral for this bow and arrow build.
@@ -15,11 +14,11 @@ export function requiredSpine(
   coefficients: Coefficients,
 ): number {
   const { reference, requiredSpine: exponent } = coefficients
-  const referencePowerStroke = reference.drawLength - reference.braceHeight
 
   const logLoad =
     exponent.drawWeight * Math.log(bow.drawWeight / reference.drawWeight) +
-    exponent.powerStroke * Math.log(powerStroke(bow) / referencePowerStroke) +
+    exponent.drawLength * Math.log(bow.drawLength / reference.drawLength) +
+    exponent.braceHeight * Math.log(bow.braceHeight / reference.braceHeight) +
     exponent.arrowLength * Math.log(arrow.length / reference.arrowLength) +
     exponent.frontMass * Math.log(frontMass(arrow) / reference.frontMass) +
     exponent.tailMass * Math.log(tailMass(arrow) / reference.tailMass) +

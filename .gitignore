@@ -32,5 +32,9 @@ Thumbs.db
 *.sln
 *.sw?
 
+# Reference material under other people's copyright, kept on this machine only.
+# Notes on it are in readme/tuning-references.md.
+docs/
+
 # Tooling
 .claude/settings.local.json

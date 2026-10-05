@@ -68,7 +68,7 @@ describe('sensitivity', () => {
     const effect = (key: string) => entries.find((entry) => entry.key === key)!.effect
     expect(effect('arrow.spine')).toBeLessThan(0)
     expect(effect('bow.drawWeight')).toBeLessThan(0)
-    expect(effect('bow.braceHeight')).toBeGreaterThan(0)
+    expect(effect('bow.braceHeight')).toBeLessThan(0)
   })
 })
 
