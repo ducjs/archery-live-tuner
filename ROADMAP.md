@@ -6,6 +6,7 @@ How to use this file:
 - tick a box when the item is merged and working
 - update the status table when a phase starts or finishes
 - a phase is done only when its exit criteria are met, not when all boxes are ticked
+- each phase and milestone opens with a **Nói đơn giản** note: what it is for, without jargon
 
 ## Status
 
@@ -25,9 +26,14 @@ How to use this file:
 
 ## V0.1 — Basic simulator (MVP)
 
+> **Nói đơn giản:** Bản đầu tiên dùng được. Nhập thông số cung và tên, xem mũi tên bay, kéo thử một thanh trượt và thấy kết quả đổi ngay. Kết quả mới chỉ là xu hướng (yếu/cứng, lệch trái/phải), chưa phải con số chính xác.
+
 Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the result change. Heuristic model only.
 
 ### M1. Project scaffold
+
+> **Nói đơn giản:** Dựng khung dự án và bộ công cụ. Chưa có gì để xem, nhưng từ đây mọi dòng code đều được tự động kiểm tra lỗi và chạy test.
+
 - [x] Vite + React + TypeScript (strict) + npm
 - [x] Tailwind CSS
 - [ ] shadcn/ui (deferred to M4, when the first components are needed)
@@ -36,6 +42,9 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [ ] Folder structure from §24 (folders appear as their first files are written)
 
 ### M2. Data models and utilities
+
+> **Nói đơn giản:** Định nghĩa "một bộ setup" gồm những thông số nào, mỗi thông số có đơn vị gì, giới hạn bao nhiêu, mặc định là gì, thuộc nhóm cơ bản hay nâng cao. Kèm bộ đổi đơn vị (lb, inch, grain) và kiểm tra dữ liệu nhập sai.
+
 - [x] `BowSetup`, `ArrowSetup`, `TuningSetup`, `SimulationResult` types (§5, §6, §20)
 - [x] Parameter metadata table: label, unit, bounds, default, tier (§4.1)
 - [x] Unit conversion utilities (§21)
@@ -43,6 +52,9 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [x] Development reference setup as default profile (§19)
 
 ### M3. Engine v0
+
+> **Nói đơn giản:** Bộ não của ứng dụng. Nhận một setup, trả lời: tên đang yếu hay cứng, dao động nhiều hay ít, lệch trái hay phải, có dễ chạm cung không, và đường bay trông thế nào. Chưa có giao diện; đúng sai kiểm bằng test (ví dụ: tăng point weight thì tên phải yếu đi).
+
 - [ ] `SimulationModel` interface
 - [ ] Heuristic model with normalized factors (§10), coefficients marked as heuristic
 - [ ] Handedness mirroring
@@ -51,6 +63,9 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [ ] Consistency tests 1–7 (§25)
 
 ### M4. Input UI
+
+> **Nói đơn giản:** Màn hình nhập liệu. Hai bảng Cung và Tên, mỗi thông số có ô nhập số và thanh trượt. Có nút chuyển Simple/Advanced để người mới chỉ thấy những thông số cơ bản.
+
 - [ ] Bow and Arrow panels rendered from the parameter metadata
 - [ ] Numeric input + slider + unit + reset per parameter
 - [ ] Simple / Advanced toggle, with "advanced values modified" notice (§4.1)
@@ -58,6 +73,9 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [ ] Estimated total arrow mass
 
 ### M5. Visualization
+
+> **Nói đơn giản:** Phần nhìn thấy được. Hoạt hình mũi tên rời cung, uốn, dao động rồi ổn định; kèm bảng kết quả. Kéo thanh trượt là hoạt hình và kết quả đổi theo, không cần bấm nút tính.
+
 - [ ] Top view: bow, string, arrow flex, oscillation, stabilization (§13)
 - [ ] Side view: vertical attitude (Advanced)
 - [ ] Play / pause / restart, speed, flex exaggeration (§23)
@@ -66,11 +84,17 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [ ] Live update while dragging sliders (§15)
 
 ### M6. Snapshots and comparison
+
+> **Nói đơn giản:** Lưu lại setup đang có, đổi vài thông số, rồi đặt hai bản cạnh nhau để so trước và sau. Dữ liệu lưu ngay trên trình duyệt, chưa cần tài khoản.
+
 - [ ] `SetupRepository` interface + localStorage implementation (§35)
 - [ ] Save / load / rename / delete setups
 - [ ] Compare two setups, before/after animation (§14)
 
 ### M7. Release
+
+> **Nói đơn giản:** Hoàn thiện để đưa cho người khác dùng: chạy tốt trên điện thoại, có tiếng Việt và tiếng Anh, đổi được đơn vị, có lời nhắc đây chỉ là mô hình gần đúng, và có đường link công khai.
+
 - [ ] Responsive layout for phone (§4.2)
 - [ ] i18n: Vietnamese + English
 - [ ] Unit toggle
@@ -82,6 +106,8 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 ---
 
 ## V0.2 — Improved dynamic model
+
+> **Nói đơn giản:** Làm cho bộ não đáng tin hơn. Thay các hệ số ước chừng bằng công thức vật lý đơn giản (độ cứng thật của thân tên, tần số dao động), và báo kết quả theo cách người bắn quen dùng: bareshaft lệch đâu, xé giấy hướng nào. Giao diện gần như không đổi.
 
 Goal: replace the blind heuristic core with a cheap physical basis. UI changes are minimal.
 
@@ -100,6 +126,8 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 
 ## V0.3 — Landscape, sensitivity, sharing
 
+> **Nói đơn giản:** Nhìn toàn cảnh thay vì thử từng cái. Một bảng màu cho biết tổ hợp spine và point weight nào tốt, một biểu đồ cho biết thông số nào ảnh hưởng mạnh nhất. Gửi setup cho người khác bằng một đường link, và dùng được khi không có mạng.
+
 Goal: explore many setups at once, and pass a setup to someone else.
 
 - [ ] Tuning landscape grid, e.g. spine × point weight (§16)
@@ -116,6 +144,8 @@ Goal: explore many setups at once, and pass a setup to someone else.
 
 ## V0.4 — Real-world calibration
 
+> **Nói đơn giản:** Dạy mô hình bằng thực tế. Người bắn ghi lại điều thật sự xảy ra ngoài bãi, ứng dụng so với dự đoán rồi tự chỉnh để lần sau đoán sát hơn cho chính bộ cung đó.
+
 Goal: users record what really happened, and the model adjusts to it.
 
 - [ ] Observation form attached to a setup: oscillation, impact tendency, clearance, bareshaft result (§18)
@@ -130,6 +160,8 @@ Goal: users record what really happened, and the model adjusts to it.
 
 ## V0.5 — Advanced parameters and recommendations
 
+> **Nói đơn giản:** Thêm chi tiết cho người tune sâu (từng thanh stabilizer, cách thả dây, barebow), và ứng dụng bắt đầu gợi ý nên thử đổi gì tiếp theo.
+
 Goal: cover more equipment detail and suggest what to try next.
 
 - [ ] Stabilizer breakdown: long rod, side rods, extender, weights (§5)
@@ -143,6 +175,8 @@ Goal: cover more equipment detail and suggest what to try next.
 ---
 
 ## V0.6 — Backend: setup storage
+
+> **Nói đơn giản:** Có tài khoản và lưu trữ trên máy chủ. Thông số của từng setup được giữ lại theo người dùng, mở trên máy nào cũng thấy, kèm lịch sử thay đổi. Không đăng nhập vẫn dùng được như cũ.
 
 Goal: store the parameters of every setup per user, across devices (§35).
 
@@ -160,6 +194,8 @@ Goal: store the parameters of every setup per user, across devices (§35).
 ---
 
 ## V1.0 — Stable public release
+
+> **Nói đơn giản:** Bản chính thức cho cộng đồng. Không thêm tính năng lớn; tập trung vào độ ổn định, tốc độ trên máy yếu, dễ dùng cho mọi người, và tài liệu giải thích rõ mô hình làm được gì, không làm được gì.
 
 - [ ] Accessibility pass (keyboard, screen reader, contrast)
 - [ ] Performance pass on low-end phones
