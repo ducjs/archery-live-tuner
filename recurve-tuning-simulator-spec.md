@@ -105,7 +105,7 @@ The simulation engine must be usable independently of React.
 
 Framer Motion is not needed: the main animation runs on `requestAnimationFrame`, and CSS transitions cover UI transitions.
 
-**Do NOT start with Three.js.** Start with 2D.
+**Do NOT start with Three.js.** Start with 2D. The first 3D feature is the setup viewer in V0.3 (section 36).
 
 Backend is out of scope for now. See section 35.
 
@@ -1388,3 +1388,21 @@ What to do now so the backend is cheap to add later:
 - generate setup ids as UUIDs on the client, so local setups can be uploaded without id conflicts
 
 Stack is undecided. Candidates: Supabase (Postgres + auth) or Cloudflare Workers + D1.
+
+---
+
+# 36. 3D setup viewer (V0.3)
+
+Goal: show where each setup parameter lives on the bow, and what changes physically when it is adjusted. This is a viewer of the equipment, separate from the arrow flight simulation.
+
+Example: moving the center shot slider shifts the arrow point left or right of the string line on the 3D bow.
+
+Principles:
+- The bow is built from code (parametric geometry), not loaded from a model file. A static model cannot bend its limbs for brace height or move its plunger.
+- One part per parameter. Changing a parameter moves, resizes or highlights exactly that part.
+- Focus on change. The camera moves to the part being adjusted and a dimension line shows the value. Without this, a 2 mm change on a 1.7 m bow is invisible.
+- Offsets are amplified and labelled as not to scale, as in the flight views.
+- Parameters without a geometric meaning (draw weight, spine, shaft weight, plunger stiffness) are listed as "nothing to show" instead of being given a made-up visual.
+- The 3D code is loaded on demand and is never required: the simulator works without WebGL.
+
+The viewer reads the same `TuningSetup` as the engine and does not depend on the simulation model.

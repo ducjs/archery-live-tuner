@@ -14,7 +14,7 @@ How to use this file:
 |---|---|---|
 | V0.1 | Basic simulator (MVP) | In progress (M1–M5 done; M6 next) |
 | V0.2 | Improved dynamic model | Not started |
-| V0.3 | Landscape, sensitivity, sharing | Not started |
+| V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | Not started |
 | V0.4 | Real-world calibration | Not started |
 | V0.5 | Advanced parameters and recommendations | Not started |
 | V0.6 | Backend: setup storage | Not started |
@@ -137,7 +137,7 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 
 ---
 
-## V0.3 — Landscape, sensitivity, sharing
+## V0.3 — Landscape, sensitivity, sharing, 3D setup viewer
 
 > **Nói đơn giản:** Nhìn toàn cảnh thay vì thử từng cái. Một bảng màu cho biết tổ hợp spine và point weight nào tốt, một biểu đồ cho biết thông số nào ảnh hưởng mạnh nhất. Gửi setup cho người khác bằng một đường link, và dùng được khi không có mạng.
 
@@ -151,7 +151,21 @@ Goal: explore many setups at once, and pass a setup to someone else.
 - [ ] Compare more than two snapshots
 - [ ] PWA, works offline (§34.8)
 
-**Exit criteria:** the landscape renders without blocking slider interaction, and a shared URL reproduces the exact same result on another device.
+### 3D setup viewer
+
+> **Nói đơn giản:** Một cây cung 3D xoay được, làm bằng các bộ phận thật: riser, limb, dây, plunger, rest, stabilizer, mũi tên. Chỉnh thông số nào thì bộ phận đó chuyển động theo, camera tự bay tới chỗ đó và hiện thước đo. Ví dụ kéo center shot thì thấy đầu mũi tên dịch sang trái hoặc phải so với đường dây. Mục đích là hiểu "thông số này nằm ở đâu trên cung", không phải mô phỏng bay.
+
+- [ ] React Three Fiber scene, loaded only when the viewer is opened
+- [ ] Bow built from code, not from a model file, so every part can move with its parameter
+- [ ] Parts: riser, limbs, string, plunger, rest, arrow, long rod and side rods
+- [ ] Parameters with a visible effect: handedness, center shot, brace height, tiller, nocking point height, plunger preload, draw length (full-draw pose), arrow length, point weight, stabilizer mass and position, strand count
+- [ ] Focus on change: moving a slider flies the camera to that part, highlights it and shows a dimension line with the value
+- [ ] Amplified offsets with a "not to scale" note, because real changes are a few millimetres on a 1.7 m bow
+- [ ] Parameters with nothing to show (draw weight, spine, shaft weight, plunger stiffness) are marked as such, not faked
+- [ ] Orbit, zoom, preset views (front, side, top, arrow rest close-up)
+- [ ] Works on a phone, and falls back to the 2D views when WebGL is missing
+
+**Exit criteria:** the landscape renders without blocking slider interaction, a shared URL reproduces the exact same result on another device, and for every parameter in the 3D list a user can see which part moved and in which direction.
 
 ---
 
@@ -224,7 +238,7 @@ Goal: store the parameters of every setup per user, across devices (§35).
 ## After V1.0
 
 Not scheduled (§30):
-- 3D mode
+- 3D arrow flight (the 3D setup viewer is in V0.3)
 - real bow profiles, arrow database, commercial component database
 - coach mode
 - tuning history
