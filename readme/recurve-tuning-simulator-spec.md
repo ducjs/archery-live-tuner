@@ -398,6 +398,8 @@ type ReleaseSetup = {
 
 Reason: the same bow + arrow setup can behave differently depending on finger release.
 
+Section 37 widens this from the release to execution errors in general (collapse, bow hand torque, alignment) and describes how they could be simulated. It is an idea, not scheduled work.
+
 ---
 
 # 8. Physics/model philosophy
@@ -1248,7 +1250,7 @@ Comparison + tuning landscape.
 Real-world calibration.
 
 ### V0.5
-Advanced bow/arrow parameters.
+Advanced bow/arrow parameters. Possibly execution errors (section 37).
 
 ### V0.6
 Backend: store the parameters of each setup per user (section 35).
@@ -1442,3 +1444,57 @@ Principles:
 - The 3D code is loaded on demand and is never required: the simulator works without WebGL.
 
 The viewer reads the same `TuningSetup` as the engine and does not depend on the simulation model.
+
+---
+
+# 37. Execution errors (idea, V0.5 at the earliest)
+
+Status: an idea, written down so it is not lost. Nothing here is scheduled or built.
+
+Goal: show what the archer's own mistakes do to the arrow, next to what the equipment does. The simulator so far flies one arrow shot perfectly. Real arrows are shot by a person.
+
+Two reasons it is worth doing:
+
+- A dirty release reads on the bare shaft much like a wrong spine. An archer who cannot tell the two apart changes arrows when the problem is the hand.
+- The practical reason to tune is forgiveness: with the same mistake, a tuned setup scatters less than a mistuned one. One perfect arrow cannot show that. A group can.
+
+## 37.1 Errors as disturbances the engine already understands
+
+Each error is mapped to a physical disturbance of the shot, not given a model of its own:
+
+| Error | Mapped to | Confidence |
+|---|---|---|
+| Arm collapse, creep | Draw length lost at release: slower arrow, stiffer reaction, lower impact | Fair, the physics is plain |
+| Dirty release (pluck) | String pulled sideways as it leaves the fingers: more bending, lateral shift | Medium |
+| Bow hand torque (grip) | Bow turning about its vertical axis while the arrow is on the string: lateral shift, more clearance risk | Medium |
+| Uneven finger pressure | Nock pushed up or down: acts like a wrong nocking point | Medium |
+| Wrong alignment | Draw force out of the plane of the bow; usually brings collapse and pluck with it | Low, hard to isolate |
+
+This extends the `ReleaseSetup` of section 7, which only covers the release hand.
+
+## 37.2 Constant part and varying part
+
+Every error has two parts, and both are needed:
+
+- constant: the same mistake on every shot. It moves the whole group.
+- varying: a little different on every shot. It widens the group.
+
+The varying part needs many simulated shots with random disturbances, drawn as a group on a target face. That face should be the one used by the target plot diagnosis (section 17.2), so the model's group and the archer's real group can be laid side by side.
+
+Random shots must be repeatable: the same setup and settings give the same group, so a change on screen always comes from a change the user made.
+
+## 37.3 Inputs
+
+Archers do not know by how many millimetres they pluck. Each error is set as a level (none, slight, clear), plus one overall "consistency" control. All of it sits in the Advanced tier and defaults to a perfect shot, so nothing changes for a user who never opens it.
+
+## 37.4 Limits
+
+- The coefficients would be estimates. There is no measured data here for how far a given pluck moves an arrow, and for some errors (alignment, grip) even the direction depends on the archer. This is where reference material is needed most.
+- It must not read as a diagnosis of a person. The simulator can say "if you collapse, you would see this". Going backwards, from a group to the mistake that caused it, has many answers and is not supported.
+- Section 2.1 applies: results are tendencies, labelled as model results.
+
+## 37.5 Suggested order
+
+1. A simulated group on the target with the single consistency control. Already shows which setup forgives more.
+2. Collapse, dirty release and bow hand torque, three levels each.
+3. Alignment and finger pressure, after references are available.

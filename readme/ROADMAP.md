@@ -226,6 +226,19 @@ Goal: cover more equipment detail and suggest what to try next.
 - [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button, shown in two groups: "Adjust directly" on the bow, and "Equipment")
 - [ ] Recommendations that plan a sequence of changes, not only the next single step
 
+### Execution errors (idea, not scheduled)
+
+> **Nói đơn giản:** Giả lập lỗi kỹ thuật của người bắn: release dơ, tay cầm cung vặn, arm collapse, alignment sai. Thay vì một mũi tên "hoàn hảo", ứng dụng bắn thử vài chục mũi có sai số rồi vẽ cả cụm tên trên bia. Mục đích: thấy lỗi nào tạo dấu hiệu giống lỗi thiết bị, và thấy setup cân thì "dễ tha thứ" hơn setup lệch. Đây mới là ý tưởng, chưa lên lịch làm.
+
+Why it matters: a dirty release reads on the bare shaft much like a wrong spine, so archers change arrows when the problem is the hand. And the real reason to tune, a setup that forgives small mistakes, is something a single perfect arrow cannot show. Details and limits are in §37.
+
+- [ ] A group of simulated arrows on a target face, with one "consistency" control: each shot gets a small random error (§37)
+- [ ] Collapse, dirty release and bow hand torque as separate errors, each in three levels (none, slight, clear) rather than in millimetres
+- [ ] Each error as a constant part that moves the whole group and a varying part that widens it
+- [ ] The same target face as the target plot diagnosis of V0.4, so the model's group and the real one can be compared
+- [ ] Alignment and uneven finger pressure, once there are references for their size and direction
+- [ ] Wording that says "if you collapse, you would see this", never "you are collapsing"
+
 **Exit criteria:** every new parameter is in the Advanced tier with a default, Simple mode is unchanged, and each recommendation is one the landscape shows as an improvement.
 
 ---

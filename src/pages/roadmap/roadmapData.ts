@@ -263,6 +263,7 @@ export const ROADMAP: RoadmapPhase[] = [
       'Thêm chi tiết cho người tune sâu (từng thanh stabilizer, cách thả dây, barebow), và ứng dụng gợi ý nên thử đổi gì tiếp theo.',
     groups: [
       {
+        title: 'Thiết bị chi tiết và gợi ý',
         items: [
           todo('Tách stabilizer: thanh dài, thanh bên, extender, tạ'),
           todo('Thông số thả dây'),
@@ -272,6 +273,28 @@ export const ROADMAP: RoadmapPhase[] = [
             'Gợi ý tune có thứ tự ưu tiên, kèm nút thử ngay, chia hai nhóm: chỉnh trực tiếp và thiết bị',
           ),
           todo('Gợi ý cả một chuỗi bước, không chỉ bước kế tiếp'),
+        ],
+      },
+      {
+        title: 'Giả lập lỗi kỹ thuật (ý tưởng, chưa lên lịch)',
+        summary:
+          'Giả lập lỗi của người bắn: release dơ, tay cầm cung vặn, arm collapse, alignment sai. Thay vì một mũi tên "hoàn hảo", ứng dụng bắn thử vài chục mũi có sai số rồi vẽ cả cụm tên trên bia.',
+        note: 'Vì sao cần: release dơ tạo dấu hiệu trên bareshaft rất giống spine sai, nên người bắn dễ đi đổi tên trong khi vấn đề nằm ở tay. Và setup cân thì "dễ tha thứ" hơn setup lệch, điều mà một mũi tên hoàn hảo không cho thấy được.',
+        items: [
+          todo('Cụm tên giả lập trên bia, với một thanh "độ ổn định": mỗi mũi có một sai số nhỏ'),
+          todo(
+            'Ba lỗi riêng: collapse, release dơ, tay cầm cung vặn; mỗi lỗi ba mức, không nhập mm',
+          ),
+          todo('Mỗi lỗi gồm phần cố định làm cả cụm dời đi và phần thay đổi làm cụm tản ra'),
+          todo(
+            'Dùng chung mặt bia với tính năng chấm tên của V0.4, để so cụm mô hình với cụm thật',
+          ),
+          todo(
+            'Alignment và áp lực ngón không đều, khi đã có tài liệu về độ lớn và chiều ảnh hưởng',
+          ),
+          todo(
+            'Câu chữ kiểu "nếu bạn collapse thì sẽ thấy thế này", không phán "bạn đang collapse"',
+          ),
         ],
       },
     ],
