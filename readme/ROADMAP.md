@@ -2,13 +2,27 @@
 
 Phase tracker for the project. The specification lives in [recurve-tuning-simulator-spec.md](recurve-tuning-simulator-spec.md); section numbers below (§) refer to it.
 
-How to use this file:
+## Việc cần bạn làm (ghim)
+
+Những việc chỉ chủ dự án làm được: quyết định, cấp quyền, tìm tài liệu, xem bằng mắt. Xong việc nào thì tick, hết thì xóa dòng đó ở lần cập nhật sau.
+
+- [ ] Cho phép push các commit đang chờ để site được deploy, rồi mở site thật trên điện thoại và rà 10 tiêu chí ở spec §33. *Đây là việc cuối cùng của V0.1. Push lên master là site tự cập nhật.*
+- [ ] Xem khối "đang giả định" trong chế độ Cơ bản trên trình duyệt, nhất là trên điện thoại. *Khối này đã qua test nhưng chưa ai nhìn bằng mắt.*
+- [ ] Quyết định điểm cân của center shot: giữ 0 mm, dời ra ngoài khoảng 2,4 mm theo sách Easton, hay đổi nghĩa thông số thành "lệch so với vị trí chuẩn". *Hiện đặt center shot đúng như sách thì mô hình báo bareshaft lệch trái. Chi tiết ở tuning-references.md mục 4.2.*
+- [ ] Quyết định điểm cân của nocking point: giữ 4 mm hay nâng lên. *Các nguồn ghi từ 3 tới 13 mm; 4 mm nằm ở đầu thấp. Chi tiết ở tuning-references.md mục 4.3.*
+- [ ] Tìm bảng chọn spine của Easton (PDF) và đặt vào docs/. *Cần cho bài test đối chiếu vùng cân với bảng của nhà sản xuất, là điều kiện để xong V0.2.*
+- [ ] Tải bản PDF gốc sách Easton "Arrow Tuning and Maintenance Guide" (đủ 32 trang, có hình) và bản sạch sách của Murray Elliot, đặt vào docs/. *Bản lưu từ Scribd mất hết hình và thiếu trang; thiếu hình thì không làm được phần xé giấy.*
+- [ ] Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có. *Để các commit mới gắn với tài khoản ducjs.*
+
+## How to use this file
+
 - tick a box when the item is merged and working
 - update the status table when a phase starts or finishes
 - a phase is done only when its exit criteria are met, not when all boxes are ticked
 - each phase and milestone opens with a **Nói đơn giản** note: what it is for, without jargon
 - this file and the other project documents live in `readme/`; only `README.md` stays at the repository root, where GitHub shows it
 - the app has a Vietnamese roadmap page ("Lộ trình", `#roadmap`) built from `src/pages/roadmap/roadmapData.ts`. When an item here is added, removed or ticked, make the same change there; a test fails until both match
+- the pinned list above is for the project owner and is mirrored as `PINNED` in the same file, shown at the top of the roadmap page. Add a task when work is blocked on a decision, a permission or a document; the same test checks that both lists match
 
 ## Status
 

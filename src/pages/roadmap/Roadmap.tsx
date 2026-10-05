@@ -1,5 +1,6 @@
 import {
   AFTER_V1,
+  PINNED,
   ROADMAP,
   countItems,
   type RoadmapGroup,
@@ -41,38 +42,77 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
   )
 }
 
+function ItemMark({ done }: { done: boolean }) {
+  return (
+    <svg viewBox="0 0 20 20" className="mt-0.5 size-5" aria-hidden="true">
+      {done ? (
+        <>
+          <circle cx="10" cy="10" r="9" className="fill-ink" />
+          <path
+            d="M5.8 10.4l2.8 2.8 5.6-6"
+            fill="none"
+            className="stroke-surface"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </>
+      ) : (
+        <circle
+          cx="10"
+          cy="10"
+          r="8.25"
+          fill="none"
+          className="stroke-ink-muted"
+          strokeWidth="1.5"
+        />
+      )}
+    </svg>
+  )
+}
+
 function ItemRow({ item }: { item: RoadmapItem }) {
   return (
     <li className="grid grid-cols-[1.5rem_1fr] items-start gap-x-2">
-      <svg viewBox="0 0 20 20" className="mt-0.5 size-5" aria-hidden="true">
-        {item.done ? (
-          <>
-            <circle cx="10" cy="10" r="9" className="fill-ink" />
-            <path
-              d="M5.8 10.4l2.8 2.8 5.6-6"
-              fill="none"
-              className="stroke-surface"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </>
-        ) : (
-          <circle
-            cx="10"
-            cy="10"
-            r="8.25"
-            fill="none"
-            className="stroke-ink-muted"
-            strokeWidth="1.5"
-          />
-        )}
-      </svg>
+      <ItemMark done={item.done} />
       <span className={item.done ? undefined : 'text-ink-muted'}>
         <span className="sr-only">{item.done ? 'Đã xong: ' : 'Chưa làm: '}</span>
         {item.text}
       </span>
     </li>
+  )
+}
+
+/** What waits on the project owner. Kept above the phases so it is seen first. */
+function Pinned() {
+  const open = PINNED.filter((task) => !task.done).length
+  if (PINNED.length === 0) return null
+  return (
+    <section
+      aria-labelledby="pinned-title"
+      className="border-gold bg-gold/10 mt-6 max-w-3xl rounded-lg border-l-4 px-4 py-3"
+    >
+      <h2 id="pinned-title" className="font-display text-xl font-semibold">
+        Việc cần bạn làm
+      </h2>
+      <p className="text-ink-muted text-sm">
+        {open === 0
+          ? 'Không còn việc nào đang chờ bạn.'
+          : `${open} việc đang chờ bạn: quyết định, cấp quyền, tìm tài liệu, xem bằng mắt.`}
+      </p>
+      <ul className="mt-3 grid gap-3">
+        {PINNED.map((task) => (
+          <li key={task.text} className="grid grid-cols-[1.5rem_1fr] items-start gap-x-2">
+            <ItemMark done={task.done} />
+            <span>
+              <span className="sr-only">{task.done ? 'Đã xong: ' : 'Chưa làm: '}</span>
+              <span className={task.done ? 'line-through' : 'font-medium'}>{task.text}</span>
+              <span className="text-ink-muted block text-sm">{task.why}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
@@ -197,6 +237,8 @@ export function Roadmap() {
           </p>
         </div>
       </header>
+
+      <Pinned />
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start">
         <nav aria-label="Các giai đoạn" className="lg:sticky lg:top-4">

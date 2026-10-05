@@ -23,6 +23,48 @@ export type RoadmapPhase = {
   exit: string
 }
 
+/** Something only the project owner can do: a decision, a permission, a document. */
+export type PinnedTask = RoadmapItem & { why: string }
+
+// Mirrors the pinned list at the top of readme/ROADMAP.md, in the same order.
+export const PINNED: PinnedTask[] = [
+  {
+    text: 'Cho phép push các commit đang chờ để site được deploy, rồi mở site thật trên điện thoại và rà 10 tiêu chí ở spec §33',
+    why: 'Đây là việc cuối cùng của V0.1. Push lên master là site tự cập nhật.',
+    done: false,
+  },
+  {
+    text: 'Xem khối "đang giả định" trong chế độ Cơ bản trên trình duyệt, nhất là trên điện thoại',
+    why: 'Khối này đã qua test nhưng chưa ai nhìn bằng mắt.',
+    done: false,
+  },
+  {
+    text: 'Quyết định điểm cân của center shot: giữ 0 mm, dời ra ngoài khoảng 2,4 mm theo sách Easton, hay đổi nghĩa thông số thành "lệch so với vị trí chuẩn"',
+    why: 'Hiện đặt center shot đúng như sách thì mô hình báo bareshaft lệch trái. Chi tiết ở tuning-references.md mục 4.2.',
+    done: false,
+  },
+  {
+    text: 'Quyết định điểm cân của nocking point: giữ 4 mm hay nâng lên',
+    why: 'Các nguồn ghi từ 3 tới 13 mm; 4 mm nằm ở đầu thấp. Chi tiết ở tuning-references.md mục 4.3.',
+    done: false,
+  },
+  {
+    text: 'Tìm bảng chọn spine của Easton (PDF) và đặt vào docs/',
+    why: 'Cần cho bài test đối chiếu vùng cân với bảng của nhà sản xuất, là điều kiện để xong V0.2.',
+    done: false,
+  },
+  {
+    text: 'Tải bản PDF gốc sách Easton "Arrow Tuning and Maintenance Guide" (đủ 32 trang, có hình) và bản sạch sách của Murray Elliot, đặt vào docs/',
+    why: 'Bản lưu từ Scribd mất hết hình và thiếu trang; thiếu hình thì không làm được phần xé giấy.',
+    done: false,
+  },
+  {
+    text: 'Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có',
+    why: 'Để các commit mới gắn với tài khoản ducjs.',
+    done: false,
+  },
+]
+
 const done = (text: string): RoadmapItem => ({ text, done: true })
 const todo = (text: string): RoadmapItem => ({ text, done: false })
 

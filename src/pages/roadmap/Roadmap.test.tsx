@@ -2,7 +2,7 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Roadmap } from './Roadmap.tsx'
-import { ROADMAP, countItems } from './roadmapData.ts'
+import { PINNED, ROADMAP, countItems } from './roadmapData.ts'
 
 afterEach(cleanup)
 
@@ -14,6 +14,19 @@ describe('Roadmap page', () => {
 
     const all = countItems(ROADMAP.flatMap((phase) => phase.groups))
     expect(screen.getByText(String(all.total))).toBeTruthy()
+  })
+
+  it('pins the tasks that wait on the owner above the phases', () => {
+    render(<Roadmap />)
+    const pinned = screen.getByRole('region', { name: 'Việc cần bạn làm' })
+    for (const task of PINNED) {
+      expect(within(pinned).getByText(task.text)).toBeTruthy()
+      expect(within(pinned).getByText(task.why)).toBeTruthy()
+    }
+    const firstPhase = document.getElementById(ROADMAP[0]!.id)!
+    expect(
+      pinned.compareDocumentPosition(firstPhase) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
   })
 
   it('lists every phase in the side navigation and as a section', () => {
