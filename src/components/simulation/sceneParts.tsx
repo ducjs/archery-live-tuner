@@ -68,15 +68,18 @@ type ArrowProps = {
 
 /** One arrow in flight, with the path behind it. */
 export function FlyingArrow({ pose, trail, bare = false }: ArrowProps) {
+  // Point and vanes keep their proportion to the shaft.
+  const pointWidth = pose.length * 0.03
+  const vaneHeight = pose.length * 0.06
   const point = [
     pointOnArrow(pose, 1.03),
-    pointOnArrow(pose, 0.95, 3.2),
-    pointOnArrow(pose, 0.95, -3.2),
+    pointOnArrow(pose, 0.95, pointWidth),
+    pointOnArrow(pose, 0.95, -pointWidth),
   ]
   const vanes = [-1, 1].map((sideOfShaft) => [
     pointOnArrow(pose, 0.05),
-    pointOnArrow(pose, 0.07, sideOfShaft * 7),
-    pointOnArrow(pose, 0.15, sideOfShaft * 7),
+    pointOnArrow(pose, 0.07, sideOfShaft * vaneHeight),
+    pointOnArrow(pose, 0.15, sideOfShaft * vaneHeight),
     pointOnArrow(pose, 0.18),
   ])
   const tone = bare ? 'stroke-ink-muted' : 'stroke-ink'
@@ -107,7 +110,7 @@ export function FlyingArrow({ pose, trail, bare = false }: ArrowProps) {
       <path
         d={shaftPath(pose)}
         className={tone}
-        strokeWidth={bare ? 2.5 : 3}
+        strokeWidth={bare ? 2 : 2.5}
         vectorEffect="non-scaling-stroke"
       />
       <polygon

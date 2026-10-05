@@ -441,7 +441,9 @@ một chiều chỉ được tính khi thành phần của nó > 0.4 · |offset|
 Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 
 - Chuyển động chậm: tốc độ thường là chậm 12 lần so với thật; các mức là 1/48, 1/24, 1/12, 1/6 và tốc độ thật.
-- Phóng đại độ uốn: 1× tới 5×, mặc định 3×. Hình vẽ không theo tỉ lệ.
+- Cung và mũi tên vẽ cùng một tỉ lệ: cung 68 in cao 187 đơn vị, nên tên 27 in dài khoảng 74 đơn vị. Cự ly tới bia, độ uốn và độ trôi mỗi thứ có tỉ lệ riêng, nên toàn cảnh vẫn không theo tỉ lệ.
+- Phóng đại độ uốn: 1× tới 5×, mặc định 2×. Ở 1×, tên cân (`flexAmplitude` 0.4) uốn lệch 3% chiều dài thân; công thức là `flex · 0.075 · chiều dài · mức phóng đại`.
+- Góc nhìn ngang kéo giãn chiều cao nhiều hơn chiều dài (tối đa 0,2 đơn vị mỗi mm, cung bay cao nhất 60 đơn vị), nên mũi tên trông chếch hơn góc bắn thật vài độ.
 - Dạng uốn của thân tên theo mode 1: điểm cách nock một phần `s` (0..1) lệch ngang `bend · cos(2π · (s − ½))`, tức giữa thân đi một phía, hai đầu đi phía kia.
 - Vị trí giữa hai mẫu đường bay được nội suy tuyến tính.
 

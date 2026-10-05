@@ -6,7 +6,9 @@ import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
 import { SCENE } from './timing.ts'
 
 // Visual amplification per unit of exaggeration. The drawing is not to scale.
-const BEND_PIXELS = 9
+// Sideways movement of the middle of the shaft, as a share of its length, at
+// full flex. A matched arrow (flex 0.4) bends by 3 % of its length at 1×.
+const BEND_SHARE = 0.075
 const ANGLE_GAIN = 3
 const DRIFT_PIXELS = 62
 const TRAIL_STEP = 6
@@ -52,7 +54,7 @@ export function TopView({ result, bare, handedness, time, exaggeration }: Props)
       centerY: center.y,
       length: SCENE.arrowLength,
       angle: (now.yaw ?? 0) * ANGLE_GAIN * exaggeration,
-      bend: (now.flex ?? 0) * BEND_PIXELS * exaggeration,
+      bend: (now.flex ?? 0) * BEND_SHARE * SCENE.arrowLength * exaggeration,
     }
     const trail = flight.trajectory
       .filter((point, index) => index % TRAIL_STEP === 0 && point.t <= time)
@@ -85,9 +87,9 @@ export function TopView({ result, bare, handedness, time, exaggeration }: Props)
         vectorEffect="non-scaling-stroke"
         transform={`translate(${SCENE.bowX + 14} ${SCENE.centerY + riserOffset})`}
       >
-        <line x1="6" y1="0" x2="64" y2="0" />
-        <line x1="-4" y1="0" x2="-30" y2="-17" />
-        <line x1="-4" y1="0" x2="-30" y2="17" />
+        <line x1="6" y1="0" x2="76" y2="0" />
+        <line x1="-4" y1="0" x2="-28" y2="-15" />
+        <line x1="-4" y1="0" x2="-28" y2="15" />
         <rect
           x="-6"
           y="-5"

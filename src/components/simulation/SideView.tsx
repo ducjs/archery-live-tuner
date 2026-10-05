@@ -5,9 +5,12 @@ import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
 import { SCENE } from './timing.ts'
 
 // Visual amplification. The drawing is not to scale.
-const MAX_PIXELS_PER_MM = 0.3
-/** Tallest the arc may be drawn, so a long shot still fits in the frame. */
-const MAX_RISE_PIXELS = 105
+const MAX_PIXELS_PER_MM = 0.2
+/**
+ * Tallest the arc may be drawn. Height is stretched far more than distance, so
+ * a tall arc tilts the arrow well beyond its real launch angle of a few degrees.
+ */
+const MAX_RISE_PIXELS = 60
 const ANGLE_GAIN = 3
 const DIRECTION_STEP = 0.004
 const TRAIL_STEP = 6
