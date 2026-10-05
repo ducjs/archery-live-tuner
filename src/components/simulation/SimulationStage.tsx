@@ -6,7 +6,7 @@ import { SideView } from './SideView.tsx'
 import { MAX_EXAGGERATION, MIN_EXAGGERATION, SLOW_MOTION, SPEEDS } from './timing.ts'
 import { TopView } from './TopView.tsx'
 
-export type FlightViewKind = 'top' | 'side'
+export type FlightViewKind = 'top' | 'side' | 'both'
 
 type FlightViewProps = {
   view: FlightViewKind
@@ -48,31 +48,44 @@ export function FlightView({
   exaggeration,
 }: FlightViewProps) {
   const time = elapsed / SLOW_MOTION
+  const both = view === 'both'
+  // Keeps the drawing from pushing everything else off a wide, short screen.
+  const heightLimit = both ? '[&>svg]:max-h-[30vh]' : '[&>svg]:max-h-[46vh]'
+  const frameClass = `border-line bg-surface relative overflow-hidden rounded-lg border ${heightLimit}`
+  const legend = bare && (
+    <div className="text-ink-muted absolute top-2 right-8 flex gap-4 text-sm">
+      <LegendItem label="Fletched" />
+      <LegendItem label="Bare shaft" bare />
+    </div>
+  )
+
   return (
-    <div className="border-line bg-surface relative overflow-hidden rounded-lg border">
-      {view === 'top' ? (
-        <TopView
-          result={result}
-          bare={bare}
-          handedness={handedness}
-          time={time}
-          exaggeration={exaggeration}
-        />
-      ) : (
-        <SideView result={result} bare={bare} time={time} exaggeration={exaggeration} />
-      )}
-      <span className="text-ink-muted absolute top-2 left-3 text-sm">
-        {view === 'top' ? "Archer's left" : 'High'}
-      </span>
-      <span className="text-ink-muted absolute bottom-2 left-3 text-sm">
-        {view === 'top' ? "Archer's right" : 'Low'}
-      </span>
-      {bare && (
-        <div className="text-ink-muted absolute top-2 right-8 flex gap-4 text-sm">
-          <LegendItem label="Fletched" />
-          <LegendItem label="Bare shaft" bare />
-        </div>
-      )}
+    // Side by side when there is room for two readable drawings, stacked otherwise.
+    <div className="@container">
+      <div className={both ? 'grid gap-2 @4xl:grid-cols-2' : undefined}>
+        {view !== 'side' && (
+          <div className={frameClass}>
+            <TopView
+              result={result}
+              bare={bare}
+              handedness={handedness}
+              time={time}
+              exaggeration={exaggeration}
+            />
+            <span className="text-ink-muted absolute top-2 left-3 text-sm">Archer's left</span>
+            <span className="text-ink-muted absolute bottom-2 left-3 text-sm">Archer's right</span>
+            {legend}
+          </div>
+        )}
+        {view !== 'top' && (
+          <div className={frameClass}>
+            <SideView result={result} bare={bare} time={time} exaggeration={exaggeration} />
+            <span className="text-ink-muted absolute top-2 left-3 text-sm">High</span>
+            <span className="text-ink-muted absolute bottom-2 left-3 text-sm">Low</span>
+            {!both && legend}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -80,7 +93,14 @@ export function FlightView({
 const VIEWS = [
   { value: 'top', label: 'Top' },
   { value: 'side', label: 'Side' },
+  { value: 'both', label: 'Both' },
 ]
+
+const AMPLIFIED: Record<FlightViewKind, string> = {
+  top: 'Bending and drift are',
+  side: 'The arrow angle is',
+  both: 'Bending, drift and arrow angle are',
+}
 
 const SPEED_OPTIONS = SPEEDS.map((speed) => ({ value: String(speed), label: `${speed}×` }))
 
@@ -114,7 +134,7 @@ export function PlaybackControls({
   onSettingsChange,
 }: PlaybackControlsProps) {
   const amplifyId = useId()
-  const subject = settings.view === 'top' ? 'Bending and drift are' : 'The arrow angle is'
+  const subject = AMPLIFIED[settings.view]
 
   return (
     <div className="grid gap-3">

@@ -123,11 +123,11 @@ export function ResultPanel({ result, comparison, handedness }: ResultPanelProps
   const reading = comparison && bareShaftReading(comparison, handedness)
 
   return (
-    <section aria-labelledby="result-heading">
+    <section aria-labelledby="result-heading" className="@container">
       <h2 id="result-heading" className="font-display text-xl font-semibold">
         Model result
       </h2>
-      <dl className="mt-3 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+      <dl className="mt-3 grid gap-x-8 gap-y-5 @lg:grid-cols-2">
         <DivergingGauge
           title="Dynamic behavior"
           word={WORDS[classification.stiffness]!}

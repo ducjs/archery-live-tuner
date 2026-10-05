@@ -75,6 +75,8 @@ describe('FlightView', () => {
   it.each([
     ['top', /Top view/],
     ['side', /Side view/],
+    ['both', /Top view/],
+    ['both', /Side view/],
   ] as const)('draws the %s view at any point of the flight', (view, name) => {
     for (const elapsed of [0, 1.7, 99]) {
       render(

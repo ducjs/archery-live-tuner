@@ -37,7 +37,7 @@ export function Simulator() {
   const playback = usePlayback(flightSeconds(result), HOLD_SECONDS, view.speed)
 
   return (
-    <main className="mx-auto max-w-6xl px-4 pt-5 pb-12 sm:px-6">
+    <main className="px-4 pt-5 pb-12 sm:px-6 lg:px-8">
       <header>
         <h1 className="font-display text-3xl leading-tight font-semibold">
           Recurve tuning simulator
@@ -48,8 +48,11 @@ export function Simulator() {
       </header>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[22rem_1fr] lg:items-start lg:gap-8">
-        {/* One column on a wide screen. On a phone its parts are placed around the inputs. */}
-        <div className="contents lg:sticky lg:top-4 lg:order-2 lg:block lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+        {/*
+          On a phone its parts are placed around the inputs. On a wide screen it is one
+          column, and on a very wide one the result moves beside the animation.
+        */}
+        <div className="contents lg:sticky lg:top-4 lg:order-2 lg:block lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto 2xl:grid 2xl:grid-cols-[minmax(0,1fr)_24rem] 2xl:grid-rows-[auto_1fr] 2xl:items-start 2xl:gap-x-8">
           {/* The animation stays in view on a phone while a slider is dragged. */}
           <div className="bg-paper sticky top-0 z-10 order-1 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0">
             <FlightView
@@ -75,7 +78,7 @@ export function Simulator() {
               onSettingsChange={mode === 'advanced' ? setAdvancedView : undefined}
             />
           </div>
-          <div className="order-4 min-w-0 lg:mt-6">
+          <div className="order-4 min-w-0 lg:mt-6 2xl:col-start-2 2xl:row-span-2 2xl:row-start-1 2xl:mt-0">
             <ResultPanel
               result={result}
               comparison={bareShaft ? comparison : undefined}

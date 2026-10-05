@@ -83,7 +83,7 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
         fill="none"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
-        transform={`translate(${SCENE.bowX} ${SCENE.centerY})`}
+        transform={`translate(${SCENE.bowX} ${SCENE.centerY}) scale(0.86)`}
       >
         <line x1="1" y1="-103" x2="1" y2="103" strokeWidth="1" />
         <path d="M26 -34C22 -68 6 -84 1 -100q1 -8 9 -9" strokeWidth="3" />
