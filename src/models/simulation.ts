@@ -80,10 +80,21 @@ export type LaunchGeometry = {
   nockAngle: number
 }
 
+/**
+ * mm from the center at which an arrow lands when its tendency is at full
+ * scale and nothing steers it back. The same for a fletched arrow and a bare
+ * shaft of one setup, so a drawing can put both on one scale.
+ */
+export type FullDrift = {
+  lateral: number
+  vertical: number
+}
+
 export type SimulationResult = {
   setupId: string
   modelVersion: string
   launch: LaunchGeometry
+  fullDrift: FullDrift
   classification: TuningClassification
   metrics: SimulationMetrics
   trajectory: TrajectoryPoint[]

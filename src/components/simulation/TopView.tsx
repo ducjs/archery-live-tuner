@@ -3,7 +3,7 @@ import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
-import { DRIFT_PIXELS, SCENE, drawBack, launchEase } from './timing.ts'
+import { SCENE, drawBack, driftPixels, launchEase } from './timing.ts'
 
 // Visual amplification per unit of exaggeration. The drawing is not to scale.
 // Sideways movement of the middle of the shaft, as a share of its length, at
@@ -23,26 +23,20 @@ type Props = {
   exaggeration: number
 }
 
-/** mm of lateral drift at the target that a full-scale deviation produces. */
-function fullDrift(result: SimulationResult): number {
-  const deviation = Math.abs(result.metrics.lateralDeviation)
-  return deviation > 1e-9 ? Math.abs(result.trajectory.at(-1)!.z ?? 0) / deviation : 0
-}
-
 /** The flight seen from above. This is the view that shows the shaft bending. */
 export function TopView({ result, bare, handedness, time, exaggeration }: Props) {
   const m = useMessages()
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
-  // Both arrows share one scale, so their offset from each other is drawn true.
-  const driftScale = Math.max(fullDrift(result), bare ? fullDrift(bare) : 0)
+  // One scale for both arrows, whether the bare shaft is shown or not.
+  const driftScale = driftPixels(distance) / result.fullDrift.lateral
 
   const startX = SCENE.bowX + SCENE.arrowLength / 2
   const endX = SCENE.targetX - SCENE.arrowLength / 2
   const project = (x: number, z: number): ScreenPoint => ({
     x: startX + (x / distance) * (endX - startX),
     // Shooting to the right of the screen, so the archer's right is down.
-    y: SCENE.centerY + (driftScale > 0 ? z / driftScale : 0) * DRIFT_PIXELS,
+    y: SCENE.centerY + z * driftScale,
   })
 
   const fly = (flight: SimulationResult) => {

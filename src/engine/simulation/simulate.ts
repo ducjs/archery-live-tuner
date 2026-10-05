@@ -12,7 +12,11 @@ import { launchSpeed, powerStroke, relativeBowInertia, timeOnString } from './bo
 import { classify } from './classification.ts'
 import { stiffnessMismatch } from './dynamicSpine.ts'
 import { plungerBehaviorShift, plungerLateralPush } from './plungerModel.ts'
-import { buildTrajectory, type TrajectoryOptions } from './trajectory.ts'
+import {
+  DEFAULT_TRAJECTORY_OPTIONS,
+  buildTrajectory,
+  type TrajectoryOptions,
+} from './trajectory.ts'
 
 export type SetupInput = Pick<TuningSetup, 'id' | 'bow' | 'arrow'>
 
@@ -182,6 +186,7 @@ export function createHeuristicModel(coefficients: Coefficients = HEURISTIC_V0):
       options?.bareShaft,
     )
     const { bow, arrow } = setup
+    const distance = (options?.trajectory ?? DEFAULT_TRAJECTORY_OPTIONS).distance
     return {
       setupId: setup.id,
       modelVersion: coefficients.version,
@@ -189,6 +194,10 @@ export function createHeuristicModel(coefficients: Coefficients = HEURISTIC_V0):
         powerStroke: powerStroke(bow),
         timeOnString: timeOnString(bow, arrow, coefficients),
         nockAngle: Math.atan2(bow.nockingPointHeight, bow.braceHeight),
+      },
+      fullDrift: {
+        lateral: coefficients.lateral.driftSlope * distance,
+        vertical: coefficients.vertical.driftSlope * distance,
       },
       classification,
       metrics,

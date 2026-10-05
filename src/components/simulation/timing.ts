@@ -54,10 +54,15 @@ export function launchEase(time: number): number {
 
 /**
  * SVG units from the center at which an arrow lands when its lateral or
- * vertical tendency is at full scale. The model gives tendencies, not
- * centimetres, so this is for reading the direction and comparing two arrows.
+ * vertical tendency is at full scale and nothing steers it back: a little
+ * outside the target face. A bare shaft at full scale then misses the face,
+ * and a fletched arrow, which is steered back, stays on it. The model gives
+ * tendencies, not centimetres, so this is for reading the direction and
+ * comparing two arrows.
  */
-export const DRIFT_PIXELS = 62
+export function driftPixels(distance: number): number {
+  return 1.4 * (targetFaceDiameter(distance) / 2) * EQUIPMENT_SCALE
+}
 
 /** Shared drawing area of the top and side views, in SVG units. */
 export const SCENE = {

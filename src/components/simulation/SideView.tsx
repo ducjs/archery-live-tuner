@@ -2,7 +2,7 @@ import { useMessages } from '../../i18n/useMessages.ts'
 import type { SimulationResult, TrajectoryPoint } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
-import { DRIFT_PIXELS, SCENE, drawBack, launchEase } from './timing.ts'
+import { SCENE, drawBack, driftPixels, launchEase } from './timing.ts'
 
 // Visual amplification. The drawing is not to scale.
 /**
@@ -62,18 +62,13 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
   )
   const pixelsPerMm = rise / apex
 
-  // As in the top view, a full-scale vertical tendency lands DRIFT_PIXELS from
-  // the center, and both arrows share the scale so their gap is drawn true.
-  const fullDrift = Math.max(
-    ...[result, ...(bare ? [bare] : [])].map((flight) => {
-      const tendency = Math.abs(flight.metrics.verticalTendency)
-      return tendency > 1e-9 ? Math.abs(landing(flight)) / tendency : 0
-    }),
-  )
+  // As in the top view: one scale for both arrows, whether the bare shaft is
+  // shown or not.
+  const driftScale = driftPixels(distance) / result.fullDrift.vertical
 
   const project = (flight: SimulationResult, point: TrajectoryPoint): ScreenPoint => {
     const along = point.x / distance
-    const drift = fullDrift > 0 ? (landing(flight) / fullDrift) * DRIFT_PIXELS * along : 0
+    const drift = landing(flight) * driftScale * along
     return {
       x: startX + along * (endX - startX),
       y: SCENE.centerY - arc(flight, point) * pixelsPerMm - drift,

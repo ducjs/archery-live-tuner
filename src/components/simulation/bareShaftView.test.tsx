@@ -45,6 +45,32 @@ describe('bare shaft in the views', () => {
     expect(container.innerHTML).not.toContain('NaN')
   })
 
+  it.each(['top', 'side'] as const)(
+    'keeps the fletched arrow in place in the %s view when the bare shaft is shown',
+    (view) => {
+      // Off in both directions: weak, and a nocking point far too low.
+      const off = setValue(weak, getParameter('bow.nockingPointHeight'), -5)
+      const flown = heuristicModel.compareBareShaft(off)
+      const fletchedShaft = (bare: boolean) => {
+        const { container } = render(
+          <FlightView
+            view={view}
+            result={flown.fletched}
+            bare={bare ? flown.bare : undefined}
+            handedness="RH"
+            elapsed={99}
+            exaggeration={2}
+          />,
+        )
+        const shafts = container.querySelectorAll('svg[role="img"] path[d^="M"][d*="L"]')
+        const d = shafts[shafts.length - 1]!.getAttribute('d')
+        cleanup()
+        return d
+      }
+      expect(fletchedShaft(true)).toBe(fletchedShaft(false))
+    },
+  )
+
   it('toggles from the playback controls', async () => {
     const onBareShaftChange = vi.fn()
     render(
