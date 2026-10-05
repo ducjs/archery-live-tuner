@@ -171,6 +171,12 @@ export const ROADMAP: RoadmapPhase[] = [
           done('Bảng kết quả, thêm xu hướng dọc (nock thấp / nock cao)'),
           done('Kết quả cập nhật ngay khi đang kéo thanh trượt'),
           done('Bareshaft bay cùng tên có cánh, kèm lời đọc kết quả'),
+          done(
+            'Một điểm chạm: tên có cánh coi như đã chỉnh thước vào tâm vàng, bareshaft vẽ theo độ lệch so với nó, đúng như phép thử bareshaft ngoài bãi',
+          ),
+          todo(
+            'Chọn giữa hai cách vẽ điểm chạm. "Một điểm chạm" là cách trên, vẫn là mặc định. "Hai điểm chạm" để cả hai mũi tên cắm đúng chỗ mô hình tính, nên xu hướng lệch của tên có cánh cũng hiện thành trượt tâm',
+          ),
         ],
       },
       {
