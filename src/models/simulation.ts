@@ -29,6 +29,10 @@ export type SimulationMetrics = {
   flexAmplitude: number
   /** 0..1 */
   oscillation: number
+  /** Hz, first bending mode of the shaft */
+  oscillationFrequency: number
+  /** 1/s, how fast fletching damps the oscillation */
+  oscillationDecay: number
   /** -1 = far left, +1 = far right */
   lateralDeviation: number
   /** rad */
@@ -39,6 +43,8 @@ export type SimulationMetrics = {
   stabilityTime: number
   /** 0..1 */
   clearanceRisk: number
+  /** mm/s, estimated */
+  launchSpeed: number
 }
 
 export type SimulationResult = {

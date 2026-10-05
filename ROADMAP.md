@@ -12,7 +12,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1, M2 done; M3 next) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M3 done; M4 next) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -55,12 +55,12 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 
 > **Nói đơn giản:** Bộ não của ứng dụng. Nhận một setup, trả lời: tên đang yếu hay cứng, dao động nhiều hay ít, lệch trái hay phải, có dễ chạm cung không, và đường bay trông thế nào. Chưa có giao diện; đúng sai kiểm bằng test (ví dụ: tăng point weight thì tên phải yếu đi).
 
-- [ ] `SimulationModel` interface
-- [ ] Heuristic model with normalized factors (§10), coefficients marked as heuristic
-- [ ] Handedness mirroring
-- [ ] Classification: stiffness, oscillation, lateral, clearance (§12)
-- [ ] Trajectory generator (§9)
-- [ ] Consistency tests 1–7 (§25)
+- [x] `SimulationModel` interface
+- [x] Heuristic model with normalized factors (§10), coefficients marked as heuristic
+- [x] Handedness mirroring
+- [x] Classification: stiffness, oscillation, lateral, clearance (§12)
+- [x] Trajectory generator (§9)
+- [x] Consistency tests 1–7 (§25), with property tests over random valid setups
 
 ### M4. Input UI
 
@@ -112,10 +112,10 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 Goal: replace the blind heuristic core with a cheap physical basis. UI changes are minimal.
 
 - [ ] Coefficients moved to versioned JSON, `modelVersion` in results (§34.7)
-- [ ] Bending stiffness `EI` from static spine (§34.1)
-- [ ] First bending mode frequency from `EI`, mass and length
+- [x] Bending stiffness `EI` from static spine (§34.1) (done early in M3, drives the animation frequency)
+- [x] First bending mode frequency from `EI`, mass and length (end-mass correction is still heuristic)
 - [ ] Clearance from oscillation phase vs time on string (§34.2)
-- [ ] String parameters feed the model (§5)
+- [x] String parameters feed the model (§5)
 - [ ] Derived metrics: FOC, grains per pound with warning, estimated speed (§34.4)
 - [ ] Virtual tuning tests: bareshaft, paper tear, walk-back (§34.3)
 - [ ] Spine chart sanity test (§25 Test 8)
