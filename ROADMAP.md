@@ -11,7 +11,7 @@ How to use this file:
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1 done, M2 next) |
+| V0.1 | Basic simulator (MVP) | In progress (M1, M2 done; M3 next) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -36,11 +36,11 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [ ] Folder structure from §24 (folders appear as their first files are written)
 
 ### M2. Data models and utilities
-- [ ] `BowSetup`, `ArrowSetup`, `TuningSetup`, `SimulationResult` types (§5, §6, §20)
-- [ ] Parameter metadata table: label, unit, bounds, default, tier (§4.1)
-- [ ] Unit conversion utilities (§21)
-- [ ] Zod validation with bounds (§22)
-- [ ] Development reference setup as default profile (§19)
+- [x] `BowSetup`, `ArrowSetup`, `TuningSetup`, `SimulationResult` types (§5, §6, §20)
+- [x] Parameter metadata table: label, unit, bounds, default, tier (§4.1)
+- [x] Unit conversion utilities (§21)
+- [x] Zod validation with bounds (§22), generated from the parameter table
+- [x] Development reference setup as default profile (§19)
 
 ### M3. Engine v0
 - [ ] `SimulationModel` interface
