@@ -100,7 +100,7 @@ The simulation engine must be usable independently of React.
 | Lint | oxlint + Prettier | `no-restricted-imports` blocks `engine/`, `models/`, `utils/`, `storage/` from importing React or UI code |
 | i18n | Own typed dictionaries (`src/i18n/en.ts`, `vi.ts`) | Vietnamese + English. The compiler rejects a dictionary with a missing text; i18next was not needed for two languages |
 | PWA | vite-plugin-pwa | Offline use at the range |
-| Deploy | Cloudflare Pages or GitHub Pages | Static, no backend |
+| Deploy | GitHub Pages, through a GitHub Actions workflow | Static, no backend. Relative asset paths, so any static host works |
 | Later | React Three Fiber + Three.js | Only for a future 3D mode |
 
 Framer Motion is not needed: the main animation runs on `requestAnimationFrame`, and CSS transitions cover UI transitions.

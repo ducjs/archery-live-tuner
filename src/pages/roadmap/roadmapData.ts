@@ -145,7 +145,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done('Hai ngôn ngữ: tiếng Việt và tiếng Anh, đổi ngay trên thanh trên cùng'),
           done('Đổi đơn vị hiển thị: lb, inch, grain hoặc kg, cm, gram'),
           done('Lời nhắc về giới hạn của mô hình, ở cuối trang mô phỏng'),
-          todo('Đưa lên mạng với đường link công khai (để sau)'),
+          todo(
+            'Đưa lên mạng với đường link công khai. Đã sẵn sàng cho GitHub Pages, còn thiếu repo trên GitHub và lần push đầu',
+          ),
         ],
       },
     ],

@@ -38,6 +38,14 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 | `npm run format` | Format source files with Prettier |
 | `npm run build` | Type-check and build for production |
 
+## Deploy
+
+The app is static and can be served from any folder: the build uses relative paths, and pages are picked by the `#` part of the address.
+
+GitHub Pages: `.github/workflows/deploy.yml` lints, tests, builds and publishes on every push to `master`. One-time setup in the repository: Settings → Pages → Source → "GitHub Actions".
+
+Anywhere else: run `npm run build` and upload the `dist/` folder.
+
 ## Layout
 
 ```text

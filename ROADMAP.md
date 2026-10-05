@@ -123,7 +123,7 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [x] i18n: Vietnamese + English, with our own typed dictionaries instead of i18next. The simulator follows the browser language at first and remembers the choice. The roadmap and previews pages stay Vietnamese only
 - [x] Unit toggle: lb / inch / grain or kg / cm / gram, for inputs, suggestions, saved setups and the comparison. Setups are stored in internal units either way
 - [x] Scientific disclaimer (§26), at the foot of the simulator, next to the note under the model result
-- [ ] Deploy to static hosting (left for later, on request)
+- [ ] Deploy to static hosting. Ready but not live: the build uses relative paths and `.github/workflows/deploy.yml` tests, builds and publishes to GitHub Pages on every push to `master`. Still needed: a GitHub repository, a push, and Pages set to "GitHub Actions"
 
 **Exit criteria:** all ten points of §33 pass, and the engine runs in tests without React.
 
