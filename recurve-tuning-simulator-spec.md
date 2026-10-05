@@ -762,6 +762,22 @@ Possible changes:
 
 All recommendations must be labelled as model suggestions, not guaranteed tuning advice.
 
+## 17.1 How suggestions are ranked
+
+Each suggestion is one change to one parameter. The engine tries each parameter over a limited range, keeps the value that the model scores as closest to tuned, and drops changes that barely help. The list is ordered by improvement divided by effort:
+
+```text
+adjust on the bow      (nocking point, plunger, center shot, brace height, tiller, draw weight)
+change an arrow part   (point weight, nock weight)
+needs new arrows       (spine, arrow length)
+```
+
+So a free adjustment that helps is listed before a purchase that helps more. Every item shows what the model reports after the change and has a "Try it" action that applies it. In Simple mode only Simple parameters are suggested.
+
+## 17.2 Diagnosis from a target plot (V0.4)
+
+The user marks where fletched arrows and bare shafts landed on a target face, as in a scoring app. Together with the entered setup, treated as approximate, the app reads the bare shaft offset from the fletched group and suggests what to adjust first. Here the evidence is the real target, and the model only helps choose between possible causes. A bare shaft offset that is small compared with the group spread must be reported as not conclusive.
+
 ---
 
 # 18. Real-world calibration

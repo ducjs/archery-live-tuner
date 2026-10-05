@@ -181,6 +181,17 @@ Goal: users record what really happened, and the model adjusts to it.
 - [ ] Personal calibrated coefficient set, switchable with the base set
 - [ ] Export observations
 
+### Target plot diagnosis
+
+> **Nói đơn giản:** Giống app ghi điểm: chấm vị trí từng mũi tên trên bia, đánh dấu mũi nào là bareshaft, mũi nào có cánh. Ứng dụng so cụm bareshaft với cụm fletched, kết hợp với setup đã nhập (coi như gần đúng), rồi đoán nguyên nhân và gợi ý nên chỉnh gì trước. Khác với gợi ý hiện tại ở chỗ: dữ liệu đến từ bia thật, không phải từ mô hình tự đoán.
+
+- [ ] Target face to tap arrow positions, with distance and face size
+- [ ] Mark each arrow as fletched or bare shaft; several ends can be added up
+- [ ] Group centers and spread; bare shaft offset from the fletched group, in cm and in clock direction
+- [ ] Reading that separates tuning from the archer: a bare shaft offset that is small against the group spread is reported as "not conclusive"
+- [ ] Diagnosis that starts from the observed offset, uses the entered setup to choose between causes (spine, plunger, center shot, nocking point), and ranks the changes
+- [ ] Observed offset stored as a real-world observation, so it also feeds calibration
+
 **Exit criteria:** after a user logs observations for several setups, the calibrated model matches those observations better than the base model, and the user can always switch back to the base model.
 
 ---
@@ -195,7 +206,8 @@ Goal: cover more equipment detail and suggest what to try next.
 - [ ] Release parameters (§7)
 - [ ] Barebow support (§1)
 - [ ] Extra arrow detail: point length, fletching position (§6)
-- [ ] Recommendation engine, labelled as model suggestions (§17)
+- [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button)
+- [ ] Recommendations that plan a sequence of changes, not only the next single step
 
 **Exit criteria:** every new parameter is in the Advanced tier with a default, Simple mode is unchanged, and each recommendation is one the landscape shows as an improvement.
 
