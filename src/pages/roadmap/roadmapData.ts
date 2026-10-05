@@ -1,4 +1,4 @@
-// Vietnamese, plain-language version of ROADMAP.md, shown on the roadmap page.
+// Vietnamese, plain-language version of readme/ROADMAP.md, shown on the roadmap page.
 // ROADMAP.md stays the source of truth: a test checks that every group here has
 // the same items, in the same order, with the same done state.
 

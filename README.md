@@ -2,8 +2,9 @@
 
 A web-based simulator for exploring how a recurve bow and arrow setup behaves when a parameter changes. The model reports tendencies (weak / stiff, left / right), not exact predictions.
 
-- Specification: [recurve-tuning-simulator-spec.md](recurve-tuning-simulator-spec.md)
-- Phase tracker: [ROADMAP.md](ROADMAP.md)
+- Specification: [readme/recurve-tuning-simulator-spec.md](readme/recurve-tuning-simulator-spec.md)
+- Phase tracker: [readme/ROADMAP.md](readme/ROADMAP.md)
+- Working rules for the AI assistant on this project: [readme/memory/](readme/memory/MEMORY.md)
 
 ## What it does today
 
@@ -49,6 +50,7 @@ Anywhere else: run `npm run build` and upload the `dist/` folder.
 ## Layout
 
 ```text
+readme/          specification, roadmap, and the assistant's working rules (memory/)
 src/
 ├── engine/      simulation model, pure TypeScript
 ├── models/      data types and parameter metadata

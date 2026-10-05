@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import source from '../../../ROADMAP.md?raw'
+import source from '../../../readme/ROADMAP.md?raw'
 import { ROADMAP, countItems } from './roadmapData.ts'
 
 /** Done flags of the checklist items in ROADMAP.md, per phase and per group. */

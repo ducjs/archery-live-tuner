@@ -1,0 +1,4 @@
+- [Update roadmap and docs](update-roadmap-and-docs.md) — every change also updates readme/ROADMAP.md, the React roadmap page data, and related md files
+- [UI skills](ui-skills.md) — use frontend-design + ui-ux-pro-max for UI work in this repo
+- [Commit per feature](commit-per-feature.md) — commit each feature on master without asking, no branches; ask before pushing
+- [Mirror memory into repo](mirror-memory-into-repo.md) — copy every memory change into readme/memory/ and commit it

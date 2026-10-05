@@ -242,8 +242,8 @@ export function Roadmap() {
           </section>
 
           <p className="text-ink-muted border-line max-w-prose border-t pt-4 text-sm">
-            Trang này là bản tiếng Việt, viết gọn của file ROADMAP.md trong mã nguồn. File đó là bản
-            gốc; một bài test giữ cho hai bên khớp nhau.
+            Trang này là bản tiếng Việt, viết gọn của file readme/ROADMAP.md trong mã nguồn. File đó
+            là bản gốc; một bài test giữ cho hai bên khớp nhau.
           </p>
         </div>
       </div>

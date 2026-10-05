@@ -7,6 +7,7 @@ How to use this file:
 - update the status table when a phase starts or finishes
 - a phase is done only when its exit criteria are met, not when all boxes are ticked
 - each phase and milestone opens with a **Nói đơn giản** note: what it is for, without jargon
+- this file and the other project documents live in `readme/`; only `README.md` stays at the repository root, where GitHub shows it
 - the app has a Vietnamese roadmap page ("Lộ trình", `#roadmap`) built from `src/pages/roadmap/roadmapData.ts`. When an item here is added, removed or ticked, make the same change there; a test fails until both match
 
 ## Status
