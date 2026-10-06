@@ -28,7 +28,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M6 done; M7 done except the deploy) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M6 done; M7 done except the deploy; M8 proposed, not started) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -144,6 +144,19 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [x] Unit toggle: lb / inch / grain or kg / cm / gram, for inputs, suggestions, saved setups and the comparison. Setups are stored in internal units either way
 - [x] Scientific disclaimer (§26), at the foot of the simulator, next to the note under the model result
 - [ ] Deploy to static hosting. Ready but not live: the build uses relative paths and `.github/workflows/deploy.yml` tests, builds and publishes to GitHub Pages on every push to `master`. Still needed: a GitHub repository, a push, and Pages set to "GitHub Actions"
+
+### M8. A calmer screen
+
+> **Nói đơn giản:** Màn hình đang có quá nhiều thứ cùng lúc, nhìn vào khá rối. Phần này sắp lại để thứ quan trọng hiện trước, phần còn lại mở ra khi cần. Trên điện thoại, vuốt để cuộn trang không còn vô tình kéo trúng thanh trượt.
+
+Raised by the project owner on 2026-10-06. The items are proposals; the owner picks which ones to build.
+
+- [ ] Sliders on a touch screen move only when their thumb is dragged, and a vertical swipe that starts on a slider scrolls the page. Each value also gets minus and plus buttons, so it can be changed without dragging
+- [ ] Playback options put away: play, restart and the bare shaft switch stay in view; view, distance, points of impact, speed and amplification open from one "display options" button
+- [ ] The result leads with one sentence in plain words (for example "the arrow is a little weak; the bare shaft lands to the right"). The gauges and numbers open on request
+- [ ] Inputs in groups that fold, with the changed values counted on a folded group. On a phone, setup, result and suggestions become three tabs under the animation instead of one long page
+- [ ] The standing notes under the controls and the result (slowed, amplified, not to scale, model limits) shortened to one line each, with the full text behind an "about this drawing" link
+- [ ] The whole screen reviewed with the two UI skills and checked by eye at 400 px wide, in both languages
 
 **Exit criteria:** all ten points of §33 pass, and the engine runs in tests without React.
 

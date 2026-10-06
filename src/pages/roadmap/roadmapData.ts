@@ -209,6 +209,31 @@ export const ROADMAP: RoadmapPhase[] = [
           ),
         ],
       },
+      {
+        title: 'M8. Màn hình gọn hơn',
+        summary:
+          'Màn hình đang có quá nhiều thứ cùng lúc, nhìn vào khá rối. Phần này sắp lại để thứ quan trọng hiện trước, phần còn lại mở ra khi cần. Trên điện thoại, vuốt để cuộn trang không còn vô tình kéo trúng thanh trượt. Các mục dưới đây là đề xuất, chủ dự án chọn mục nào sẽ làm.',
+        items: [
+          todo(
+            'Trên màn cảm ứng, thanh trượt chỉ chạy khi kéo đúng nút tròn; vuốt dọc bắt đầu trên thanh trượt thì cuộn trang. Mỗi thông số có thêm nút trừ và cộng để chỉnh mà không cần kéo',
+          ),
+          todo(
+            'Cất bớt tùy chọn phát: chỉ để lại chạy, chạy lại và công tắc bareshaft; góc nhìn, cự ly, điểm chạm, tốc độ và phóng đại mở ra từ một nút "tùy chọn hiển thị"',
+          ),
+          todo(
+            'Kết quả mở đầu bằng một câu dễ hiểu (ví dụ "tên hơi yếu, bareshaft cắm lệch phải"). Các thước đo và con số mở ra khi cần',
+          ),
+          todo(
+            'Thông số nhập chia nhóm gập lại được, nhóm đang gập ghi số giá trị đã đổi. Trên điện thoại, setup, kết quả và gợi ý thành ba tab dưới hoạt hình thay cho một trang dài',
+          ),
+          todo(
+            'Rút các dòng ghi chú cố định (chiếu chậm, phóng đại, không theo tỉ lệ, giới hạn mô hình) còn mỗi thứ một dòng, bản đầy đủ nằm sau một đường link',
+          ),
+          todo(
+            'Rà cả màn hình bằng hai skill UI và xem bằng mắt ở bề rộng 400 px, cả hai ngôn ngữ',
+          ),
+        ],
+      },
     ],
     exit: 'Người dùng làm được trọn mười bước trong tiêu chí thành công của spec, và bộ não chạy được trong test mà không cần giao diện.',
   },

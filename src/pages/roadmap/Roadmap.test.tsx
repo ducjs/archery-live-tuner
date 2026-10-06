@@ -45,8 +45,9 @@ describe('Roadmap page', () => {
     const open = [...container.querySelectorAll('details[open] summary')].map(
       (summary) => summary.textContent,
     )
-    expect(open).toHaveLength(1)
+    expect(open).toHaveLength(2)
     expect(open[0]).toContain('M7.')
+    expect(open[1]).toContain('M8.')
   })
 
   it('says in words whether an item is done', () => {
