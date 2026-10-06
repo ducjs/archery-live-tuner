@@ -3,7 +3,7 @@ import { useMessages } from '../../i18n/useMessages.ts'
 import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
 import type { UnitSystem } from '../../models/parameters.ts'
-import { PRESETS } from './cameraShots.ts'
+import { EQUIPMENT, VIEWS } from './cameraShots.ts'
 import type { BowViewerState } from './useBowViewer.ts'
 
 // three.js is large, so it is fetched only when the viewer is shown.
@@ -84,24 +84,53 @@ export function BowViewer({ bow, arrow, viewer, units, fallback, onPick }: BowVi
   )
 }
 
-export function BowViewerControls({ viewer }: { viewer: BowViewerState }) {
+type ControlsProps = {
+  viewer: BowViewerState
+  /** Called with the key of the value that a piece of equipment is set with. */
+  onPick: (parameterKey: string) => void
+}
+
+export function BowViewerControls({ viewer, onPick }: ControlsProps) {
   const m = useMessages()
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <div className="flex flex-wrap gap-2" role="group" aria-label={m.viewer.lookAt}>
-          {PRESETS.map((focus) => (
-            <button
-              key={focus}
-              type="button"
-              onClick={() => viewer.lookAt(focus)}
-              aria-pressed={viewer.focus === focus}
-              className={buttonClass}
-            >
-              {m.viewer.focus[focus]}
-            </button>
-          ))}
-        </div>
+        <fieldset className="min-w-0">
+          <legend className="text-ink-muted text-sm">{m.viewer.views}</legend>
+          <div className="mt-1 flex flex-wrap gap-2">
+            {VIEWS.map((focus) => (
+              <button
+                key={focus}
+                type="button"
+                onClick={() => viewer.lookAt(focus)}
+                aria-pressed={viewer.focus === focus}
+                className={buttonClass}
+              >
+                {m.viewer.focus[focus]}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        {/* A piece of equipment is looked at and set in one press: the camera goes to it, and the page to its value. */}
+        <fieldset className="min-w-0">
+          <legend className="text-ink-muted text-sm">{m.viewer.equipment}</legend>
+          <div className="mt-1 flex flex-wrap gap-2">
+            {EQUIPMENT.map(({ name, focus, parameter }) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => {
+                  viewer.lookAt(focus)
+                  onPick(parameter)
+                }}
+                aria-pressed={viewer.focus === focus}
+                className={buttonClass}
+              >
+                {m.viewer.part[name]}
+              </button>
+            ))}
+          </div>
+        </fieldset>
         <label className="flex min-h-11 cursor-pointer items-center gap-2 font-medium">
           <input
             type="checkbox"

@@ -333,11 +333,11 @@ export const ROADMAP: RoadmapPhase[] = [
           done('Phóng đại độ lệch, có ghi rõ không theo tỉ lệ'),
           done('Thông số không có gì để vẽ thì nói rõ, không bịa hình'),
           done(
-            'Xoay, zoom, năm góc nhìn có sẵn: cả cây cung, từ phía bia, từ trên xuống, rest và plunger, dọc theo dây (cách kiểm cánh có thẳng hàng không)',
+            'Xoay, zoom, và các nút bấm nhanh chia hai nhóm. "Góc nhìn": cả cây cung, từ phía bia, từ trên xuống, dọc theo dây (cách kiểm cánh có thẳng hàng không). "Thiết bị": cánh cung, dây, nocking point, rest, plunger, mũi tên, stabilizer',
           ),
           done('Chạy trên điện thoại; không có WebGL thì quay về hình 2D, có ghi rõ lý do'),
           done(
-            'Bấm vào một bộ phận trên cung là tới thông số của nó: ô nhập cuộn vào tầm nhìn, nhận focus và được tô sáng một lúc',
+            'Bấm vào một bộ phận trên cung, hoặc nút của thiết bị đó, là tới thông số của nó: ô nhập cuộn vào tầm nhìn, nhận focus và được tô sáng một lúc. Bộ phận mảnh như dây và mũi tên nhận cả cú bấm sát bên',
           ),
         ],
       },

@@ -268,20 +268,30 @@ export const en = {
   },
 
   viewer: {
-    lookAt: 'Look at',
+    views: 'View',
+    equipment: 'Equipment',
     focus: {
       bow: 'Whole bow',
       front: 'From the target',
       top: 'From above',
-      rest: 'Rest and plunger',
       alongString: 'Along the string',
     },
+    part: {
+      limbs: 'Limbs',
+      string: 'String',
+      nockingPoint: 'Nocking point',
+      rest: 'Rest',
+      plunger: 'Plunger',
+      arrow: 'Arrow',
+      stabilizer: 'Stabilizer',
+    },
+    goTo: (label: string) => `Press to set: ${label}`,
     amplify: (times: number) => `Draw offsets ${times} times larger`,
     drawn: 'At full draw',
     notDrawn:
       'Nothing to draw for draw weight, spine, shaft weight, plunger stiffness, string mass, nock fit, bow mass, or the weight of insert, nock and vanes: they change how the arrow flies, not where a part sits.',
     about:
-      'The bow follows the setup. Change a value and the camera goes to the part it moves, with the value written there. Press a part of the bow to go to its value. Drag to turn the bow, scroll or pinch to zoom. The dashed gold line is the string line from above and the line square to the string from the side. Offsets of a few millimetres are hard to see at true scale; the switch draws them larger. Labels always show real values. The bow is a simplified shape, not your equipment.',
+      'The bow follows the setup. Change a value and the camera goes to the part it moves, with the value written there. Press a part of the bow, or the button of a piece of equipment, to go to its value. Drag to turn the bow, scroll or pinch to zoom. The dashed gold line is the string line from above and the line square to the string from the side. Offsets of a few millimetres are hard to see at true scale; the switch draws them larger. Labels always show real values. The bow is a simplified shape, not your equipment.',
     loading: 'Loading the 3D view.',
     failed:
       'The 3D view cannot run here: it needs WebGL, which this browser or device has turned off. These are the flat drawings instead.',

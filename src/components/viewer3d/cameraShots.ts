@@ -3,9 +3,22 @@ import { along, type BowGeometry, type Vec3 } from './bowGeometry.ts'
 // Where the camera stands for each thing a user may want to look at, and what
 // is measured there. Plain numbers, so it can be tested without a 3D scene.
 
-/** Views picked by hand from the buttons under the viewer. */
-export const PRESETS = ['bow', 'front', 'top', 'rest', 'alongString'] as const
-export type Preset = (typeof PRESETS)[number]
+/** Views of the whole bow, picked by hand from the buttons under the viewer. */
+export const VIEWS = ['bow', 'front', 'top', 'alongString'] as const
+/**
+ * Pieces of equipment, picked the same way. Each has a close view, and a value
+ * that is set on it: its button goes to both.
+ */
+export const EQUIPMENT = [
+  { name: 'limbs', focus: 'tiller', parameter: 'bow.tiller' },
+  { name: 'string', focus: 'braceHeight', parameter: 'bow.braceHeight' },
+  { name: 'nockingPoint', focus: 'nockingPoint', parameter: 'bow.nockingPointHeight' },
+  { name: 'rest', focus: 'centerShot', parameter: 'bow.centerShot' },
+  { name: 'plunger', focus: 'plunger', parameter: 'bow.plungerStiffness' },
+  { name: 'arrow', focus: 'arrow', parameter: 'arrow.length' },
+  { name: 'stabilizer', focus: 'stabilizer', parameter: 'bow.stabilizerPosition' },
+] as const satisfies readonly { name: string; focus: Focus; parameter: string }[]
+export type Preset = (typeof VIEWS)[number] | 'rest'
 
 /** Views the camera flies to by itself when a value of the setup changes. */
 export type PartFocus =

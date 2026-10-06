@@ -297,20 +297,30 @@ export const vi: Messages = {
   },
 
   viewer: {
-    lookAt: 'Nhìn vào',
+    views: 'Góc nhìn',
+    equipment: 'Thiết bị',
     focus: {
       bow: 'Cả cây cung',
       front: 'Từ phía bia',
       top: 'Từ trên xuống',
-      rest: 'Rest và plunger',
       alongString: 'Dọc theo dây',
     },
+    part: {
+      limbs: 'Cánh cung',
+      string: 'Dây',
+      nockingPoint: 'Nocking point',
+      rest: 'Rest',
+      plunger: 'Plunger',
+      arrow: 'Mũi tên',
+      stabilizer: 'Stabilizer',
+    },
+    goTo: (label) => `Bấm để chỉnh: ${label}`,
     drawn: 'Kéo hết dây',
     notDrawn:
       'Không có gì để vẽ cho lực kéo, spine, khối lượng thân tên, độ cứng plunger, khối lượng dây, độ khít nock, khối lượng cung, hay khối lượng insert, nock và cánh: chúng đổi cách tên bay, không đổi vị trí bộ phận nào.',
     amplify: (times) => `Vẽ độ lệch lớn gấp ${times} lần`,
     about:
-      'Cây cung đi theo setup. Đổi một thông số thì camera bay tới bộ phận đó và ghi giá trị ngay tại chỗ. Bấm vào một bộ phận trên cung để tới thanh trượt của nó. Kéo để xoay cung, cuộn hoặc chụm ngón để phóng to. Đường vàng đứt là đường dây khi nhìn từ trên, và là đường vuông góc với dây khi nhìn từ bên. Các độ lệch vài mm khó thấy ở tỉ lệ thật; bật công tắc để vẽ lớn hơn. Nhãn luôn ghi giá trị thật. Cây cung là hình đơn giản hoá, không phải thiết bị của bạn.',
+      'Cây cung đi theo setup. Đổi một thông số thì camera bay tới bộ phận đó và ghi giá trị ngay tại chỗ. Bấm vào một bộ phận trên cung, hoặc nút của thiết bị đó, để tới thanh trượt của nó. Kéo để xoay cung, cuộn hoặc chụm ngón để phóng to. Đường vàng đứt là đường dây khi nhìn từ trên, và là đường vuông góc với dây khi nhìn từ bên. Các độ lệch vài mm khó thấy ở tỉ lệ thật; bật công tắc để vẽ lớn hơn. Nhãn luôn ghi giá trị thật. Cây cung là hình đơn giản hoá, không phải thiết bị của bạn.',
     loading: 'Đang tải hình 3D.',
     failed:
       'Hình 3D không chạy được ở đây: nó cần WebGL, mà trình duyệt hoặc thiết bị này đang tắt. Dưới đây là hình vẽ phẳng thay thế.',

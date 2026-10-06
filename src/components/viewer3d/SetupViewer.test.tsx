@@ -18,6 +18,7 @@ beforeEach(() => {
     mode: 'simple',
     language: 'en',
     units: 'archery',
+    highlighted: null,
   })
   useLibraryStore.setState({ saved: [], failed: false })
 })
@@ -97,18 +98,28 @@ describe('the viewer in the page', () => {
     expect(screen.getAllByRole('img', { name: /view of the arrow/ })).toHaveLength(2)
   })
 
-  it('offers the preset views and the two switches', async () => {
+  it('offers the views and the equipment in two groups, and the two switches', async () => {
     render(<App />)
     await userEvent.click(screen.getByRole('radio', { name: 'Bow 3D' }))
-    const views = screen.getByRole('group', { name: 'Look at' })
-    expect([...views.querySelectorAll('button')].map((button) => button.textContent)).toEqual([
+    const buttons = (group: string) =>
+      [...screen.getByRole('group', { name: group }).querySelectorAll('button')].map(
+        (button) => button.textContent,
+      )
+    expect(buttons('View')).toEqual([
       'Whole bow',
       'From the target',
       'From above',
-      'Rest and plunger',
       'Along the string',
     ])
-    expect(screen.getByRole('button', { name: 'Whole bow' })).toHaveProperty('ariaPressed', 'true')
+    expect(buttons('Equipment')).toEqual([
+      'Limbs',
+      'String',
+      'Nocking point',
+      'Rest',
+      'Plunger',
+      'Arrow',
+      'Stabilizer',
+    ])
 
     await userEvent.click(screen.getByRole('button', { name: 'Along the string' }))
     expect(screen.getByRole('button', { name: 'Along the string' })).toHaveProperty(
@@ -127,6 +138,47 @@ describe('the viewer in the page', () => {
     render(<App />)
     await userEvent.click(screen.getByRole('radio', { name: 'Bow 3D' }))
     expect(screen.getByText(/Nothing to draw for draw weight, spine/)).toBeTruthy()
+  })
+})
+
+describe('the button of a piece of equipment', () => {
+  const marked = () =>
+    [...document.querySelectorAll('[data-highlighted]')].map(
+      (element) => element.querySelector('label, legend')?.textContent,
+    )
+  const open3d = async () => {
+    render(<App />)
+    await userEvent.click(screen.getByRole('radio', { name: 'Bow 3D' }))
+  }
+
+  it('turns the camera to the piece and goes to its slider, in one press', async () => {
+    await open3d()
+    await userEvent.click(screen.getByRole('button', { name: 'String' }))
+    expect(screen.getByRole('button', { name: 'String' })).toHaveProperty('ariaPressed', 'true')
+    expect(screen.getByRole('button', { name: 'Whole bow' })).toHaveProperty('ariaPressed', 'false')
+    expect(marked()).toEqual(['Brace height'])
+    expect(document.activeElement).toBe(screen.getByRole('slider', { name: 'Brace height slider' }))
+  })
+
+  it('shows Advanced when the value of the piece lives there', async () => {
+    await open3d()
+    await userEvent.click(screen.getByRole('button', { name: 'Limbs' }))
+    expect(useTuningStore.getState().mode).toBe('advanced')
+    expect(marked()).toEqual(['Tiller'])
+  })
+
+  it('opens the setup tab, which is where the sliders are on a phone', async () => {
+    await open3d()
+    await userEvent.click(screen.getByRole('tab', { name: 'Result' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Arrow' }))
+    expect(screen.getByRole('tab', { name: 'Setup' })).toHaveProperty('ariaSelected', 'true')
+    expect(marked()).toEqual(['Arrow length'])
+  })
+
+  it('leaves the sliders alone for a view of the whole bow', async () => {
+    await open3d()
+    await userEvent.click(screen.getByRole('button', { name: 'From above' }))
+    expect(marked()).toEqual([])
   })
 })
 

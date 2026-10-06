@@ -141,6 +141,13 @@ export function Simulator() {
   const sections: Section[] = compared ? ['setup', 'result'] : ['setup', 'result', 'advice']
   const shownSection = sections.includes(section) ? section : 'result'
 
+  /** Goes to the input of a value: from a part of the 3D bow, or from the button of a piece of equipment. */
+  const pickValue = (key: string) => {
+    // On a phone the inputs are a tab of their own.
+    setSection('setup')
+    pointTo(key)
+  }
+
   const onSettingsChange = (next: ViewSettings) =>
     // Simple mode shows the default amplification; do not store that.
     setSettings((current) => (advanced ? next : { ...next, exaggeration: current.exaggeration }))
@@ -185,11 +192,7 @@ export function Simulator() {
                 arrow={setup.arrow}
                 viewer={viewer}
                 units={units}
-                onPick={(key) => {
-                  // On a phone the inputs are a tab of their own.
-                  setSection('setup')
-                  pointTo(key)
-                }}
+                onPick={pickValue}
                 fallback={
                   <FlightView
                     view="both"
@@ -242,7 +245,7 @@ export function Simulator() {
             )}
           </div>
           <div className="order-2 grid min-w-0 gap-3 lg:mt-3">
-            {stage === 'bow' && <BowViewerControls viewer={viewer} />}
+            {stage === 'bow' && <BowViewerControls viewer={viewer} onPick={pickValue} />}
             {compared && (
               <fieldset>
                 <legend className="font-medium">

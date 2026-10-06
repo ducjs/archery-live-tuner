@@ -1,6 +1,6 @@
 import { Line, OrbitControls, RoundedBox } from '@react-three/drei'
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CatmullRomCurve3, Quaternion, TubeGeometry, Vector3 } from 'three'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { ArrowSetup } from '../../models/arrow.ts'
@@ -32,6 +32,16 @@ type Props = {
   onPick: (parameterKey: string) => void
 }
 
+/** The nocking point locators are a few millimetres long; this is what answers a press on them. */
+function NockPressArea({ at }: { at: Vec3 }) {
+  return (
+    <mesh position={at}>
+      <sphereGeometry args={[PRESS * 1.4, 12, 8]} />
+      <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+    </mesh>
+  )
+}
+
 type Palette = {
   ink: string
   muted: string
@@ -54,6 +64,9 @@ function readPalette(): Palette {
 
 const UP = new Vector3(0, 1, 0)
 
+/** mm, half the width of the area that answers a press on a thin part */
+const PRESS = 20
+
 /** Position, rotation and length of something that runs from one point to another. */
 function span(from: Vec3, to: Vec3) {
   const start = new Vector3(...from)
@@ -70,6 +83,20 @@ type RodProps = {
   /** Radius at `to`. Defaults to `radius`; near 0 makes a cone. */
   endRadius?: number
   color: string
+}
+
+/**
+ * Something to press that is wider than what is drawn. A string or a shaft is
+ * a pixel or two wide when the whole bow is in view; nobody can hit that.
+ */
+function PressArea({ from, to, radius }: Pick<RodProps, 'from' | 'to' | 'radius'>) {
+  const { middle, quaternion, length } = span(from, to)
+  return (
+    <mesh position={middle} quaternion={quaternion}>
+      <cylinderGeometry args={[radius, radius, length, 8]} />
+      <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+    </mesh>
+  )
 }
 
 /** A cylinder or cone between two points. */
@@ -232,22 +259,29 @@ type BowProps = {
   measured: Mark[]
   /** Called with the key of the value a pressed part stands for. */
   onPick: (parameterKey: string) => void
+  /** Called with the key of the value under the pointer. */
+  onHover: (parameterKey: string) => void
+  /** Called when the pointer leaves the part of that value. */
+  onLeave: (parameterKey: string) => void
 }
 
-function Bow({ geometry, measured, onPick }: BowProps) {
+function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
   // A part answers a press, not the end of a drag that turned the bow.
   const pick = (parameterKey: string) => ({
     onClick: (event: ThreeEvent<MouseEvent>) => {
-      if (event.delta > 4) return
+      if (event.delta > 8) return
       // Only the part in front answers.
       event.stopPropagation()
       onPick(parameterKey)
     },
-    onPointerOver: () => {
+    onPointerOver: (event: ThreeEvent<PointerEvent>) => {
+      event.stopPropagation()
       document.body.style.cursor = 'pointer'
+      onHover(parameterKey)
     },
     onPointerOut: () => {
       document.body.style.cursor = ''
+      onLeave(parameterKey)
     },
   })
 
@@ -316,6 +350,14 @@ function Bow({ geometry, measured, onPick }: BowProps) {
       <group {...pick('bow.limbSize')}>
         <Limb points={upperLimb} color={palette.ink} />
         <Limb points={lowerLimb} color={palette.ink} />
+        {/* Seen from the side a limb is a line; this gives it some width to press. */}
+        {[upperLimb, lowerLimb].flatMap((points, limb) =>
+          points
+            .slice(1)
+            .map((end, index) => (
+              <PressArea key={`${limb}-${index}`} from={points[index]!} to={end} radius={PRESS} />
+            )),
+        )}
       </group>
       <group {...pick('bow.braceHeight')}>
         {/* The string, strand count and all, with the thicker center serving around the nock. */}
@@ -340,10 +382,15 @@ function Bow({ geometry, measured, onPick }: BowProps) {
           radius={geometry.stringRadius + 0.6}
           color={palette.muted}
         />
+        {/* Clear of the nock, which belongs to the nocking point. */}
+        <PressArea from={string[1]!} to={along(nock, string[1]!, 0.1)} radius={PRESS} />
+        <PressArea from={along(nock, string[3]!, 0.1)} to={string[3]!} radius={PRESS} />
       </group>
       <group {...pick('bow.stabilizerPosition')}>
         {/* Long rod, with a damper and its weight at the far end. */}
         <Rod from={longRod.from} to={longRod.to} radius={7} color={palette.ink} />
+        <PressArea from={longRod.from} to={longRod.to} radius={PRESS} />
+
         <Rod
           from={longRod.to}
           to={[longRod.to[0] + 14, longRod.to[1], 0]}
@@ -369,6 +416,8 @@ function Bow({ geometry, measured, onPick }: BowProps) {
         {sideRods.map((rod, index) => (
           <group key={index}>
             <Rod from={rod.from} to={rod.to} radius={6} color={palette.ink} />
+            <PressArea from={rod.from} to={along(rod.from, rod.to, 1.12)} radius={PRESS} />
+
             <Rod
               from={rod.to}
               to={along(rod.from, rod.to, 1.12)}
@@ -386,6 +435,11 @@ function Bow({ geometry, measured, onPick }: BowProps) {
           radius={3.2}
           color={palette.gold}
         />
+        <PressArea
+          from={[plungerX, 0, outerZ]}
+          to={[plungerX, 0, outerZ + side * 40]}
+          radius={PRESS * 0.8}
+        />
         {/* The barrel of the plunger, on the outside of the riser, and the collar that sets its preload. */}
         <Rod
           from={[plungerX, 0, outerZ]}
@@ -402,6 +456,11 @@ function Bow({ geometry, measured, onPick }: BowProps) {
       </group>
       <group {...pick('bow.centerShot')}>
         {/* The rest: a wire out of the window wall, bent up under the shaft. */}
+        <PressArea
+          from={[plungerX + 8, -radius - 14, windowZ]}
+          to={[plungerX + 8, -radius - 14, atRest[2] - side * 11]}
+          radius={PRESS * 0.6}
+        />
         <Rod
           from={[plungerX + 8, -radius - 1.2, windowZ]}
           to={[plungerX + 8, -radius - 1.2, atRest[2] - side * 9]}
@@ -431,6 +490,9 @@ function Bow({ geometry, measured, onPick }: BowProps) {
       <group {...pick('arrow.length')}>
         {/* Arrow: shaft, point, nock, three vanes. */}
         <Rod from={nock} to={point} radius={radius} color={palette.ink} />
+        {/* From ahead of the string to the point: the nock end belongs to the nocking point. */}
+        <PressArea from={along(nock, point, 0.14)} to={point} radius={PRESS} />
+
         <Rod
           from={point}
           to={along(nock, point, 1 + geometry.pointLength / arrowLength)}
@@ -453,6 +515,8 @@ function Bow({ geometry, measured, onPick }: BowProps) {
       </group>
       <group {...pick('bow.nockingPointHeight')}>
         {/* Nocking point locators on the string. */}
+        <NockPressArea at={nock} />
+
         {[-11, 5].map((offset) => (
           <Rod
             key={offset}
@@ -499,6 +563,8 @@ export default function BowScene({
   )
   const { point, side } = geometry
   const measured = useMemo(() => marks(focus, geometry), [focus, geometry])
+  // The value the part under the pointer stands for: said before it is pressed.
+  const [hovered, setHovered] = useState<string | null>(null)
 
   // One label per thing measured. Two marks may share a label: it is written once.
   const labels = measured.filter(
@@ -543,11 +609,24 @@ export default function BowScene({
         <directionalLight position={[800, 1600, -1200 * side]} intensity={2.2} />
         <directionalLight position={[-900, -400, 900 * side]} intensity={0.7} />
         <directionalLight position={[-1600, 300, 0]} intensity={0.9} />
-        <Bow geometry={geometry} measured={measured} onPick={onPick} />
+        <Bow
+          geometry={geometry}
+          measured={measured}
+          onPick={onPick}
+          onHover={setHovered}
+          // Going from one part straight to the next, the new one is entered before
+          // the old one is left: leaving must not wipe out what was just entered.
+          onLeave={(key) => setHovered((current) => (current === key ? null : current))}
+        />
         <CameraRig focus={focus} focusRequest={focusRequest} geometry={geometry} />
         <LabelPins anchors={anchors} />
       </Canvas>
 
+      {hovered && (
+        <p className="border-line bg-surface text-ink pointer-events-none absolute bottom-2 left-2 rounded-md border px-2 py-1 text-sm font-medium">
+          {m.viewer.goTo(parameterText(m, getParameter(hovered)).label)}
+        </p>
+      )}
       <div className="pointer-events-none absolute inset-0">
         {labels.map((mark, index) => (
           <span

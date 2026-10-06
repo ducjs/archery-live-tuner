@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { PARAMETERS, defaultValues, getParameter, setValue } from '../../models/parameters.ts'
 import { bowGeometry, type Vec3 } from './bowGeometry.ts'
-import { PRESETS, cameraShot, focusOf, marks, type Focus } from './cameraShots.ts'
+import { EQUIPMENT, VIEWS, cameraShot, focusOf, marks, type Focus } from './cameraShots.ts'
 
 const reference = defaultValues()
 const right = bowGeometry(reference, 1)
@@ -18,7 +18,7 @@ const PARTS: Focus[] = [
   'stabilizer',
   'string',
 ]
-const ALL: Focus[] = [...PRESETS, ...PARTS]
+const ALL: Focus[] = [...new Set<Focus>([...VIEWS, 'rest', ...PARTS])]
 const distance = (a: Vec3, b: Vec3) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2])
 
 describe('which view shows a value', () => {
@@ -41,6 +41,25 @@ describe('which view shows a value', () => {
     const known = new Set(PARAMETERS.map((parameter) => parameter.key))
     for (const mark of ALL.flatMap((focus) => marks(focus, right))) {
       if (mark.shows !== 'bowLength') expect(known.has(mark.shows.parameter)).toBe(true)
+    }
+  })
+})
+
+describe('equipment buttons', () => {
+  it('pair each piece with a value that exists and a view that measures something', () => {
+    for (const { name, focus, parameter } of EQUIPMENT) {
+      expect(
+        PARAMETERS.some((entry) => entry.key === parameter),
+        name,
+      ).toBe(true)
+      expect(marks(focus, right).length, name).toBeGreaterThan(0)
+    }
+  })
+
+  it('show the view the camera would fly to when that value is changed', () => {
+    for (const name of ['limbs', 'string', 'nockingPoint', 'rest', 'arrow', 'stabilizer']) {
+      const piece = EQUIPMENT.find((entry) => entry.name === name)!
+      expect(piece.focus, name).toBe(focusOf(piece.parameter))
     }
   })
 })
