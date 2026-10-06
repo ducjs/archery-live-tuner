@@ -18,7 +18,8 @@ export const vi: Messages = {
     show: 'Hiển thị',
     flight: 'Tên bay',
     compare: 'So sánh',
-    bow: 'Cung 3D (xem thử)',
+    explore: 'Toàn cảnh',
+    bow: 'Cung 3D',
     sections: 'Phần của trang',
     section: { setup: 'Setup', result: 'Kết quả', advice: 'Gợi ý' },
     disclaimer:
@@ -324,6 +325,23 @@ export const vi: Messages = {
     removeQuestion: (name) => `Xoá "${name}"? Không khôi phục lại được.`,
     storageError: 'Không dùng được bộ nhớ của trình duyệt. Setup chưa được lưu.',
     localOnly: 'Chỉ lưu trên trình duyệt này.',
+  },
+
+  explore: {
+    landscape: 'Thân tên và point nào hợp với cung này',
+    landscapeIntro:
+      'Mọi cặp spine và point weight, các thông số khác giữ nguyên như setup đang mở. Bấm một ô để đưa cặp đó vào setup.',
+    landscapeCaption: (unit) =>
+      `Độ cứng động theo spine (hàng) và point weight tính bằng ${unit} (cột)`,
+    axes: (unit) => `Spine \\ ${unit}`,
+    cell: (spine, pointWeight, rating) => `Spine ${spine}, point ${pointWeight}: ${rating}`,
+    letter: { WEAK: 'Y', NEUTRAL: 'TT', STIFF: 'C' },
+    sensitivity: 'Thông số nào ảnh hưởng mạnh nhất',
+    sensitivityIntro:
+      'Độ yếu / cứng đổi bao nhiêu khi tăng một thông số thêm một phần mười khoảng cho phép. Thanh dài nhất là thứ nên xem trước với setup này.',
+    weaker: 'làm tên yếu hơn',
+    stiffer: 'làm tên cứng hơn',
+    effect: (weaker, amount) => `${weaker ? 'yếu hơn' : 'cứng hơn'} ${amount}`,
   },
 
   transfer: {

@@ -7,7 +7,7 @@ import {
   type NumberParameter,
 } from '../../../models/parameters.ts'
 import { createDefaultSetup, type TuningSetup } from '../../../models/setup.ts'
-import { LANDSCAPE_POINTS, LANDSCAPE_SPINES, landscape, sensitivity, tunePlan } from './explore.ts'
+import { tunePlan } from './explore.ts'
 import { advise, readPlot, type Mark } from './targetPlot.ts'
 
 const reference = createDefaultSetup('Reference')
@@ -16,36 +16,6 @@ function withDisplay(setup: TuningSetup, key: string, displayValue: number): Tun
   const parameter = getParameter(key) as NumberParameter
   return setValue(setup, parameter, fromDisplay(parameter, displayValue))
 }
-
-describe('landscape', () => {
-  const grid = landscape(heuristicModel, reference)
-
-  it('covers every spine and point weight', () => {
-    expect(grid).toHaveLength(LANDSCAPE_SPINES.length)
-    expect(grid[0]).toHaveLength(LANDSCAPE_POINTS.length)
-  })
-
-  it('is neutral at the reference cell, stiffer above it and weaker below', () => {
-    const column = LANDSCAPE_POINTS.indexOf(120)
-    const row = LANDSCAPE_SPINES.indexOf(700)
-    expect(grid[row]![column]!.rating).toBe('NEUTRAL')
-    expect(grid[0]![column]!.rating).toBe('STIFF')
-    expect(grid.at(-1)![column]!.rating).toBe('WEAK')
-  })
-})
-
-describe('sensitivity', () => {
-  it('ranks by size of effect, with the sign archers expect', () => {
-    const entries = sensitivity(heuristicModel, reference)
-    const sizes = entries.map((entry) => Math.abs(entry.effect))
-    expect(sizes).toEqual([...sizes].sort((a, b) => b - a))
-
-    const effect = (key: string) => entries.find((entry) => entry.key === key)!.effect
-    expect(effect('arrow.spine')).toBeLessThan(0)
-    expect(effect('bow.drawWeight')).toBeLessThan(0)
-    expect(effect('bow.braceHeight')).toBeLessThan(0)
-  })
-})
 
 describe('tunePlan', () => {
   it('walks a detuned setup to tuned, one change at a time', () => {

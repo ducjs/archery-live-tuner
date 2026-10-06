@@ -2,6 +2,8 @@ import { useEffect, useId, useMemo, useState } from 'react'
 import { SegmentedControl } from '../components/common/SegmentedControl.tsx'
 import { inputClass } from '../components/common/styles.ts'
 import { ComparisonFlight, ComparisonTable } from '../components/compare/Comparison.tsx'
+import { Landscape, SensitivityChart } from '../components/explore/ExploreViews.tsx'
+import { useExplore } from '../components/explore/useExplore.ts'
 import { SavedSetups } from '../components/setups/SavedSetups.tsx'
 import { SharedSetupNotice } from '../components/setups/SetupTransfer.tsx'
 import { BowViewer, BowViewerControls } from '../components/viewer3d/SetupViewer.tsx'
@@ -29,7 +31,7 @@ import { useMessages } from '../i18n/useMessages.ts'
 import { useLibraryStore } from '../state/libraryStore.ts'
 import { useTuningStore } from '../state/tuningStore.ts'
 
-type Stage = 'flight' | 'compare' | 'bow'
+type Stage = 'flight' | 'compare' | 'explore' | 'bow'
 /** The part of the page a phone shows under the animation. A wide screen shows all of them. */
 type Section = 'setup' | 'result' | 'advice'
 
@@ -43,6 +45,18 @@ const DEFAULT_VIEW: ViewSettings = {
 
 // Two setups are drawn at once when comparing, so each gets a single view.
 const COMPARE_VIEWS = ['top', 'side'] as const
+
+/** The landscape and the sensitivity chart, in place of the animation. */
+function ExploreStage() {
+  const setup = useTuningStore((state) => state.setup)
+  const result = useExplore(setup)
+  return (
+    <div className="grid gap-6 @container">
+      <Landscape grid={result.landscape} />
+      <SensitivityChart entries={result.sensitivity} />
+    </div>
+  )
+}
 
 export function Simulator() {
   const m = useMessages()
@@ -132,6 +146,7 @@ export function Simulator() {
           options={[
             { value: 'flight', label: m.simulator.flight },
             { value: 'compare', label: m.simulator.compare },
+            { value: 'explore', label: m.simulator.explore },
             { value: 'bow', label: m.simulator.bow },
           ]}
           value={stage}
@@ -151,10 +166,12 @@ export function Simulator() {
             drawings would cover half the screen, so a comparison scrolls away.
           */}
           <div
-            className={`bg-paper order-1 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0 ${stage === 'compare' ? '' : 'sticky top-0 z-10'}`}
+            className={`bg-paper order-1 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0 ${stage === 'compare' || stage === 'explore' ? '' : 'sticky top-0 z-10'}`}
           >
             {stage === 'bow' ? (
               <BowViewer bow={setup.bow} arrow={setup.arrow} viewer={viewer} />
+            ) : stage === 'explore' ? (
+              <ExploreStage />
             ) : stage === 'compare' && !compared ? (
               <p className="border-line bg-surface max-w-prose rounded-lg border p-4">
                 {m.compare.empty}

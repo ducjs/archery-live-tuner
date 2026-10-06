@@ -748,6 +748,8 @@ Generate a grid such as:
 
 This can later become a powerful tuning assistant.
 
+As built: "Show: Explore" in the simulator puts the landscape in place of the animation, with the sensitivity chart of §34.5 under it. Rows are the spine sizes from 400 to 1000 in steps of 50, columns the point weights from 80 to 140 gr in steps of 10, and everything else is the setup on screen. A cell is colored from weak to stiff by dynamic behavior and carries a letter, so color is not the only sign. Pressing a cell puts its spine and point weight into the setup; the cell of the setup on screen is outlined. Both views are computed in a Web Worker: the previous ones stay on screen until the new ones arrive, and an answer to an older setup is dropped.
+
 ---
 
 # 17. Recommendation engine
@@ -1408,6 +1410,8 @@ As built: all three are part of the model result, with the kinetic energy of the
 ## 34.5 Sensitivity chart
 
 For the current setup, show which parameter moves the result the most (a tornado chart). This fits the "What happens if I change this?" philosophy.
+
+As built: each bar is the change in dynamic behavior when a value goes up by a tenth of its allowed range (measured by stepping down when there is no room to go up). Bars to the left make the arrow weaker, to the right stiffer. Changes under 0.005 are left out, the eight largest are listed, and Simple mode lists only the values it shows.
 
 ## 34.6 Sharing without a backend
 

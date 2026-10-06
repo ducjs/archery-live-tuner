@@ -1,3 +1,13 @@
+export {
+  LANDSCAPE_POINTS,
+  LANDSCAPE_SPINES,
+  explore,
+  landscape,
+  sensitivity,
+  type Exploration,
+  type LandscapeCell,
+  type Sensitivity,
+} from './explore/explore.ts'
 export { HEURISTIC_V0, parseCoefficients, type Coefficients } from './coefficients/coefficients.ts'
 export {
   suggestTuning,

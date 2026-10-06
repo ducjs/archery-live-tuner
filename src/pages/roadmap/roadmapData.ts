@@ -289,9 +289,13 @@ export const ROADMAP: RoadmapPhase[] = [
       {
         title: 'Toàn cảnh và chia sẻ',
         items: [
-          todo('Bảng màu toàn cảnh, ví dụ spine × point weight'),
-          todo('Tính bảng ở luồng phụ để giao diện không giật'),
-          todo('Biểu đồ thông số nào ảnh hưởng mạnh nhất'),
+          done(
+            'Bảng màu toàn cảnh spine × point weight: mục "Hiển thị: Toàn cảnh" ở trang Simulator. Bấm một ô để đưa cặp đó vào setup',
+          ),
+          done('Tính bảng ở luồng phụ để giao diện không giật'),
+          done(
+            'Biểu đồ thông số nào ảnh hưởng mạnh nhất, nằm dưới bảng toàn cảnh. Chế độ Cơ bản chỉ liệt kê thông số nó đang hiện',
+          ),
           done(
             'Setup nằm trong đường link để chia sẻ: nút "Chép link tới setup này" dưới danh sách setup đã lưu. Mở link thì ứng dụng hỏi trước, không tự thay setup đang mở',
           ),

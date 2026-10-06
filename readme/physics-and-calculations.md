@@ -454,8 +454,7 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 
 Các công thức dưới đây chỉ chạy trong demo (`src/pages/demos/logic/`), chưa thuộc engine. Mã hoá setup vào đường link đã chuyển thành tính năng thật, ở `src/utils/setupTransfer.ts`. Chỉ số phụ (grains per pound, FOC, động năng) đã chuyển vào engine, xem mục 7.7.
 
-- Landscape: `dynamicBehavior` trên lưới spine 500..900 (bước 50) × point 80..140 gr (bước 10), các giá trị khác giữ nguyên.
-- Sensitivity: tăng từng thông số thêm 1/10 khoảng giới hạn của nó (giảm nếu hết chỗ tăng), ghi độ đổi của `dynamicBehavior`, bỏ mức dưới 0.005, xếp theo độ lớn.
+- Landscape và sensitivity đã chuyển vào engine (`src/engine/explore/explore.ts`) và hiện ở trang Simulator, mục "Hiển thị: Toàn cảnh". Landscape: `dynamicBehavior` trên lưới spine 400..1000 (bước 50) × point 80..140 gr (bước 10), các giá trị khác giữ nguyên. Sensitivity: tăng từng thông số thêm 1/10 khoảng giới hạn của nó (giảm nếu hết chỗ tăng), ghi độ đổi của `dynamicBehavior`, bỏ mức dưới 0.005, xếp theo độ lớn. Cả hai tính trong Web Worker (`src/workers/explore.worker.ts`).
 - Tuning plan: áp gợi ý đứng đầu lặp lại, tối đa 5 bước.
 - Đọc bia (target plot), tọa độ tính bằng cm:
 

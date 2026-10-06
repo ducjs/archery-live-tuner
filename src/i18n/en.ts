@@ -33,9 +33,10 @@ export const en = {
     title: 'Recurve tuning simulator',
     intro: 'Change a value and watch how the arrow leaves the bow.',
     show: 'Show',
-    flight: 'Arrow flight',
+    flight: 'Flight',
     compare: 'Compare',
-    bow: 'Bow in 3D (preview)',
+    explore: 'Explore',
+    bow: 'Bow 3D',
     sections: 'Part of the page',
     section: { setup: 'Setup', result: 'Result', advice: 'Suggestions' },
     disclaimer:
@@ -311,6 +312,24 @@ export const en = {
     removeQuestion: (name: string) => `Delete "${name}"? This cannot be undone.`,
     storageError: 'The browser storage could not be used. Setups are not being saved.',
     localOnly: 'Saved in this browser only.',
+  },
+
+  explore: {
+    landscape: 'Which shaft and point suit this bow',
+    landscapeIntro:
+      'Every pair of spine and point weight, with the rest of the setup as it is. Press a cell to put that pair into the setup.',
+    landscapeCaption: (unit: string) =>
+      `Dynamic behavior by spine, in rows, and point weight in ${unit}, in columns`,
+    axes: (unit: string) => `Spine \\ ${unit}`,
+    cell: (spine: number, pointWeight: string, rating: string) =>
+      `Spine ${spine}, point ${pointWeight}: ${rating}`,
+    letter: { WEAK: 'W', NEUTRAL: 'N', STIFF: 'S' },
+    sensitivity: 'What moves the result most',
+    sensitivityIntro:
+      'How far weak or stiff moves when a value goes up by a tenth of its range. The longest bar is what to look at first for this setup.',
+    weaker: 'makes it weaker',
+    stiffer: 'makes it stiffer',
+    effect: (weaker: boolean, amount: string) => `${amount} ${weaker ? 'weaker' : 'stiffer'}`,
   },
 
   transfer: {

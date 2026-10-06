@@ -19,6 +19,7 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 - Model result: dynamic behavior, lateral and vertical tendency, oscillation, clearance sensitivity, bare shaft test
 - Grains per pound, front of center and kinetic energy in Advanced, and a warning when the arrow is too light for the bow
 - Tuning suggestions in two groups, adjustments on the bow and changes of equipment, each in order of priority and with a button to try it
+- Explore: which spine and point weight suit the bow on screen, as a colored grid, and which values move the result most
 - Share and back up: a link that carries the setup on screen, and a JSON file of the saved setups to export and import
 - Saved setups: save, open, rename, delete, save as new. They are kept in this browser, and the setup on screen survives a reload
 - Compare: the saved setup and the one on screen fly together, with a table of the values and model results that differ

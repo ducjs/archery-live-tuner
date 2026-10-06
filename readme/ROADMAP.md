@@ -32,7 +32,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 |---|---|---|
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | In progress (5 of 8 done; paper tear, walk-back and the spine chart test wait for reference documents) |
-| V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | In progress (sharing by link and by file done) |
+| V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | In progress (sharing, landscape and sensitivity chart done; open: more than two setups compared, offline use, the full 3D viewer) |
 | V0.4 | Real-world calibration | Not started |
 | V0.5 | Advanced parameters and recommendations | Not started |
 | V0.6 | Backend: setup storage | Not started |
@@ -44,7 +44,7 @@ Every phase has a demo on the "Xem trước" page of the app (`#demo-v0-1` to `#
 
 Done ahead of their phase:
 - V0.2: everything except the paper tear and walk-back tests and the spine chart test, which wait for the Easton documents in the pinned list
-- V0.3: sharing by link and by file; a preview of the 3D setup viewer (center shot and nocking point height only)
+- V0.3: sharing by link and by file, the landscape and the sensitivity chart; a preview of the 3D setup viewer (center shot and nocking point height only)
 - V0.5: ranked tuning suggestions
 
 ---
@@ -191,9 +191,9 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 
 Goal: explore many setups at once, and pass a setup to someone else.
 
-- [ ] Tuning landscape grid, e.g. spine × point weight (§16)
-- [ ] Grid computed in a Web Worker
-- [ ] Sensitivity (tornado) chart for the current setup (§34.5)
+- [x] Tuning landscape grid, e.g. spine × point weight (§16): "Show: Explore" in the simulator. Spine 400 to 1000 against point weight 80 to 140 gr, colored weak to stiff; a cell puts its pair into the setup
+- [x] Grid computed in a Web Worker, with the sensitivity chart. The previous result stays on screen until the new one arrives, and a browser without workers computes in place
+- [x] Sensitivity (tornado) chart for the current setup (§34.5): under the landscape, the values that move weak and stiff most, largest first. Simple mode lists only the values it shows
 - [x] Setup encoded in URL (§34.6): "Copy a link to this setup" under the saved setups. The link holds every value at full precision. Opening it offers the setup and replaces nothing until the user agrees
 - [x] Export / import setups as JSON: one file with the saved setups and the one on screen. Importing adds setups and never replaces a saved one
 - [ ] Compare more than two snapshots

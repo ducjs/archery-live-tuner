@@ -41,17 +41,6 @@ describe('demo tabs', () => {
 })
 
 describe('demos that do something', () => {
-  it('applies a landscape cell to the setup', async () => {
-    render(<Demos hash="#demo-v0-3" />)
-    await userEvent.click(screen.getByRole('button', { name: /^Spine 600, point 100 grain/ }))
-    const { arrow } = useTuningStore.getState().setup
-    expect(arrow.spine).toBe(600)
-    expect(screen.getByRole('button', { name: /^Spine 600, point 100 grain/ })).toHaveProperty(
-      'ariaPressed',
-      'true',
-    )
-  })
-
   it('reads the example target and changes its advice with the example', async () => {
     render(<Demos hash="#demo-v0-4" />)
     expect(screen.getByText(/Đọc bia: tên đang yếu\./)).toBeTruthy()
