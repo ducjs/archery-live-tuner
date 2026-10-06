@@ -701,6 +701,8 @@ and switch between them.
 
 As built (M6): the page has a "Your setups" section (name, save, save as new, new setup, and a list with open, compare, rename, delete). A "Compare" view flies the chosen saved setup and the setup on screen at the same moment, each in its own drawing, and lists the input values that differ and the model result of each. Comparing a saved setup with its own unsaved changes is the before / after case. Opening another setup, or starting a new one, asks first when unsaved changes would be lost.
 
+Since V0.3 up to three saved setups can stand next to the one on screen. They are ticked in a list above the playback controls; one always stays chosen. Each gets a drawing, and the tables get a column per setup, headed by the setup's name once there is more than one saved setup in the comparison. A value of the setup on screen is set in bold where it differs from any of the others. "Compare" on a saved setup starts a comparison with that one alone.
+
 ---
 
 # 15. Live slider mode

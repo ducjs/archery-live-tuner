@@ -384,7 +384,10 @@ export const vi: Messages = {
     openSetup: 'setup đang mở',
     differences: 'Khác nhau ở đâu',
     value: 'Thông số',
+    upTo: (most) => `(tối đa ${most})`,
     same: 'Hai setup có cùng thông số.',
+    sameAll: 'Các setup này có cùng thông số.',
     note: 'Cả hai cột là kết quả của mô hình, không phải quan sát từ bắn thật.',
+    noteAll: 'Mọi cột đều là kết quả của mô hình, không phải quan sát từ bắn thật.',
   },
 }

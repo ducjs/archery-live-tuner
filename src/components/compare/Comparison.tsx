@@ -12,8 +12,11 @@ export type Compared = {
   result: SimulationResult
 }
 
+/** How many saved setups can stand next to the one on screen. More would not fit a screen. */
+export const MOST_COMPARED = 3
+
 type FlightProps = {
-  saved: Compared
+  saved: Compared[]
   now: Compared
   view: 'top' | 'side'
   impact: ImpactMode
@@ -22,19 +25,20 @@ type FlightProps = {
   exaggeration: number
 }
 
-/** The saved setup and the one on screen, flown at the same moment. */
+/** The saved setups and the one on screen, flown at the same moment. */
 export function ComparisonFlight({ saved, now, view, impact, elapsed, exaggeration }: FlightProps) {
   const m = useMessages()
   const sides = [
-    { ...saved, title: m.compare.saved },
+    ...saved.map((side) => ({ ...side, title: m.compare.saved })),
     { ...now, title: m.compare.now },
   ]
   return (
     <div className="@container">
       <div className="grid gap-2 @4xl:grid-cols-2">
-        {sides.map(({ setup, result, title }) => (
+        {sides.map(({ setup, result, title }, index) => (
           <FlightView
-            key={title}
+            // A saved setup and the one on screen can be the same setup, before and after.
+            key={`${index}-${setup.id}`}
             view={view}
             result={result}
             handedness={setup.bow.handedness}
@@ -52,38 +56,47 @@ export function ComparisonFlight({ saved, now, view, impact, elapsed, exaggerati
 
 const RATED = ['stiffness', 'lateral', 'vertical', 'oscillation', 'clearance'] as const
 
-type Row = { label: string; saved: string; now: string }
+/** One value or result, as each compared setup has it. The setup on screen is last. */
+type Row = { label: string; values: string[] }
 
 function Rows({ rows }: { rows: Row[] }) {
   return (
     <tbody>
-      {rows.map((row) => {
-        const changed = row.saved !== row.now
-        return (
-          <tr key={row.label} className="border-line border-t">
-            <th scope="row" className="py-1.5 pr-2 text-left font-normal">
-              {row.label}
-            </th>
-            <td className="text-ink-muted py-1.5 pr-2 text-right">{row.saved}</td>
-            <td className={`py-1.5 text-right ${changed ? 'font-semibold' : 'text-ink-muted'}`}>
-              {row.now}
-            </td>
-          </tr>
-        )
-      })}
+      {rows.map((row) => (
+        <tr key={row.label} className="border-line border-t">
+          <th scope="row" className="py-1.5 pr-2 text-left font-normal">
+            {row.label}
+          </th>
+          {row.values.map((value, index) => {
+            const last = index === row.values.length - 1
+            // The setup on screen stands out where it differs from a saved one.
+            const changed = last && row.values.some((other) => other !== value)
+            return (
+              <td
+                key={index}
+                className={`py-1.5 text-right ${last ? '' : 'pr-2'} ${changed ? 'font-semibold' : 'text-ink-muted'}`}
+              >
+                {value}
+              </td>
+            )
+          })}
+        </tr>
+      ))}
     </tbody>
   )
 }
 
 type TableProps = {
-  saved: Compared
+  saved: Compared[]
   now: Compared
   units: UnitSystem
 }
 
-/** What was changed between two setups, and what the model reports for each. */
+/** What was changed between the setups, and what the model reports for each. */
 export function ComparisonTable({ saved, now, units }: TableProps) {
   const m = useMessages()
+  const sides = [...saved, now]
+  const several = saved.length > 1
 
   const inputs: Row[] = PARAMETERS.flatMap((parameter) => {
     const show = (setup: TuningSetup) =>
@@ -91,12 +104,10 @@ export function ComparisonTable({ saved, now, units }: TableProps) {
         ? (parameterText(m, parameter).options?.[getValue(setup, parameter)] ??
           getValue(setup, parameter))
         : formatValue(parameter, getValue(setup, parameter), units)
-    const row = {
-      label: parameterText(m, parameter).label,
-      saved: show(saved.setup),
-      now: show(now.setup),
-    }
-    return row.saved === row.now ? [] : [row]
+    const values = sides.map((side) => show(side.setup))
+    return values.every((value) => value === values[0])
+      ? []
+      : [{ label: parameterText(m, parameter).label, values }]
   })
 
   const speed = (result: SimulationResult) =>
@@ -104,24 +115,30 @@ export function ComparisonTable({ saved, now, units }: TableProps) {
   const results: Row[] = [
     ...RATED.map((key) => ({
       label: m.result[key],
-      saved: m.rating[saved.result.classification[key]],
-      now: m.rating[now.result.classification[key]],
+      values: sides.map((side) => m.rating[side.result.classification[key]]),
     })),
-    { label: m.result.speed, saved: speed(saved.result), now: speed(now.result) },
+    { label: m.result.speed, values: sides.map((side) => speed(side.result)) },
   ]
 
+  // Two setups are "saved" and "now"; more than two need their names.
+  const headings = several
+    ? [...saved.map((side) => side.setup.name), m.compare.now]
+    : [m.compare.saved, m.compare.now]
   const head = (title: string) => (
     <thead className="text-ink-muted text-sm">
       <tr>
         <th scope="col" className="py-1 text-left font-normal">
           {title}
         </th>
-        <th scope="col" className="w-1/4 py-1 pr-2 text-right font-normal">
-          {m.compare.saved}
-        </th>
-        <th scope="col" className="w-1/4 py-1 text-right font-normal">
-          {m.compare.now}
-        </th>
+        {headings.map((heading, index) => (
+          <th
+            key={index}
+            scope="col"
+            className={`max-w-28 py-1 text-right font-normal break-words ${several ? '' : 'w-1/4'} ${index === headings.length - 1 ? '' : 'pr-2'}`}
+          >
+            {heading}
+          </th>
+        ))}
       </tr>
     </thead>
   )
@@ -132,20 +149,26 @@ export function ComparisonTable({ saved, now, units }: TableProps) {
         {m.compare.differences}
       </h2>
       {inputs.length === 0 ? (
-        <p className="mt-2 max-w-prose">{m.compare.same}</p>
+        <p className="mt-2 max-w-prose">{several ? m.compare.sameAll : m.compare.same}</p>
       ) : (
-        <table className="mt-2 w-full">
-          {head(m.compare.value)}
-          <Rows rows={inputs} />
-        </table>
+        <div className="overflow-x-auto">
+          <table className="mt-2 w-full">
+            {head(m.compare.value)}
+            <Rows rows={inputs} />
+          </table>
+        </div>
       )}
 
       <h2 className="font-display mt-6 text-xl font-semibold">{m.result.heading}</h2>
-      <table className="mt-2 w-full">
-        {head(m.compare.value)}
-        <Rows rows={results} />
-      </table>
-      <p className="text-ink-muted mt-3 max-w-prose text-sm">{m.compare.note}</p>
+      <div className="overflow-x-auto">
+        <table className="mt-2 w-full">
+          {head(m.compare.value)}
+          <Rows rows={results} />
+        </table>
+      </div>
+      <p className="text-ink-muted mt-3 max-w-prose text-sm">
+        {several ? m.compare.noteAll : m.compare.note}
+      </p>
     </section>
   )
 }

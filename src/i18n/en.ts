@@ -373,8 +373,11 @@ export const en = {
     openSetup: 'the setup on screen',
     differences: 'What differs',
     value: 'Value',
+    upTo: (most: number) => `(up to ${most})`,
     same: 'Both setups have the same values.',
+    sameAll: 'All of these setups have the same values.',
     note: 'Both columns are model results, not observations from real shooting.',
+    noteAll: 'Every column is a model result, not an observation from real shooting.',
   },
 }
 

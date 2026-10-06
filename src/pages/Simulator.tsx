@@ -1,7 +1,10 @@
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { SegmentedControl } from '../components/common/SegmentedControl.tsx'
-import { inputClass } from '../components/common/styles.ts'
-import { ComparisonFlight, ComparisonTable } from '../components/compare/Comparison.tsx'
+import {
+  ComparisonFlight,
+  ComparisonTable,
+  MOST_COMPARED,
+} from '../components/compare/Comparison.tsx'
 import { Landscape, SensitivityChart } from '../components/explore/ExploreViews.tsx'
 import { useExplore } from '../components/explore/useExplore.ts'
 import { SavedSetups } from '../components/setups/SavedSetups.tsx'
@@ -60,7 +63,6 @@ function ExploreStage() {
 
 export function Simulator() {
   const m = useMessages()
-  const compareId = useId()
   const setup = useTuningStore((state) => state.setup)
   const mode = useTuningStore((state) => state.mode)
   const units = useTuningStore((state) => state.units)
@@ -103,26 +105,34 @@ export function Simulator() {
   // The top and side views can be put away, to leave a small screen to the values.
   const [drawingHidden, setDrawingHidden] = useState(false)
 
-  // Compare against the chosen setup. Without a choice, against the saved copy of
-  // the setup on screen (before and after), or else the first saved one.
-  const [chosenId, setChosenId] = useState<string | null>(null)
-  const other =
-    saved.find((entry) => entry.id === chosenId) ??
-    saved.find((entry) => entry.id === setup.id) ??
-    saved[0]
-  const otherResult = useMemo(
-    () => other && heuristicModel.simulate(other, { trajectory }),
-    [other, trajectory],
+  // Compare against the chosen setups. Without a choice, against the saved copy
+  // of the setup on screen (before and after), or else the first saved one.
+  const [chosenIds, setChosenIds] = useState<string[]>([])
+  const others = useMemo(() => {
+    const chosen = chosenIds.flatMap((id) => saved.find((entry) => entry.id === id) ?? [])
+    const fallback = saved.find((entry) => entry.id === setup.id) ?? saved[0]
+    return chosen.length > 0 ? chosen : fallback ? [fallback] : []
+  }, [chosenIds, saved, setup.id])
+  const otherResults = useMemo(
+    () =>
+      others.map((other) => ({
+        setup: other,
+        result: heuristicModel.simulate(other, { trajectory }),
+      })),
+    [others, trajectory],
   )
-  const comparing = stage === 'compare' && other && otherResult
-  const compared = comparing && {
-    saved: { setup: other, result: otherResult },
-    now: { setup, result },
+  const compared = stage === 'compare' &&
+    otherResults.length > 0 && { saved: otherResults, now: { setup, result } }
+  const toggleCompared = (id: string) => {
+    const current = others.map((other) => other.id)
+    setChosenIds(
+      current.includes(id) ? current.filter((chosen) => chosen !== id) : [...current, id],
+    )
   }
 
-  // The slower of two flights sets the length of the loop, so both finish.
+  // The slowest of the flights sets the length of the loop, so all of them finish.
   const duration = compared
-    ? Math.max(clipSeconds(result), clipSeconds(otherResult))
+    ? Math.max(clipSeconds(result), ...otherResults.map((other) => clipSeconds(other.result)))
     : clipSeconds(result)
   const playback = usePlayback(duration, HOLD_SECONDS, view.speed)
 
@@ -214,23 +224,35 @@ export function Simulator() {
           <div className="order-2 grid min-w-0 gap-3 lg:mt-3">
             {stage === 'bow' && <BowViewerControls viewer={viewer} />}
             {compared && (
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <label htmlFor={compareId} className="font-medium">
-                  {m.compare.with}
-                </label>
-                <select
-                  id={compareId}
-                  value={other.id}
-                  onChange={(event) => setChosenId(event.target.value)}
-                  className={`${inputClass} max-w-full`}
-                >
-                  {saved.map((entry) => (
-                    <option key={entry.id} value={entry.id}>
-                      {entry.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <fieldset>
+                <legend className="font-medium">
+                  {m.compare.with}{' '}
+                  <span className="text-ink-muted text-sm font-normal">
+                    {m.compare.upTo(MOST_COMPARED)}
+                  </span>
+                </legend>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {saved.map((entry) => {
+                    const checked = others.some((other) => other.id === entry.id)
+                    return (
+                      <label
+                        key={entry.id}
+                        className="border-line bg-surface has-checked:border-ink has-focus-visible:outline-accent has-disabled:text-ink-muted flex min-h-11 max-w-full cursor-pointer items-center gap-2 rounded-md border px-3 font-medium has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-disabled:cursor-default"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          // One setup always stays, and no more than fit on screen.
+                          disabled={checked ? others.length === 1 : others.length >= MOST_COMPARED}
+                          onChange={() => toggleCompared(entry.id)}
+                          className="accent-accent size-5 cursor-pointer disabled:cursor-default"
+                        />
+                        <span className="min-w-0 break-words">{entry.name}</span>
+                      </label>
+                    )
+                  })}
+                </div>
+              </fieldset>
             )}
             {stage === 'flight' && (
               <PlaybackControls
@@ -319,7 +341,7 @@ export function Simulator() {
         >
           <SavedSetups
             onCompare={(id) => {
-              setChosenId(id)
+              setChosenIds([id])
               setStage('compare')
             }}
           />

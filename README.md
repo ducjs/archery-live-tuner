@@ -23,7 +23,7 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 - Explore: which spine and point weight suit the bow on screen, as a colored grid, and which values move the result most
 - Share and back up: a link that carries the setup on screen, and a JSON file of the saved setups to export and import
 - Saved setups: save, open, rename, delete, save as new. They are kept in this browser, and the setup on screen survives a reload
-- Compare: the saved setup and the one on screen fly together, with a table of the values and model results that differ
+- Compare: up to three saved setups and the one on screen fly together, with a table of the values and model results that differ
 - English and Vietnamese, and a choice of lb / inch / grain or kg / cm / gram
 
 - A preview of the bow in 3D, showing where center shot and nocking point height sit
