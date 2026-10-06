@@ -61,7 +61,11 @@ describe('bowGeometry', () => {
   })
 
   it('moves the string and limb tips with brace height', () => {
-    const geometry = bowGeometry(withValue('bow.braceHeight', 240), 1)
+    // With an even tiller, so that the string stands upright.
+    const geometry = bowGeometry(
+      setValue(withValue('bow.braceHeight', 240), getParameter('bow.tiller'), 0),
+      1,
+    )
     expect(geometry.stringX).toBe(-240)
     expect(geometry.string[1]![0]).toBe(-240)
     expect(geometry.limbs[0].at(-1)![0]).toBe(-210)
@@ -182,7 +186,7 @@ describe('the setup on the bow', () => {
     expect(apart.string[3]![2]).toBeLessThan(0)
   })
 
-  it('opens the upper limb and closes the lower one for a positive tiller', () => {
+  it('swings the limbs in their pockets for tiller, and leans the string with them', () => {
     const even = bowGeometry(withValue('bow.tiller', 0), 1)
     const positive = bowGeometry(withValue('bow.tiller', 8), 1)
     const gap = (mark: { from: [number, number, number]; to: [number, number, number] }) =>
@@ -190,10 +194,24 @@ describe('the setup on the bow', () => {
     expect(gap(even.tiller[0])).toBeCloseTo(gap(even.tiller[1]), 9)
     // Top tiller minus bottom tiller is the value entered.
     expect(gap(positive.tiller[0]) - gap(positive.tiller[1])).toBeCloseTo(8, 9)
-    // The tips, and so the string, stay where they are; so do the limbs in their pockets.
-    expect(positive.limbs[0].at(-1)).toEqual(even.limbs[0].at(-1))
+    // The limbs stay in their pockets.
     expect(positive.limbs[0][0]).toEqual(even.limbs[0][0])
     expect(positive.limbs[1][0]).toEqual(even.limbs[1][0])
+    // The upper tip swings toward the archer and the lower one as far toward the
+    // target: a wider gap at the top means a string that leans back at the top.
+    const tipX = (geometry: typeof even, limb: 0 | 1) => geometry.limbs[limb].at(-1)![0]
+    const upperSwing = tipX(positive, 0) - tipX(even, 0)
+    expect(upperSwing).toBeLessThan(0)
+    expect(tipX(positive, 1) - tipX(even, 1)).toBeCloseTo(-upperSwing, 9)
+    // Each limb swings as a whole: more the further from the pocket.
+    const moved = positive.limbs[0].map((point, index) => point[0] - even.limbs[0][index]![0])
+    expect(moved).toEqual([...moved].sort((a, b) => b - a))
+    // The string goes with the tips, so it is no longer upright.
+    expect(positive.string[1]![0]).toBeLessThan(positive.string[3]![0])
+    expect(even.string[1]![0]).toBe(even.string[3]![0])
+    // Where the arrow sits, it is where it was: the brace height is kept.
+    expect(positive.stringX).toBe(even.stringX)
+    expect((positive.string[1]![0] + positive.string[3]![0]) / 2).toBeCloseTo(even.stringX, 9)
   })
 
   it('draws the string back to the draw length, and keeps its length', () => {
@@ -211,8 +229,8 @@ describe('the setup on the bow', () => {
             sum + Math.hypot(point[0] - points[index]![0], point[1] - points[index]![1]),
           0,
         )
-    // Without the nocking point height, which kinks the string a little.
-    const square = withValue('bow.nockingPointHeight', 0)
+    // Without the nocking point height, which kinks the string a little, and with an even tiller.
+    const square = setValue(withValue('bow.nockingPointHeight', 0), getParameter('bow.tiller'), 0)
     const atBrace = bowGeometry(square, 1).string.slice(1, 4)
     const atDraw = bowGeometry(square, { amplify: 1, drawn: true }).string.slice(1, 4)
     expect(length(atDraw)).toBeCloseTo(length(atBrace), 6)
