@@ -23,6 +23,16 @@ export type TrajectoryPoint = {
   flex?: number
 }
 
+/** The two numbers that shape the draw force curve (spec §39.2). */
+export type CurveShape = {
+  /** How far the curve bulges above a straight line in mid-draw. Sets the stored energy. */
+  fullness: number
+  /** How much steeper the two ends are than the middle. Sets the force gain at the clicker. */
+  endRise: number
+  /** How many forces measured by the archer shaped it. 0 is an estimate from the setup. */
+  measuredPoints: 0 | 1 | 2
+}
+
 export type SimulationMetrics = {
   /** -1 = very weak, 0 = neutral, +1 = very stiff */
   dynamicBehavior: number
@@ -52,6 +62,14 @@ export type SimulationMetrics = {
   launchSpeed: number
   /** J, of the arrow at that speed */
   kineticEnergy: number
+  /** J, stored in the bow at full draw: the area under the draw force curve */
+  storedEnergy: number
+  /** N per mm, how fast the force on the fingers still rises at full draw */
+  clickerGain: number
+  /** Shape of the draw force curve, see `CurveShape` */
+  curveFullness: number
+  curveEndRise: number
+  curveMeasuredPoints: 0 | 1 | 2
   /** gr/lb, arrow mass per pound of draw weight */
   grainsPerPound: number
   /** %, how far the balance point sits ahead of the middle of the shaft */

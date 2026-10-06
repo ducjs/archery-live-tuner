@@ -1,16 +1,15 @@
 import { arrowTotalMass, type ArrowSetup } from '../../models/arrow.ts'
-import type { BowSetup } from '../../models/bow.ts'
+import { powerStroke, type BowSetup } from '../../models/bow.ts'
 import type { Coefficients } from '../coefficients/coefficients.ts'
+import { drawCurve } from './drawCurve.ts'
 
-/** mm, distance over which the string accelerates the arrow */
-export function powerStroke(bow: BowSetup): number {
-  return bow.drawLength - bow.braceHeight
-}
+export { powerStroke }
 
-/** J */
+/** J, the area under the draw force curve */
 export function storedEnergy(bow: BowSetup, coefficients: Coefficients): number {
   const linear = 0.5 * bow.drawWeight * (powerStroke(bow) / 1000)
-  return linear * coefficients.energy.drawCurveFactor
+  // A straight line stores ½·F·s; the bulge of the curve adds a third of its fullness.
+  return linear * (1 + drawCurve(bow, coefficients).fullness / 3)
 }
 
 /** mm/s, estimated launch speed from a virtual-mass energy balance */

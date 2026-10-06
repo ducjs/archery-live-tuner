@@ -1,4 +1,4 @@
-import base from './heuristic-0.3.json'
+import base from './heuristic-0.4.json'
 
 // Every number in the coefficient file is a HEURISTIC. None of them has been
 // validated against real shooting data. They are tuned so that the reference
@@ -156,11 +156,40 @@ export type Coefficients = {
   }
 
   energy: {
-    /** Stored energy relative to a linear draw-force curve (½·F·stroke). */
-    drawCurveFactor: number
     /** g, mass of limbs and string that moves with the arrow */
     limbVirtualMass: number
     stringMassShare: number
+  }
+
+  /**
+   * The draw force curve of spec §39: force over the power stroke as
+   * `u + fullness·u(1−u) + endRise·u(1−u)(1−2u)`, with `u` from 0 at brace
+   * height to 1 at full draw.
+   */
+  drawCurve: {
+    /** Fullness of the three curve styles. Stored energy is `1 + fullness / 3` times that of a straight line. */
+    fullnessStraight: number
+    /** 0.42 gives the factor of 1.14 the model used before it had a curve. */
+    fullnessStandard: number
+    fullnessFull: number
+    /**
+     * End rise of a bow whose length fits the draw. Set so that the reference
+     * setup gains 5% of its draw weight per inch at full draw, the usual rule
+     * for a recurve near 28 in.
+     */
+    endRise: number
+    /** End rise added per inch of draw beyond the one the bow length fits. A guess at the size of a known direction. */
+    endRisePerInch: number
+    /** The estimate is kept between 0 and this, so the curve always rises. */
+    endRiseMax: number
+    /** mm, the draw length that a bow of `fitBowLength` fits: 28 in. */
+    fitDrawLength: number
+    /** in. Each inch of bow length fits one more inch of draw. */
+    fitBowLength: number
+    /** Share of the draw weight a common recurve gains per inch at full draw. */
+    usualGainPerInch: number
+    /** Half-width of what is still read as "about usual". */
+    usualGainBand: number
   }
 
   thresholds: {

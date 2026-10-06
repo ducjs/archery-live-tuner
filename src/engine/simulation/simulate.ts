@@ -14,9 +14,11 @@ import {
   powerStroke,
   relativeBowInertia,
   riserPassTime,
+  storedEnergy,
   timeOnString,
 } from './bowModel.ts'
 import { classify } from './classification.ts'
+import { clickerGain, drawCurve } from './drawCurve.ts'
 import { frontOfCenter, grainsPerPound, kineticEnergy } from './derivedMetrics.ts'
 import { stiffnessMismatch } from './dynamicSpine.ts'
 import { plungerBehaviorShift, plungerLateralPush } from './plungerModel.ts'
@@ -152,6 +154,7 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
 
   const speed = launchSpeed(bow, arrow, c)
   const braceRange = braceHeightRange(bow)
+  const curve = drawCurve(bow, c)
   const metrics: SimulationMetrics = {
     dynamicBehavior,
     flexAmplitude,
@@ -168,6 +171,11 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     clearanceCycles,
     launchSpeed: speed,
     kineticEnergy: kineticEnergy(arrow, speed),
+    storedEnergy: storedEnergy(bow, c),
+    clickerGain: clickerGain(bow, curve),
+    curveFullness: curve.fullness,
+    curveEndRise: curve.endRise,
+    curveMeasuredPoints: curve.measuredPoints,
     grainsPerPound: grainsPerPound(bow, arrow),
     frontOfCenter: frontOfCenter(arrow),
     bowLength: bowLength(bow),

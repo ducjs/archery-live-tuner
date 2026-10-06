@@ -73,6 +73,11 @@ export const vi: Messages = {
       label: 'Độ khít nock',
       options: { LOOSE: 'Lỏng', NORMAL: 'Vừa', TIGHT: 'Chặt' },
     },
+    'bow.drawCurve': {
+      label: 'Đường lực kéo',
+      hint: 'Ước lượng lực tăng thế nào trong lúc kéo. Mức chuẩn hợp với phần lớn limb recurve.',
+      options: { STRAIGHT: 'Thẳng', STANDARD: 'Chuẩn', FULL: 'Đầy giữa hành trình' },
+    },
     'arrow.length': {
       label: 'Chiều dài tên',
       hint: 'Từ rãnh nock tới cuối thân tên, không tính point.',
@@ -317,7 +322,7 @@ export const vi: Messages = {
     goTo: (label) => `Bấm để chỉnh: ${label}`,
     drawn: 'Kéo hết dây',
     notDrawn:
-      'Không có gì để vẽ cho lực kéo, spine, khối lượng thân tên, độ cứng plunger, khối lượng dây, độ khít nock, khối lượng cung, hay khối lượng insert, nock và cánh: chúng đổi cách tên bay, không đổi vị trí bộ phận nào.',
+      'Không có gì để vẽ cho lực kéo, spine, khối lượng thân tên, độ cứng plunger, khối lượng dây, độ khít nock, đường lực kéo, khối lượng cung, hay khối lượng insert, nock và cánh: chúng đổi cách tên bay, không đổi vị trí bộ phận nào.',
     amplify: (times) => `Vẽ độ lệch lớn gấp ${times} lần`,
     about:
       'Cây cung đi theo setup. Đổi một thông số thì camera bay tới bộ phận đó và ghi giá trị ngay tại chỗ. Bấm vào một bộ phận trên cung, hoặc nút của thiết bị đó, để tới thanh trượt của nó. Kéo để xoay cung, cuộn hoặc chụm ngón để phóng to. Đường vàng đứt là đường dây khi nhìn từ trên, và là đường vuông góc với dây khi nhìn từ bên. Các độ lệch vài mm khó thấy ở tỉ lệ thật; bật công tắc để vẽ lớn hơn. Nhãn luôn ghi giá trị thật. Cây cung là hình đơn giản hoá, không phải thiết bị của bạn.',

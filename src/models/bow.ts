@@ -11,6 +11,9 @@ export type RiserSize = 'H23' | 'H25' | 'H27'
  */
 export type LimbSize = '66' | '68' | '70'
 
+/** How the force builds up over the draw, when the archer has not measured it (spec §39.3). */
+export type DrawCurveStyle = 'STRAIGHT' | 'STANDARD' | 'FULL'
+
 export type StringSetup = {
   strandCount: number
   /** g */
@@ -49,6 +52,8 @@ export type BowSetup = {
   stabilizerMass: number
   /** mm, distance of the stabilizer mass in front of the riser */
   stabilizerPosition: number
+  /** An estimate of the shape of the draw force curve */
+  drawCurve: DrawCurveStyle
   string: StringSetup
 }
 
@@ -78,4 +83,9 @@ export function braceHeightRange(bow: Pick<BowSetup, 'riserSize' | 'limbSize'>):
   const shift = (bowLength(bow) - 68) * BRACE_PER_INCH
   // The guide gives inches: 8 1/4 to 9 1/2 in for a 68 in bow.
   return { min: 8.25 * 25.4 + shift, max: 9.5 * 25.4 + shift }
+}
+
+/** mm, distance over which the string accelerates the arrow */
+export function powerStroke(bow: Pick<BowSetup, 'drawLength' | 'braceHeight'>): number {
+  return bow.drawLength - bow.braceHeight
 }

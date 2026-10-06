@@ -1,5 +1,5 @@
 {
-  "version": "heuristic-0.3",
+  "version": "heuristic-0.4",
   "reference": {
     "drawWeight": 169.03242137989898,
     "drawLength": 711.1999999999999,
@@ -85,9 +85,20 @@
     "perMmLimbTwist": 0.04
   },
   "energy": {
-    "drawCurveFactor": 1.14,
     "limbVirtualMass": 5.5,
     "stringMassShare": 0.3333333333333333
+  },
+  "drawCurve": {
+    "fullnessStraight": 0.15,
+    "fullnessStandard": 0.42,
+    "fullnessFull": 0.6,
+    "endRise": 0.39,
+    "endRisePerInch": 0.1,
+    "endRiseMax": 0.8,
+    "fitDrawLength": 711.2,
+    "fitBowLength": 68,
+    "usualGainPerInch": 0.05,
+    "usualGainBand": 0.01
   },
   "thresholds": {
     "stiffnessNeutral": 0.2,

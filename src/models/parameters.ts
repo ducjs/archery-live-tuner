@@ -64,6 +64,8 @@ const HINTS: Record<string, string> = {
     'Limb tip to the side of the riser centerline. Negative is left, positive is right.',
   'bow.bowMass': 'Everything held in the bow hand, stabilizers included.',
   'bow.stabilizerPosition': 'How far in front of the riser the weight sits.',
+  'bow.drawCurve':
+    'An estimate of how the force builds up over the draw. Standard suits most recurve limbs.',
   'arrow.length': 'Nock groove to the end of the shaft, without the point.',
   'arrow.spine': 'A lower number is a stiffer shaft.',
   'arrow.fletchingWeight': 'All vanes together.',
@@ -232,6 +234,13 @@ export const PARAMETERS: readonly Parameter[] = [
     'Nock fit',
     { LOOSE: 'Loose', NORMAL: 'Normal', TIGHT: 'Tight' },
     'NORMAL',
+  ),
+  choice(
+    'bow.drawCurve',
+    'advanced',
+    'Draw force curve',
+    { STRAIGHT: 'Straight', STANDARD: 'Standard', FULL: 'Full in mid-draw' },
+    'STANDARD',
   ),
 
   num('arrow.length', 'simple', 'Arrow length', {

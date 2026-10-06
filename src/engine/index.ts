@@ -26,5 +26,6 @@ export {
   type SimulateOptions,
   type SimulationModel,
 } from './simulation/simulate.ts'
+export { curvePoints, shapeOf } from './simulation/drawCurve.ts'
 export { MIN_GRAINS_PER_POUND } from './simulation/derivedMetrics.ts'
 export { DEFAULT_TRAJECTORY_OPTIONS, type TrajectoryOptions } from './simulation/trajectory.ts'

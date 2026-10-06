@@ -3,11 +3,11 @@ import { createDefaultSetup } from '../../models/setup.ts'
 import { convert } from '../../utils/units.ts'
 import { createHeuristicModel, heuristicModel } from '../simulation/simulate.ts'
 import { HEURISTIC_V0, parseCoefficients } from './coefficients.ts'
-import base from './heuristic-0.3.json'
+import base from './heuristic-0.4.json'
 
 describe('coefficient file', () => {
   it('names its version, and results carry it', () => {
-    expect(base.version).toBe('heuristic-0.3')
+    expect(base.version).toBe('heuristic-0.4')
     expect(HEURISTIC_V0.version).toBe(base.version)
     expect(heuristicModel.simulate(createDefaultSetup()).modelVersion).toBe(base.version)
   })
@@ -36,8 +36,8 @@ describe('coefficient file', () => {
 
   it('refuses a number that is not one', () => {
     const broken = structuredClone(base) as unknown as { energy: Record<string, unknown> }
-    broken.energy.drawCurveFactor = '1.14'
-    expect(() => parseCoefficients(broken)).toThrow('energy.drawCurveFactor')
+    broken.energy.limbVirtualMass = '5.5'
+    expect(() => parseCoefficients(broken)).toThrow('energy.limbVirtualMass')
   })
 
   it('refuses an entry it does not know', () => {

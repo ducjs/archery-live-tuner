@@ -117,4 +117,11 @@ describe('setups stored before a parameter was added', () => {
     expect(parseSetup({ ...current, bow: 'none' }).ok).toBe(false)
     expect(parseSetup(null).ok).toBe(false)
   })
+
+  it('opens a setup saved before the draw force curve existed', () => {
+    const current = createDefaultSetup()
+    const { drawCurve: _left, ...oldBow } = current.bow
+    const parsed = parseSetup({ ...current, bow: oldBow })
+    expect(parsed.ok && parsed.setup.bow.drawCurve).toBe('STANDARD')
+  })
 })

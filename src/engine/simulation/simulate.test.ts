@@ -477,3 +477,50 @@ describe('limb alignment', () => {
     expect(analyze(aligned(-2, 2))).toEqual(twisted)
   })
 })
+
+describe('draw force curve (§39)', () => {
+  const reference = createDefaultSetup()
+  const withValue = (key: string, value: number | string) =>
+    setValue(reference, getParameter(key), value)
+  const metrics = (setup: TuningSetup) => heuristicModel.analyze(setup).metrics
+
+  it('reports the curve of the reference setup', () => {
+    const m = metrics(reference)
+    expect(m.curveFullness).toBe(0.42)
+    expect(m.curveEndRise).toBeCloseTo(0.39, 9)
+    expect(m.curveMeasuredPoints).toBe(0)
+    // 38 lb over a 19.3 in power stroke, times 1.14: about 47 J.
+    expect(m.storedEnergy).toBeGreaterThan(44)
+    expect(m.storedEnergy).toBeLessThan(50)
+    expect(m.storedEnergy).toBeGreaterThan(m.kineticEnergy)
+  })
+
+  it('shoots faster with a fuller curve, and leaves weak and stiff alone', () => {
+    const straight = metrics(withValue('bow.drawCurve', 'STRAIGHT'))
+    const standard = metrics(reference)
+    const full = metrics(withValue('bow.drawCurve', 'FULL'))
+    expect(straight.launchSpeed).toBeLessThan(standard.launchSpeed)
+    expect(standard.launchSpeed).toBeLessThan(full.launchSpeed)
+    expect(straight.dynamicBehavior).toBe(standard.dynamicBehavior)
+    expect(full.dynamicBehavior).toBe(standard.dynamicBehavior)
+  })
+
+  it('gains more at the clicker on shorter limbs, at the same speed', () => {
+    const short = metrics(withValue('bow.limbSize', '66'))
+    const long = metrics(withValue('bow.limbSize', '70'))
+    expect(short.clickerGain).toBeGreaterThan(long.clickerGain)
+    expect(short.launchSpeed).toBe(long.launchSpeed)
+  })
+
+  it('reports finite curve numbers for any valid setup', () => {
+    fc.assert(
+      fc.property(setupArbitrary, (setup) => {
+        const m = metrics(setup)
+        expect(Number.isFinite(m.storedEnergy)).toBe(true)
+        expect(m.clickerGain).toBeGreaterThan(0)
+        expect(Number.isFinite(m.curveFullness)).toBe(true)
+        expect(Number.isFinite(m.curveEndRise)).toBe(true)
+      }),
+    )
+  })
+})

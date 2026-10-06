@@ -113,8 +113,8 @@ Tần số này chỉ điều khiển tốc độ uốn trong hoạt hình. Nó 
 ```text
 powerStroke = drawLength − braceHeight                         mm
 
-E = ½ · drawWeight · powerStroke · drawCurveFactor             J   (powerStroke đổi ra m)
-    drawCurveFactor = 1.14
+E = ½ · drawWeight · powerStroke · (1 + h / 3)                 J   (powerStroke đổi ra m)
+    h = độ đầy của đường lực kéo: 0.15 thẳng, 0.42 chuẩn, 0.60 đầy giữa hành trình
 
 m_động = m_tổng + limbVirtualMass + stringMass · stringMassShare
     limbVirtualMass = 5.5 g,  stringMassShare = 1/3
@@ -122,7 +122,20 @@ m_động = m_tổng + limbVirtualMass + stringMass · stringMassShare
 v = √(2·E / m_động)                                            m/s (m_động đổi ra kg)
 ```
 
-`½·F·s` là năng lượng của đường lực kéo tuyến tính; `drawCurveFactor` bù cho việc cung recurve tích nhiều hơn thế. `limbVirtualMass` là phần khối lượng của limb và dây cùng chuyển động với tên, nên ăn bớt năng lượng. Không có hệ số hiệu suất riêng.
+`½·F·s` là năng lượng của đường lực kéo thẳng; `1 + h / 3` là phần cung recurve tích thêm nhờ đường cong phồng lên ở giữa hành trình. Mức chuẩn cho đúng hệ số 1.14 mà mô hình dùng từ trước (từ `heuristic-0.4` hệ số cố định `drawCurveFactor` không còn).
+
+Đường lực kéo, với `u` là phần power stroke đã kéo (0 ở brace height, 1 ở full draw):
+
+```text
+F(u) = drawWeight · ( u + h·u(1−u) + k·u(1−u)(1−2u) )
+
+k = 0.39 + 0.10 · (drawLength − drawVừa)          inch, giữ trong 0 … 0.8
+    drawVừa = 28 in + (chiều dài cung − 68 in)
+
+lực tăng ở clicker = drawWeight / powerStroke · (1 − h + k)
+```
+
+`k` (độ dốc cuối) không đổi năng lượng: số hạng của nó thêm bao nhiêu diện tích ở nửa đầu thì bớt bấy nhiêu ở nửa sau. Nó chỉ đổi lực tăng ở clicker. 0.39 làm setup tham chiếu tăng 5% lực kéo mỗi inch ở full draw; 0.10 mỗi inch là ước đoán về độ lớn, chưa có số đo. Chi tiết ở spec §39. `limbVirtualMass` là phần khối lượng của limb và dây cùng chuyển động với tên, nên ăn bớt năng lượng. Không có hệ số hiệu suất riêng.
 
 ### 5.2 Quán tính của cung
 
@@ -504,7 +517,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 
 | Nội dung | File |
 |---|---|
-| Mọi hệ số và ngưỡng (con số) | `src/engine/coefficients/heuristic-0.3.json` |
+| Mọi hệ số và ngưỡng (con số) | `src/engine/coefficients/heuristic-0.4.json` |
 | Ý nghĩa từng hệ số, kiểm tra file khi nạp | `src/engine/coefficients/coefficients.ts` |
 | Khối lượng tên | `src/models/arrow.ts` |
 | `EI`, tần số uốn | `src/engine/simulation/arrowModel.ts` |
