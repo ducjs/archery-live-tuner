@@ -7,6 +7,7 @@ Phase tracker for the project. The specification lives in [recurve-tuning-simula
 Những việc chỉ chủ dự án làm được: quyết định, cấp quyền, tìm tài liệu, xem bằng mắt. Xong việc nào thì tick, hết thì xóa dòng đó ở lần cập nhật sau.
 
 - [ ] Mở site thật trên điện thoại và rà 10 tiêu chí ở spec §33. *Đây là việc cuối cùng của V0.1: mọi mục đã tick, chỉ còn bước kiểm này.*
+- [ ] Mở "Hiển thị: Cung 3D" trên điện thoại thật: xoay bằng một ngón, phóng to bằng hai ngón, bấm thử năm góc nhìn có sẵn. *Mới kiểm bằng Chrome trên máy tính ở bề rộng điện thoại, với WebGL phần mềm; thao tác cảm ứng trên cảnh 3D chưa thử được.*
 - [ ] Thử thanh trượt trên điện thoại thật: vuốt dọc ngang qua thanh trượt phải cuộn trang, chỉ kéo đúng nút tròn mới đổi giá trị. *Mới kiểm bằng Chrome giả lập màn cảm ứng trên máy tính, chưa thử trên máy thật.*
 - [ ] Chuyển repo GitHub sang private, rồi nối repo với Cloudflare Pages: lệnh build `npm run build`, thư mục xuất `dist`. *Ở gói GitHub miễn phí, repo private thì GitHub Pages ngừng chạy, nên site sẽ tắt cho tới khi Cloudflare chạy. Nối xong thì báo để bỏ bước deploy GitHub Pages khỏi workflow.*
 - [ ] Xem khối "đang giả định" trong chế độ Cơ bản trên trình duyệt, nhất là trên điện thoại. *Khối này đã qua test nhưng chưa ai nhìn bằng mắt.*
@@ -32,7 +33,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 |---|---|---|
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | In progress (5 of 8 done; paper tear, walk-back and the spine chart test wait for reference documents) |
-| V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | In progress (everything done except the 3D viewer, which has its parts and its parameters but not yet its camera moves and preset views) |
+| V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
 | V0.4 | Real-world calibration | Not started |
 | V0.5 | Advanced parameters and recommendations | Not started |
 | V0.6 | Backend: setup storage | Not started |
@@ -44,7 +45,7 @@ Every phase has a demo on the "Xem trước" page of the app (`#demo-v0-1` to `#
 
 Done ahead of their phase:
 - V0.2: everything except the paper tear and walk-back tests and the spine chart test, which wait for the Easton documents in the pinned list
-- V0.3: everything except the full 3D setup viewer, of which there is a preview (center shot and nocking point height only)
+- V0.3: all of it
 - V0.5: ranked tuning suggestions, bow size, limb alignment
 
 ---
@@ -203,17 +204,17 @@ Goal: explore many setups at once, and pass a setup to someone else.
 
 > **Nói đơn giản:** Một cây cung 3D xoay được, làm bằng các bộ phận thật: riser, limb, dây, plunger, rest, stabilizer, mũi tên. Chỉnh thông số nào thì bộ phận đó chuyển động theo, camera tự bay tới chỗ đó và hiện thước đo. Ví dụ kéo center shot thì thấy đầu mũi tên dịch sang trái hoặc phải so với đường dây. Mục đích là hiểu "thông số này nằm ở đâu trên cung", không phải mô phỏng bay.
 
-Status: built in three rounds. Two are done: the bow has all its parts, and every value that has something to show moves it. Still to come: the camera flying to each changed part, preset views and the phone (round three). Opened with "Show: Bow 3D" or `#3d` in the address.
+Status: built, in three rounds. Opened with "Show: Bow 3D" or `#3d` in the address. Touch on a real phone is still to be tried by the owner.
 
 - [x] React Three Fiber scene, loaded only when the viewer is opened
 - [x] Bow built from code, not from a model file, so every part can move with its parameter
 - [x] Parts: riser with its sight window, grip and limb pockets, limbs, string with center serving and nocking points, plunger, rest, arrow, long rod with damper and weight, V-bar and side rods
 - [x] Parameters with a visible effect: handedness, riser and limb size, center shot, limb alignment, brace height, tiller, nocking point height, plunger preload, draw length (an "at full draw" pose), arrow length, point weight, stabilizer mass and position, strand count
-- [ ] Focus on change: moving a slider flies the camera to that part, highlights it and shows a dimension line with the value
+- [x] Focus on change: moving a slider flies the camera to that part and shows a dimension line there with the value. Opening another setup does not move the camera
 - [x] Amplified offsets with a "not to scale" note, because real changes are a few millimetres on a 1.7 m bow: nocking point, center shot, tiller and limb alignment are drawn six times larger, and the switch for it says so
 - [x] Parameters with nothing to show (draw weight, spine, shaft weight, plunger stiffness and others) are named in a note under the viewer, not faked
-- [ ] Orbit, zoom, preset views (front, side, top, arrow rest close-up)
-- [ ] Works on a phone, and falls back to the 2D views when WebGL is missing
+- [x] Orbit, zoom, preset views: whole bow, from the target, from above, rest and plunger, and along the string, which is how limb alignment is checked
+- [x] Works on a phone, and falls back to the 2D views when WebGL is missing, with a line that says why
 
 **Exit criteria:** the landscape renders without blocking slider interaction, a shared URL reproduces the exact same result on another device, and for every parameter in the 3D list a user can see which part moved and in which direction.
 

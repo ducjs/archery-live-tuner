@@ -100,7 +100,7 @@ export function Simulator() {
   const [stage, setStage] = useState<Stage>(() =>
     window.location.hash === '#3d' ? 'bow' : 'flight',
   )
-  const viewer = useBowViewer(setup.bow)
+  const viewer = useBowViewer(setup)
   const [section, setSection] = useState<Section>('setup')
   // The top and side views can be put away, to leave a small screen to the values.
   const [drawingHidden, setDrawingHidden] = useState(false)
@@ -179,7 +179,21 @@ export function Simulator() {
             className={`bg-paper order-1 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0 ${stage === 'compare' || stage === 'explore' ? '' : 'sticky top-0 z-10'}`}
           >
             {stage === 'bow' ? (
-              <BowViewer bow={setup.bow} arrow={setup.arrow} viewer={viewer} />
+              <BowViewer
+                bow={setup.bow}
+                arrow={setup.arrow}
+                viewer={viewer}
+                units={units}
+                fallback={
+                  <FlightView
+                    view="both"
+                    result={result}
+                    handedness={setup.bow.handedness}
+                    elapsed={0}
+                    exaggeration={view.exaggeration}
+                  />
+                }
+              />
             ) : stage === 'explore' ? (
               <ExploreStage />
             ) : stage === 'compare' && !compared ? (

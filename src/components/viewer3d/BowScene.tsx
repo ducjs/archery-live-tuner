@@ -1,13 +1,14 @@
 import { Line, OrbitControls, RoundedBox } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useMemo, useRef, type RefObject } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { CatmullRomCurve3, Quaternion, TubeGeometry, Vector3 } from 'three'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { ArrowSetup } from '../../models/arrow.ts'
-import type { BowSetup } from '../../models/bow.ts'
+import { bowLength, type BowSetup } from '../../models/bow.ts'
+import { formatValue, getParameter, getValue, type UnitSystem } from '../../models/parameters.ts'
+import { parameterText } from '../../i18n/index.ts'
 import { along, bowGeometry, type BowGeometry, type Vec3 } from './bowGeometry.ts'
-
-export type Focus = 'bow' | 'centerShot' | 'nockingPoint'
+import { cameraShot, marks, type Focus, type Mark } from './cameraShots.ts'
 
 type Props = {
   bow: BowSetup
@@ -19,6 +20,7 @@ type Props = {
   focus: Focus
   /** Changes whenever the camera should fly to `focus` again. */
   focusRequest: number
+  units: UnitSystem
 }
 
 type Palette = {
@@ -128,25 +130,6 @@ function Riser({ points, color }: { points: Vec3[]; color: string }) {
   )
 }
 
-type Shot = { position: Vec3; target: Vec3 }
-
-function cameraShot(focus: Focus, geometry: BowGeometry): Shot {
-  const { side, stringX, point } = geometry
-  switch (focus) {
-    case 'centerShot': {
-      // Looking down on the front half of the arrow, where the offset is largest.
-      const x = stringX + (point[0] - stringX) * 0.6
-      return { position: [x, 820, -130 * side], target: [x, 0, 0] }
-    }
-    case 'nockingPoint':
-      // Level with the nock, from the open side of the bow.
-      return { position: [stringX + 90, 25, -560 * side], target: [stringX + 90, 10, 0] }
-    default:
-      // From the open side, so the arrow is in front of the riser.
-      return { position: [900, 250, -2900 * side], target: [120, 0, 0] }
-  }
-}
-
 type ControlsHandle = { target: Vector3; update: () => void }
 
 type RigProps = Pick<Props, 'focus' | 'focusRequest'> & { geometry: BowGeometry }
@@ -204,13 +187,14 @@ function CameraRig({ focus, focusRequest, geometry }: RigProps) {
   )
 }
 
-type Anchor = { element: RefObject<HTMLElement | null>; position: Vec3 }
+type Anchor = { element: () => HTMLElement | null | undefined; position: Vec3 }
 
 /** Keeps HTML labels pinned to points of the scene. */
 function LabelPins({ anchors }: { anchors: Anchor[] }) {
   const projected = useMemo(() => new Vector3(), [])
   useFrame(({ camera, size }) => {
-    for (const { element, position } of anchors) {
+    for (const { element: find, position } of anchors) {
+      const element = { current: find() }
       if (!element.current) continue
       projected.set(...position).project(camera)
       const visible = projected.z < 1
@@ -225,7 +209,7 @@ function LabelPins({ anchors }: { anchors: Anchor[] }) {
   return null
 }
 
-function Bow({ geometry }: { geometry: BowGeometry }) {
+function Bow({ geometry, measured }: { geometry: BowGeometry; measured: Mark[] }) {
   const palette = useMemo(() => readPalette(), [])
   const { side, stringX, stringZ, nock, point, atRest, shaftRadius, limbs, string } = geometry
   const { riser, pockets, longRod, sideRods, weightLength, plungerCollar } = geometry
@@ -382,23 +366,18 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
         />
       ))}
 
-      {/* The two offsets, drawn from the reference line to the arrow. */}
-      <Line
-        points={[
-          [stringX - 14, 0, stringZ],
-          [stringX - 14, nock[1], stringZ],
-        ]}
-        color={palette.accent}
-        lineWidth={4}
-      />
-      <Line
-        points={[
-          [point[0], 0, stringZ],
-          [point[0], 0, point[2]],
-        ]}
-        color={palette.accent}
-        lineWidth={4}
-      />
+      {/* What this view measures, drawn where it is measured. */}
+      {measured.map(
+        (mark, index) =>
+          mark.line && (
+            <Line
+              key={index}
+              points={[mark.line.from, mark.line.to]}
+              color={palette.accent}
+              lineWidth={4}
+            />
+          ),
+      )}
     </group>
   )
 }
@@ -406,20 +385,52 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
 const labelClass =
   'border-line bg-surface text-ink absolute top-0 left-0 rounded-md border px-2 py-1 text-sm font-medium whitespace-nowrap shadow-sm'
 
-export default function BowScene({ bow, arrow, amplify, drawn, focus, focusRequest }: Props) {
+export default function BowScene({
+  bow,
+  arrow,
+  amplify,
+  drawn,
+  focus,
+  focusRequest,
+  units,
+}: Props) {
   const m = useMessages()
   const geometry = useMemo(
     () => bowGeometry({ bow, arrow }, { amplify, drawn }),
     [bow, arrow, amplify, drawn],
   )
-  const nockLabel = useRef<HTMLSpanElement>(null)
-  const pointLabel = useRef<HTMLSpanElement>(null)
-  const { nock, point, side } = geometry
+  const { point, side } = geometry
+  const measured = useMemo(() => marks(focus, geometry), [focus, geometry])
 
-  const anchors: Anchor[] = [
-    { element: nockLabel, position: [nock[0], Math.max(nock[1], 0) + 30, 0] },
-    { element: pointLabel, position: [point[0], Math.max(point[1], 0) + 30, point[2]] },
-  ]
+  // One label per thing measured. Two marks may share a label: it is written once.
+  const labels = measured.filter(
+    (mark, index) =>
+      measured.findIndex((other) => JSON.stringify(other.shows) === JSON.stringify(mark.shows)) ===
+      index,
+  )
+  const elements = useRef<(HTMLSpanElement | null)[]>([])
+  const anchors: Anchor[] = labels.map((mark, index) => ({
+    element: () => elements.current[index],
+    position: mark.at,
+  }))
+
+  const text = (mark: Mark): string => {
+    if (mark.shows === 'bowLength') return m.panels.bowLength(bowLength(bow))
+    const key = mark.shows.parameter
+    // These two are said in words: which side of what, by how much.
+    if (key === 'bow.centerShot') {
+      // Against the string as the limbs carry it, which is what the arrow sees.
+      const value = m.viewer.centerShotValue((point[2] - geometry.stringZ) / amplify)
+      return `${m.viewer.centerShot}: ${value}`
+    }
+    if (key === 'bow.nockingPointHeight') {
+      return `${m.viewer.nockingPoint}: ${m.viewer.nockingPointValue(bow.nockingPointHeight)}`
+    }
+    const parameter = getParameter(key)
+    const { label } = parameterText(m, parameter)
+    if (parameter.kind === 'enum') return label
+    return `${label}: ${formatValue(parameter, getValue({ bow, arrow }, parameter), units)}`
+  }
 
   return (
     <div className="relative h-full w-full overflow-hidden">
@@ -433,19 +444,24 @@ export default function BowScene({ bow, arrow, amplify, drawn, focus, focusReque
         <ambientLight intensity={1.1} />
         <directionalLight position={[800, 1600, -1200 * side]} intensity={2.2} />
         <directionalLight position={[-900, -400, 900 * side]} intensity={0.7} />
-        <Bow geometry={geometry} />
+        <directionalLight position={[-1600, 300, 0]} intensity={0.9} />
+        <Bow geometry={geometry} measured={measured} />
         <CameraRig focus={focus} focusRequest={focusRequest} geometry={geometry} />
         <LabelPins anchors={anchors} />
       </Canvas>
 
       <div className="pointer-events-none absolute inset-0">
-        <span ref={nockLabel} className={labelClass}>
-          {m.viewer.nockingPoint}: {m.viewer.nockingPointValue(bow.nockingPointHeight)}
-        </span>
-        <span ref={pointLabel} className={labelClass}>
-          {/* Against the string as the limbs carry it, which is what the arrow sees. */}
-          {m.viewer.centerShot}: {m.viewer.centerShotValue((point[2] - geometry.stringZ) / amplify)}
-        </span>
+        {labels.map((mark, index) => (
+          <span
+            key={JSON.stringify(mark.shows)}
+            ref={(element) => {
+              elements.current[index] = element
+            }}
+            className={labelClass}
+          >
+            {text(mark)}
+          </span>
+        ))}
       </div>
     </div>
   )

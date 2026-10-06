@@ -298,16 +298,22 @@ export const vi: Messages = {
 
   viewer: {
     lookAt: 'Nhìn vào',
-    focus: { bow: 'Cả cây cung', centerShot: 'Center shot', nockingPoint: 'Nocking point' },
+    focus: {
+      bow: 'Cả cây cung',
+      front: 'Từ phía bia',
+      top: 'Từ trên xuống',
+      rest: 'Rest và plunger',
+      alongString: 'Dọc theo dây',
+    },
     drawn: 'Kéo hết dây',
     notDrawn:
       'Không có gì để vẽ cho lực kéo, spine, khối lượng thân tên, độ cứng plunger, khối lượng dây, độ khít nock, khối lượng cung, hay khối lượng insert, nock và cánh: chúng đổi cách tên bay, không đổi vị trí bộ phận nào.',
     amplify: (times) => `Vẽ độ lệch lớn gấp ${times} lần`,
     about:
-      'Cây cung đi theo setup: riser và cánh, brace height, tiller, cánh lệch ngang, nocking point, center shot, plunger preload, chiều dài tên, point weight, stabilizer và số sợi dây. Kéo để xoay cung, cuộn hoặc chụm ngón để phóng to. Đường vàng đứt là đường dây khi nhìn từ trên, và là đường vuông góc với dây khi nhìn từ bên. Các độ lệch vài mm được vẽ lớn hơn; nhãn ghi giá trị thật. Cây cung là hình đơn giản hoá, không phải thiết bị của bạn.',
+      'Cây cung đi theo setup. Đổi một thông số thì camera bay tới bộ phận đó và ghi giá trị ngay tại chỗ. Kéo để xoay cung, cuộn hoặc chụm ngón để phóng to. Đường vàng đứt là đường dây khi nhìn từ trên, và là đường vuông góc với dây khi nhìn từ bên. Các độ lệch vài mm khó thấy ở tỉ lệ thật; bật công tắc để vẽ lớn hơn. Nhãn luôn ghi giá trị thật. Cây cung là hình đơn giản hoá, không phải thiết bị của bạn.',
     loading: 'Đang tải hình 3D.',
     failed:
-      'Không mở được hình 3D. Nó cần WebGL, mà trình duyệt hoặc thiết bị này đang tắt. Các góc nhìn tên bay vẫn dùng được.',
+      'Hình 3D không chạy được ở đây: nó cần WebGL, mà trình duyệt hoặc thiết bị này đang tắt. Dưới đây là hình vẽ phẳng thay thế.',
     sceneLabel: 'Mô hình 3D của cây cung. Kéo để xoay, cuộn hoặc chụm ngón để phóng to.',
     nockingPoint: 'Nocking point',
     centerShot: 'Center shot',

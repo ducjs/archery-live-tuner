@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
-import type { Focus } from './BowScene.tsx'
+import { PARAMETERS, getValue } from '../../models/parameters.ts'
+import { focusOf, type Focus } from './cameraShots.ts'
 
 export type BowViewerState = {
   focus: Focus
@@ -14,21 +16,35 @@ export type BowViewerState = {
   setDrawn: (drawn: boolean) => void
 }
 
+type Values = { bow: BowSetup; arrow: ArrowSetup }
+
+/** The values that have something to show on the bow, as one comparable list. */
+const WATCHED = PARAMETERS.filter((parameter) => focusOf(parameter.key) !== null)
+const snapshot = (setup: Values) => WATCHED.map((parameter) => getValue(setup, parameter))
+
 /** Viewer state, plus the rule that changing a value flies the camera to the part it moves. */
-export function useBowViewer(bow: BowSetup): BowViewerState {
+export function useBowViewer(setup: Values): BowViewerState {
   const [view, setView] = useState<{ focus: Focus; request: number }>({ focus: 'bow', request: 0 })
-  const [amplified, setAmplified] = useState(true)
+  // True scale at first; the larger offsets are there to be asked for.
+  const [amplified, setAmplified] = useState(false)
   const [drawn, setDrawn] = useState(false)
 
   const lookAt = (focus: Focus) => setView((current) => ({ focus, request: current.request + 1 }))
 
-  const previous = useRef({ centerShot: bow.centerShot, nockingPoint: bow.nockingPointHeight })
+  const { bow, arrow } = setup
+  const previous = useRef(snapshot(setup))
   useEffect(() => {
-    const last = previous.current
-    if (bow.centerShot !== last.centerShot) lookAt('centerShot')
-    else if (bow.nockingPointHeight !== last.nockingPoint) lookAt('nockingPoint')
-    previous.current = { centerShot: bow.centerShot, nockingPoint: bow.nockingPointHeight }
-  }, [bow.centerShot, bow.nockingPointHeight])
+    const now = snapshot({ bow, arrow })
+    const changed = WATCHED.filter((_, index) => now[index] !== previous.current[index])
+    previous.current = now
+    // One value changed: a slider was moved. Several at once is another setup
+    // being opened, which is no reason to move the camera.
+    if (changed.length !== 1) return
+    const key = changed[0]!.key
+    lookAt(focusOf(key)!)
+    // Draw length only shows on a drawn bow.
+    if (key === 'bow.drawLength') setDrawn(true)
+  }, [bow, arrow])
 
   return {
     focus: view.focus,

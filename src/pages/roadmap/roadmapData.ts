@@ -34,6 +34,11 @@ export const PINNED: PinnedTask[] = [
     done: false,
   },
   {
+    text: 'Mở "Hiển thị: Cung 3D" trên điện thoại thật: xoay bằng một ngón, phóng to bằng hai ngón, bấm thử năm góc nhìn có sẵn',
+    why: 'Mới kiểm bằng Chrome trên máy tính ở bề rộng điện thoại, với WebGL phần mềm; thao tác cảm ứng trên cảnh 3D chưa thử được.',
+    done: false,
+  },
+  {
     text: 'Thử thanh trượt trên điện thoại thật: vuốt dọc ngang qua thanh trượt phải cuộn trang, chỉ kéo đúng nút tròn mới đổi giá trị',
     why: 'Mới kiểm bằng Chrome giả lập màn cảm ứng trên máy tính, chưa thử trên máy thật.',
     done: false,
@@ -314,7 +319,7 @@ export const ROADMAP: RoadmapPhase[] = [
         title: 'Cây cung 3D',
         summary:
           'Một cây cung 3D xoay được. Chỉnh thông số nào thì bộ phận đó chuyển động theo, camera tự bay tới chỗ đó và hiện thước đo. Mục đích là hiểu "thông số này nằm ở đâu trên cung", không phải mô phỏng bay.',
-        note: 'Làm theo ba đợt. Hai đợt đã xong: cung có đủ bộ phận, và mọi thông số có gì để vẽ đều làm cung chuyển động. Còn lại đợt ba: camera bay tới từng chỗ thay đổi, góc nhìn có sẵn và điện thoại. Mở bằng "Hiển thị: Cung 3D".',
+        note: 'Đã làm xong, qua ba đợt. Mở bằng "Hiển thị: Cung 3D". Thao tác cảm ứng trên điện thoại thật còn chờ chủ dự án thử.',
         items: [
           done('Cảnh 3D, chỉ tải khi mở'),
           done('Cung dựng bằng code để từng bộ phận chuyển động được'),
@@ -324,11 +329,13 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Thông số thấy được trên cung: tay thuận, cỡ riser và cánh, center shot, cánh lệch ngang, brace height, tiller, nocking point, plunger preload, draw length (tư thế kéo hết dây), chiều dài tên, point weight, stabilizer, số sợi dây',
           ),
-          todo('Kéo thanh trượt thì camera bay tới bộ phận đó, tô sáng và hiện thước đo'),
+          done('Kéo thanh trượt thì camera bay tới bộ phận đó và hiện thước đo kèm giá trị'),
           done('Phóng đại độ lệch, có ghi rõ không theo tỉ lệ'),
           done('Thông số không có gì để vẽ thì nói rõ, không bịa hình'),
-          todo('Xoay, zoom, các góc nhìn có sẵn'),
-          todo('Chạy trên điện thoại; không có WebGL thì quay về hình 2D'),
+          done(
+            'Xoay, zoom, năm góc nhìn có sẵn: cả cây cung, từ phía bia, từ trên xuống, rest và plunger, dọc theo dây (cách kiểm cánh có thẳng hàng không)',
+          ),
+          done('Chạy trên điện thoại; không có WebGL thì quay về hình 2D, có ghi rõ lý do'),
         ],
       },
     ],
