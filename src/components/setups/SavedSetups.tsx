@@ -11,6 +11,7 @@ import { createDefaultSetup, sameSetup, type TuningSetup } from '../../models/se
 import { useLibraryStore } from '../../state/libraryStore.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
 import { buttonClass, inputClass } from '../common/styles.ts'
+import { SetupTransfer } from './SetupTransfer.tsx'
 
 // The values an archer would recognise a setup by.
 const SUMMARY = ['bow.drawWeight', 'arrow.spine', 'arrow.pointWeight'].map(
@@ -268,6 +269,7 @@ export function SavedSetups({ onCompare }: Props) {
         )}
         <p className="text-ink-muted mt-2 text-sm">{text.localOnly}</p>
       </details>
+      <SetupTransfer />
     </section>
   )
 }

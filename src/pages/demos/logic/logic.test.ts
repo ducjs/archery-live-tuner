@@ -7,15 +7,7 @@ import {
   type NumberParameter,
 } from '../../../models/parameters.ts'
 import { createDefaultSetup, type TuningSetup } from '../../../models/setup.ts'
-import {
-  LANDSCAPE_POINTS,
-  LANDSCAPE_SPINES,
-  decodeSetup,
-  encodeSetup,
-  landscape,
-  sensitivity,
-  tunePlan,
-} from './explore.ts'
+import { LANDSCAPE_POINTS, LANDSCAPE_SPINES, landscape, sensitivity, tunePlan } from './explore.ts'
 import { advise, readPlot, type Mark } from './targetPlot.ts'
 
 const reference = createDefaultSetup('Reference')
@@ -69,21 +61,6 @@ describe('tunePlan', () => {
 
   it('has nothing to do for a tuned setup', () => {
     expect(tunePlan(heuristicModel, reference)).toEqual({ steps: [], tuned: true })
-  })
-})
-
-describe('setup link', () => {
-  it('round-trips a setup', () => {
-    const changed = withDisplay(reference, 'arrow.spine', 650)
-    const decoded = decodeSetup(reference, encodeSetup(changed))!
-    expect(decoded.arrow.spine).toBe(650)
-    expect(decoded.bow.handedness).toBe('RH')
-    expect(decoded.bow.drawWeight).toBeCloseTo(changed.bow.drawWeight, 3)
-  })
-
-  it('rejects text that is not a setup', () => {
-    expect(decodeSetup(reference, 'not-a-setup')).toBeNull()
-    expect(decodeSetup(reference, btoa('[1,2,3]'))).toBeNull()
   })
 })
 

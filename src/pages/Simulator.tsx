@@ -3,6 +3,7 @@ import { SegmentedControl } from '../components/common/SegmentedControl.tsx'
 import { inputClass } from '../components/common/styles.ts'
 import { ComparisonFlight, ComparisonTable } from '../components/compare/Comparison.tsx'
 import { SavedSetups } from '../components/setups/SavedSetups.tsx'
+import { SharedSetupNotice } from '../components/setups/SetupTransfer.tsx'
 import { BowViewer, BowViewerControls } from '../components/viewer3d/SetupViewer.tsx'
 import { useBowViewer } from '../components/viewer3d/useBowViewer.ts'
 import {
@@ -137,6 +138,7 @@ export function Simulator() {
           onChange={(next) => setStage(next as Stage)}
         />
       </header>
+      <SharedSetupNotice />
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[22rem_1fr] lg:items-start lg:gap-8">
         {/*

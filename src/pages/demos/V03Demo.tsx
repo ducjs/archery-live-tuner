@@ -3,15 +3,10 @@ import { heuristicModel } from '../../engine/index.ts'
 import { fromDisplay, getParameter, type NumberParameter } from '../../models/parameters.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
 import { convert } from '../../utils/units.ts'
+import { setupLink } from '../../utils/setupTransfer.ts'
 import { DemoCard } from './demoParts.tsx'
 import { RATING, buttonClass } from './demoText.ts'
-import {
-  LANDSCAPE_POINTS,
-  decodeSetup,
-  encodeSetup,
-  landscape,
-  sensitivity,
-} from './logic/explore.ts'
+import { LANDSCAPE_POINTS, landscape, sensitivity } from './logic/explore.ts'
 
 const pointWeight = getParameter('arrow.pointWeight') as NumberParameter
 
@@ -148,9 +143,7 @@ function SensitivityDemo() {
 function ShareDemo() {
   const setup = useTuningStore((state) => state.setup)
   const [status, setStatus] = useState('')
-  const code = useMemo(() => encodeSetup(setup), [setup])
-  const link = `${window.location.origin}${window.location.pathname}?setup=${code}`
-  const check = decodeSetup(setup, code)
+  const link = useMemo(() => setupLink(setup, window.location), [setup])
 
   return (
     <div className="grid gap-3">
@@ -175,8 +168,9 @@ function ShareDemo() {
         </span>
       </div>
       <p className="text-ink-muted max-w-prose text-sm">
-        Đường link chứa đủ {code.length} ký tự mã hoá toàn bộ setup, và giải mã ngược lại{' '}
-        {check ? 'ra đúng setup này' : 'chưa khớp'}. Bản demo chưa tự mở setup khi vào link.
+        Đường link dài {link.length} ký tự và chứa đủ mọi giá trị của setup. Mở link thì trang
+        Simulator hỏi có mở setup đó không. Tính năng này nằm ở mục "Chia sẻ và sao lưu" của trang
+        Simulator, cùng với xuất và nhập file.
       </p>
     </div>
   )
@@ -201,8 +195,8 @@ export function V03Demo() {
       </DemoCard>
       <DemoCard
         title="Chia sẻ setup bằng đường link"
-        kind="simple"
-        intro="Gửi setup cho huấn luyện viên hoặc bạn tập mà không cần tài khoản."
+        kind="model"
+        intro="Gửi setup cho huấn luyện viên hoặc bạn tập mà không cần tài khoản. Đã có trong trang Simulator."
       >
         <ShareDemo />
       </DemoCard>

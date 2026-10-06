@@ -313,6 +313,39 @@ export const en = {
     localOnly: 'Saved in this browser only.',
   },
 
+  transfer: {
+    heading: 'Share and back up',
+    copyLink: 'Copy a link to this setup',
+    link: 'Link to this setup',
+    copied: 'Link copied.',
+    copyByHand: 'The browser did not allow copying. Select the link and copy it by hand.',
+    linkNote:
+      'The link holds every value of the setup on screen, so it opens the same on any device. Nothing is sent to a server.',
+    exportFile: 'Export to a file',
+    importFile: 'Import from a file',
+    chooseFile: 'File of setups to import',
+    fileName: 'recurve-setups.json',
+    exported: (count: number) =>
+      count === 1 ? '1 setup written to the file.' : `${count} setups written to the file.`,
+    imported: (added: number, known: number, invalid: number) =>
+      [
+        added === 1 ? '1 setup added.' : `${added} setups added.`,
+        known > 0 ? `${known} already saved.` : '',
+        invalid > 0 ? `${invalid} could not be read.` : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+    notAFile: 'That file does not hold setups from this app.',
+    fileNote:
+      'The file holds the saved setups and the one on screen. Importing adds setups and never replaces a saved one.',
+    offered: (name: string) => `This link carries a setup: ${name}`,
+    replaces: 'Opening it replaces the setup on screen. Save yours first if you want to keep it.',
+    openShared: 'Open it',
+    notNow: 'Not now',
+    unreadable: 'This link does not hold a setup that can be read.',
+    dismiss: 'Close',
+  },
+
   compare: {
     with: 'Compare with',
     empty: 'Save a setup first. Then change a value and come back here to see before and after.',

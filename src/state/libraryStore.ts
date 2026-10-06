@@ -12,6 +12,8 @@ type LibraryState = {
   failed: boolean
   load: () => Promise<void>
   save: (setup: TuningSetup) => Promise<void>
+  /** Adds several setups at once, such as the ones read from a file. */
+  saveMany: (setups: TuningSetup[]) => Promise<void>
   remove: (id: string) => Promise<void>
 }
 
@@ -30,6 +32,10 @@ export const useLibraryStore = create<LibraryState>()((set) => {
     failed: false,
     load: () => run(),
     save: (setup) => run(() => repository.save(setup)),
+    saveMany: (setups) =>
+      run(async () => {
+        for (const setup of setups) await repository.save(setup)
+      }),
     remove: (id) => run(() => repository.remove(id)),
   }
 })

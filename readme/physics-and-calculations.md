@@ -452,7 +452,7 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 
 ## 14. Tính toán ở trang "Xem trước"
 
-Các công thức dưới đây chỉ chạy trong demo (`src/pages/demos/logic/`), chưa thuộc engine. Chỉ số phụ (grains per pound, FOC, động năng) đã chuyển vào engine, xem mục 7.7.
+Các công thức dưới đây chỉ chạy trong demo (`src/pages/demos/logic/`), chưa thuộc engine. Mã hoá setup vào đường link đã chuyển thành tính năng thật, ở `src/utils/setupTransfer.ts`. Chỉ số phụ (grains per pound, FOC, động năng) đã chuyển vào engine, xem mục 7.7.
 
 - Landscape: `dynamicBehavior` trên lưới spine 500..900 (bước 50) × point 80..140 gr (bước 10), các giá trị khác giữ nguyên.
 - Sensitivity: tăng từng thông số thêm 1/10 khoảng giới hạn của nó (giảm nếu hết chỗ tăng), ghi độ đổi của `dynamicBehavior`, bỏ mức dưới 0.005, xếp theo độ lớn.

@@ -326,6 +326,38 @@ export const vi: Messages = {
     localOnly: 'Chỉ lưu trên trình duyệt này.',
   },
 
+  transfer: {
+    heading: 'Chia sẻ và sao lưu',
+    copyLink: 'Chép link tới setup này',
+    link: 'Link tới setup này',
+    copied: 'Đã chép link.',
+    copyByHand: 'Trình duyệt không cho chép. Hãy chọn link và chép bằng tay.',
+    linkNote:
+      'Link chứa đủ mọi giá trị của setup đang mở, nên mở trên máy nào cũng ra y như vậy. Không có gì được gửi lên máy chủ.',
+    exportFile: 'Xuất ra file',
+    importFile: 'Nhập từ file',
+    chooseFile: 'File setup cần nhập',
+    fileName: 'recurve-setups.json',
+    exported: (count) => `Đã ghi ${count} setup vào file.`,
+    imported: (added, known, invalid) =>
+      [
+        `Đã thêm ${added} setup.`,
+        known > 0 ? `${known} cái đã có sẵn.` : '',
+        invalid > 0 ? `${invalid} cái không đọc được.` : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+    notAFile: 'File này không chứa setup của ứng dụng này.',
+    fileNote:
+      'File chứa các setup đã lưu và setup đang mở. Nhập file chỉ thêm setup, không bao giờ ghi đè setup đã lưu.',
+    offered: (name) => `Link này mang theo một setup: ${name}`,
+    replaces: 'Mở nó sẽ thay setup đang mở. Hãy lưu setup của bạn trước nếu muốn giữ.',
+    openShared: 'Mở setup này',
+    notNow: 'Để sau',
+    unreadable: 'Link này không chứa setup nào đọc được.',
+    dismiss: 'Đóng',
+  },
+
   compare: {
     with: 'So sánh với',
     empty: 'Hãy lưu một setup trước. Sau đó đổi một thông số rồi quay lại đây để xem trước và sau.',

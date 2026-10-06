@@ -292,8 +292,12 @@ export const ROADMAP: RoadmapPhase[] = [
           todo('Bảng màu toàn cảnh, ví dụ spine × point weight'),
           todo('Tính bảng ở luồng phụ để giao diện không giật'),
           todo('Biểu đồ thông số nào ảnh hưởng mạnh nhất'),
-          todo('Setup nằm trong đường link để chia sẻ'),
-          todo('Xuất và nhập setup dạng file'),
+          done(
+            'Setup nằm trong đường link để chia sẻ: nút "Chép link tới setup này" dưới danh sách setup đã lưu. Mở link thì ứng dụng hỏi trước, không tự thay setup đang mở',
+          ),
+          done(
+            'Xuất và nhập setup dạng file: một file chứa các setup đã lưu và setup đang mở. Nhập file chỉ thêm, không ghi đè setup đã lưu',
+          ),
           todo('So sánh nhiều hơn hai setup'),
           todo('Dùng được khi không có mạng'),
         ],

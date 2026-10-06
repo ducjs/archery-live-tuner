@@ -87,26 +87,3 @@ export function tunePlan(
   }
   return { steps, tuned: suggestTuning(model, setup, { limit: 1 }).tuned }
 }
-
-/** Packs a setup's values into a string that fits in a link. */
-export function encodeSetup(setup: TuningSetup): string {
-  const values = PARAMETERS.map((parameter) => {
-    const value = getValue(setup, parameter)
-    return typeof value === 'number' ? Number(value.toFixed(4)) : value
-  })
-  return btoa(JSON.stringify(values)).replace(/=+$/, '')
-}
-
-/** Reads a string made by `encodeSetup` back into the setup. Returns null when it does not fit. */
-export function decodeSetup(base: TuningSetup, encoded: string): TuningSetup | null {
-  try {
-    const values: unknown = JSON.parse(atob(encoded))
-    if (!Array.isArray(values) || values.length !== PARAMETERS.length) return null
-    return PARAMETERS.reduce(
-      (setup, parameter, index) => setValue(setup, parameter, values[index] as number | string),
-      base,
-    )
-  } catch {
-    return null
-  }
-}

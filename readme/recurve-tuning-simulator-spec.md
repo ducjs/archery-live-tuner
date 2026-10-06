@@ -1414,6 +1414,12 @@ For the current setup, show which parameter moves the result the most (a tornado
 - encode the setup in the URL query string
 - export / import setups as JSON
 
+As built: both sit under "Share and back up", below the saved setups.
+
+- Link. `?s=` followed by the setup as base64url JSON: a format version, the name, and every value by parameter key, in internal units and at full precision, so the model gives exactly the same result on the other side. A link that names fewer values still opens, with defaults for the rest, which keeps old links working when parameters are added. Opening a link does not replace the setup on screen: the app says which setup the link carries and waits for the user, because the screen may hold unsaved work. Either answer takes the setup out of the address. The opened setup gets an id of its own.
+- File. One JSON file with a format name, the schema version, the date, and the list of setups: the saved ones and the one on screen. Importing also takes a bare list or a single setup. Each entry is validated; the app reports how many were added, how many were already saved value for value, and how many could not be read. An entry with the id of a saved setup but other values comes in under a new id, so importing never overwrites.
+- Nothing is sent to a server in either case.
+
 ## 34.7 Versioned coefficients
 
 Keep all heuristic coefficients in a separate versioned JSON file, not in code. `SimulationResult.modelVersion` records which set produced a result. Calibration (section 18) then replaces a file, not the engine.
