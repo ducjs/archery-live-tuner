@@ -303,7 +303,9 @@ export const ROADMAP: RoadmapPhase[] = [
             'Xuất và nhập setup dạng file: một file chứa các setup đã lưu và setup đang mở. Nhập file chỉ thêm, không ghi đè setup đã lưu',
           ),
           todo('So sánh nhiều hơn hai setup'),
-          todo('Dùng được khi không có mạng'),
+          done(
+            'Dùng được khi không có mạng: mở site một lần là lần sau mở được không cần mạng, và cài được ra màn hình chính của điện thoại',
+          ),
         ],
       },
       {

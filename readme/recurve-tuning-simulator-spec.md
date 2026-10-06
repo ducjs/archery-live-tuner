@@ -1434,6 +1434,8 @@ As built: the numbers are in `src/engine/coefficients/heuristic-<version>.json`,
 
 Ship as a PWA so the simulator works at a range with no signal.
 
+As built: the build writes a service worker, `sw.js`, that keeps a copy of every file of the site: scripts, styles, fonts, icons, the web worker and the 3D viewer. After one visit with a connection the site opens without one. Files of the build are served from the copy, since their names carry a hash; the page itself is asked from the network first, so a new version is picked up as soon as there is a connection, and the copies of older versions are removed. A web manifest and icons let the site be installed to the home screen. The service worker is written in `pwa/offlinePlugin.ts`, without a library, and is only registered in the built site, not while developing. Saved setups were already kept in the browser, so they are there offline too.
+
 ---
 
 # 35. Backend (future, not for MVP)

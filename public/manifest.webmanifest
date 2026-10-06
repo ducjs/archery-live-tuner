@@ -1,0 +1,16 @@
+{
+  "name": "Recurve Tuning Simulator",
+  "short_name": "Recurve Tuner",
+  "description": "See how a recurve bow and arrow setup behaves, and what a change does to it.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0f1a24",
+  "theme_color": "#0f1a24",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
