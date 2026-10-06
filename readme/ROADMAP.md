@@ -32,7 +32,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 |---|---|---|
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | In progress (5 of 8 done; paper tear, walk-back and the spine chart test wait for reference documents) |
-| V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | In progress (everything done except the full 3D viewer) |
+| V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | In progress (everything done except the 3D viewer, which has its parts but not yet all its parameters and views) |
 | V0.4 | Real-world calibration | Not started |
 | V0.5 | Advanced parameters and recommendations | Not started |
 | V0.6 | Backend: setup storage | Not started |
@@ -203,11 +203,11 @@ Goal: explore many setups at once, and pass a setup to someone else.
 
 > **Nói đơn giản:** Một cây cung 3D xoay được, làm bằng các bộ phận thật: riser, limb, dây, plunger, rest, stabilizer, mũi tên. Chỉnh thông số nào thì bộ phận đó chuyển động theo, camera tự bay tới chỗ đó và hiện thước đo. Ví dụ kéo center shot thì thấy đầu mũi tên dịch sang trái hoặc phải so với đường dây. Mục đích là hiểu "thông số này nằm ở đâu trên cung", không phải mô phỏng bay.
 
-Preview status: a first version is in the app, opened with "Show: Bow in 3D" or `#3d` in the address. It covers center shot and nocking point height, the camera flying to the changed part, labels with real values, and 6× amplified offsets. The bow is a rough shape. The items below stay open until the full viewer is built.
+Status: built in three rounds. The first is done: the bow has all its parts. Still to come: the remaining parameters (round two), then camera, preset views and the phone (round three). Opened with "Show: Bow 3D" or `#3d` in the address. So far only center shot and nocking point height move the bow.
 
-- [ ] React Three Fiber scene, loaded only when the viewer is opened
-- [ ] Bow built from code, not from a model file, so every part can move with its parameter
-- [ ] Parts: riser, limbs, string, plunger, rest, arrow, long rod and side rods
+- [x] React Three Fiber scene, loaded only when the viewer is opened
+- [x] Bow built from code, not from a model file, so every part can move with its parameter
+- [x] Parts: riser with its sight window, grip and limb pockets, limbs, string with center serving and nocking points, plunger, rest, arrow, long rod with damper and weight, V-bar and side rods
 - [ ] Parameters with a visible effect: handedness, center shot, brace height, tiller, nocking point height, plunger preload, draw length (full-draw pose), arrow length, point weight, stabilizer mass and position, strand count
 - [ ] Focus on change: moving a slider flies the camera to that part, highlights it and shows a dimension line with the value
 - [ ] Amplified offsets with a "not to scale" note, because real changes are a few millimetres on a 1.7 m bow

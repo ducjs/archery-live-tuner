@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { defaultValues, getParameter, setValue } from '../../models/parameters.ts'
 import { en } from '../../i18n/en.ts'
 import { vi } from '../../i18n/vi.ts'
-import { along, bowGeometry } from './bowGeometry.ts'
+import { RISER_HALF_LENGTH, STABILIZER_HEIGHT, along, bowGeometry } from './bowGeometry.ts'
 
 const { centerShotValue: centerShotText, nockingPointValue: nockingPointText } = en.viewer
 
@@ -65,6 +65,60 @@ describe('bowGeometry', () => {
     expect(geometry.stringX).toBe(-240)
     expect(geometry.string[1]![0]).toBe(-240)
     expect(geometry.limb.at(-1)![0]).toBe(-210)
+  })
+})
+
+describe('parts of the bow', () => {
+  const right = bowGeometry(reference, 1)
+  const left = bowGeometry(withValue('bow.handedness', 'LH'), 1)
+
+  it('runs the riser from one limb pocket to the other, in the string plane', () => {
+    expect(right.riser[0]).toEqual(right.pockets[0])
+    expect(right.riser.at(-1)).toEqual(right.pockets[1])
+    expect(right.pockets[0][1]).toBe(-RISER_HALF_LENGTH)
+    expect(right.pockets[1][1]).toBe(RISER_HALF_LENGTH)
+    expect(right.pockets.map((pocket) => pocket[2])).toEqual([0, 0])
+  })
+
+  it('sets the sight window to the bow hand side, clear of the arrow', () => {
+    const windowOf = (geometry: typeof right) =>
+      geometry.riser.filter((point) => point[2] !== 0).map((point) => point[2])
+    expect(windowOf(right).length).toBeGreaterThan(1)
+    expect(windowOf(right).every((z) => z > 0)).toBe(true)
+    expect(windowOf(left).every((z) => z < 0)).toBe(true)
+
+    // The arrow lies on the string line; the riser beside it has to leave it room.
+    const beside = right.riser.find(([, y]) => y > 0)!
+    expect(beside[2] - 15).toBeGreaterThan(right.shaftRadius * 1.4)
+  })
+
+  it('starts each limb in its pocket', () => {
+    const [x, y] = right.limb[0]!
+    expect(Math.hypot(x - right.pockets[1][0], y - right.pockets[1][1])).toBeLessThan(40)
+  })
+
+  it('carries the long rod forward by the stabilizer position, below the arrow', () => {
+    const { from, to } = bowGeometry(withValue('bow.stabilizerPosition', 600), 1).longRod
+    expect(to[0] - from[0]).toBe(600)
+    expect(from[1]).toBe(STABILIZER_HEIGHT)
+    expect(to[1]).toBe(STABILIZER_HEIGHT)
+    expect(STABILIZER_HEIGHT).toBeLessThan(0)
+  })
+
+  it('has two side rods of 10 in, mirrored, pointing back and outward', () => {
+    const [one, other] = right.sideRods
+    for (const rod of right.sideRods) {
+      const length = Math.hypot(
+        rod.to[0] - rod.from[0],
+        rod.to[1] - rod.from[1],
+        rod.to[2] - rod.from[2],
+      )
+      expect(length).toBeCloseTo(254, 0)
+      expect(rod.to[0]).toBeLessThan(rod.from[0])
+      expect(Math.abs(rod.to[2])).toBeGreaterThan(Math.abs(rod.from[2]))
+    }
+    expect(one!.to[2]).toBe(-other!.to[2])
+    expect(one!.to[0]).toBe(other!.to[0])
   })
 })
 

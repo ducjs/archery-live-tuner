@@ -314,11 +314,13 @@ export const ROADMAP: RoadmapPhase[] = [
         title: 'Cây cung 3D',
         summary:
           'Một cây cung 3D xoay được. Chỉnh thông số nào thì bộ phận đó chuyển động theo, camera tự bay tới chỗ đó và hiện thước đo. Mục đích là hiểu "thông số này nằm ở đâu trên cung", không phải mô phỏng bay.',
-        note: 'Đã có bản xem trước trong ứng dụng (Show: Bow in 3D): mới làm center shot và nocking point, hình cung còn thô. Các việc dưới đây vẫn để mở cho tới khi làm bản đầy đủ.',
+        note: 'Làm theo ba đợt. Đợt một đã xong: cung có đủ bộ phận. Còn lại: nối các thông số còn thiếu (đợt hai), rồi camera, góc nhìn có sẵn và điện thoại (đợt ba). Mở bằng "Hiển thị: Cung 3D". Hiện mới có center shot và nocking point làm cung chuyển động.',
         items: [
-          todo('Cảnh 3D, chỉ tải khi mở'),
-          todo('Cung dựng bằng code để từng bộ phận chuyển động được'),
-          todo('Các bộ phận: riser, limb, dây, plunger, rest, tên, stabilizer'),
+          done('Cảnh 3D, chỉ tải khi mở'),
+          done('Cung dựng bằng code để từng bộ phận chuyển động được'),
+          done(
+            'Các bộ phận: riser có cửa sổ ngắm, grip và ổ limb; limb; dây có center serving và nocking point; plunger; rest; tên; long rod có damper và tạ; V-bar và hai side rod',
+          ),
           todo(
             'Thông số thấy được trên cung: tay thuận, center shot, brace height, tiller, nocking point, plunger preload, draw length, chiều dài tên, point weight, stabilizer, số sợi dây',
           ),

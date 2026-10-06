@@ -1469,6 +1469,7 @@ Example: moving the center shot slider shifts the arrow point left or right of t
 Principles:
 - The bow is built from code (parametric geometry), not loaded from a model file. A static model cannot bend its limbs for brace height or move its plunger.
 - One part per parameter. Changing a parameter moves, resizes or highlights exactly that part.
+- As built so far: the bow is made of code in `src/components/viewer3d/`, with positions in `bowGeometry.ts` (plain numbers, tested) and the drawing in `BowScene.tsx`. The riser is one tube that follows a side profile and steps aside at the sight window, on the bow hand's side, so the arrow can lie on the string line. three.js is fetched only when the viewer is opened.
 - Focus on change. The camera moves to the part being adjusted and a dimension line shows the value. Without this, a 2 mm change on a 1.7 m bow is invisible.
 - Offsets are amplified and labelled as not to scale, as in the flight views.
 - Parameters without a geometric meaning (draw weight, spine, shaft weight, plunger stiffness) are listed as "nothing to show" instead of being given a made-up visual.

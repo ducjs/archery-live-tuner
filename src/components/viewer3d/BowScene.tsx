@@ -5,13 +5,7 @@ import { CatmullRomCurve3, Quaternion, TubeGeometry, Vector3 } from 'three'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
-import {
-  RISER_HALF_LENGTH,
-  along,
-  bowGeometry,
-  type BowGeometry,
-  type Vec3,
-} from './bowGeometry.ts'
+import { along, bowGeometry, type BowGeometry, type Vec3 } from './bowGeometry.ts'
 
 export type Focus = 'bow' | 'centerShot' | 'nockingPoint'
 
@@ -102,6 +96,28 @@ function Limb({ points, color }: { points: [number, number][]; color: string }) 
   return (
     <mesh geometry={geometry} scale={[1, 1, 3.6]}>
       <meshStandardMaterial color={color} roughness={0.5} />
+    </mesh>
+  )
+}
+
+/** Front to back, the riser is half again as deep as it is wide. */
+const RISER_DEPTH = 1.5
+
+function Riser({ points, color }: { points: Vec3[]; color: string }) {
+  const geometry = useMemo(() => {
+    // The tube is stretched front to back afterwards, so its path is narrowed first.
+    const curve = new CatmullRomCurve3(
+      points.map(([x, y, z]) => new Vector3(x / RISER_DEPTH, y, z)),
+      false,
+      'catmullrom',
+      0.35,
+    )
+    return new TubeGeometry(curve, 96, 15, 14)
+  }, [points])
+  useEffect(() => () => geometry.dispose(), [geometry])
+  return (
+    <mesh geometry={geometry} scale={[RISER_DEPTH, 1, 1]}>
+      <meshStandardMaterial color={color} roughness={0.4} metalness={0.35} />
     </mesh>
   )
 }
@@ -203,46 +219,88 @@ function LabelPins({ anchors }: { anchors: Anchor[] }) {
   return null
 }
 
-function Bow({ bow, geometry }: { bow: BowSetup; geometry: BowGeometry }) {
+function Bow({ geometry }: { geometry: BowGeometry }) {
   const palette = useMemo(() => readPalette(), [])
   const { side, stringX, nock, point, atRest, shaftRadius, limb, string } = geometry
+  const { riser, pockets, longRod, sideRods } = geometry
   const lowerLimb = useMemo(() => limb.map(([x, y]): [number, number] => [x, -y]), [limb])
 
   // Drawn a little thicker than life, or the shaft vanishes at this size.
   const radius = shaftRadius * 1.4
-  const windowZ = side * 22
-  const rodEnd = 26 + bow.stabilizerPosition
+  // Z of the riser beside the arrow: the inner face of the sight window.
+  const windowZ = riser.find(([, y]) => y > 0)![2]
 
   return (
     <group>
-      {/* Riser: lower part with the grip, sight window offset to one side, upper part. */}
-      <RoundedBox args={[32, 250, 30]} radius={6} position={[10, -175, 0]}>
-        <meshStandardMaterial color={palette.muted} roughness={0.45} metalness={0.3} />
-      </RoundedBox>
-      <RoundedBox args={[30, 250, 16]} radius={5} position={[10, 70, windowZ]}>
-        <meshStandardMaterial color={palette.muted} roughness={0.45} metalness={0.3} />
-      </RoundedBox>
-      <RoundedBox args={[32, 120, 30]} radius={6} position={[10, RISER_HALF_LENGTH - 60, 0]}>
-        <meshStandardMaterial color={palette.muted} roughness={0.45} metalness={0.3} />
-      </RoundedBox>
-      <RoundedBox args={[34, 80, 30]} radius={10} position={[-14, -85, 0]}>
-        <meshStandardMaterial color={palette.ink} roughness={0.8} />
-      </RoundedBox>
+      {/* Riser, with the grip on the archer's side and a pocket for each limb. */}
+      <Riser points={riser} color={palette.muted} />
+      <group position={[-1, -74, 0]} rotation={[0, 0, 0.16]}>
+        <RoundedBox args={[30, 92, 31]} radius={12}>
+          <meshStandardMaterial color={palette.ink} roughness={0.85} />
+        </RoundedBox>
+      </group>
+      {pockets.map((pocket, index) => (
+        <group key={index} position={pocket} rotation={[0, 0, index === 0 ? -0.36 : 0.36]}>
+          <RoundedBox args={[30, 62, 42]} radius={6}>
+            <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
+          </RoundedBox>
+          {/* Limb bolt. */}
+          <mesh position={[17, index === 0 ? 10 : -10, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[7, 7, 10, 16]} />
+            <meshStandardMaterial color={palette.gold} roughness={0.35} metalness={0.5} />
+          </mesh>
+        </group>
+      ))}
 
       <Limb points={limb} color={palette.ink} />
       <Limb points={lowerLimb} color={palette.ink} />
       <Line points={string} color={palette.ink} lineWidth={1.5} />
+      {/* Center serving: the thicker wrap where the arrow and the fingers go. */}
+      <Rod from={[stringX, -90, 0]} to={[stringX, 90, 0]} radius={1.6} color={palette.muted} />
 
-      {/* Long rod with its weight. */}
-      <Rod from={[26, -130, 0]} to={[rodEnd, -130, 0]} radius={7} color={palette.ink} />
-      <Rod from={[rodEnd, -130, 0]} to={[rodEnd + 40, -130, 0]} radius={13} color={palette.muted} />
+      {/* Long rod, with a damper and its weight at the far end. */}
+      <Rod from={longRod.from} to={longRod.to} radius={7} color={palette.ink} />
+      <Rod
+        from={longRod.to}
+        to={[longRod.to[0] + 14, longRod.to[1], 0]}
+        radius={10}
+        color={palette.accent}
+      />
+      <Rod
+        from={[longRod.to[0] + 14, longRod.to[1], 0]}
+        to={[longRod.to[0] + 54, longRod.to[1], 0]}
+        radius={13}
+        color={palette.muted}
+      />
+
+      {/* V-bar on the long rod mount, and the two side rods with their weights. */}
+      <RoundedBox
+        args={[22, 20, 46]}
+        radius={5}
+        position={[longRod.from[0] + 8, longRod.from[1], 0]}
+      >
+        <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
+      </RoundedBox>
+      {sideRods.map((rod, index) => (
+        <group key={index}>
+          <Rod from={rod.from} to={rod.to} radius={6} color={palette.ink} />
+          <Rod from={rod.to} to={along(rod.from, rod.to, 1.12)} radius={12} color={palette.muted} />
+        </group>
+      ))}
 
       {/* Plunger through the riser, touching the shaft. Rest wire under it. */}
       <Rod
-        from={[0, 0, side * 52]}
+        from={[0, 0, windowZ + side * 30]}
         to={[0, 0, atRest[2] + side * radius]}
         radius={3.2}
         color={palette.gold}
+      />
+      {/* The barrel of the plunger, on the outside of the riser. */}
+      <Rod
+        from={[0, 0, windowZ + side * 14]}
+        to={[0, 0, windowZ + side * 44]}
+        radius={6}
+        color={palette.muted}
       />
       <Rod
         from={[6, -radius - 1, windowZ]}
@@ -340,7 +398,7 @@ export default function BowScene({ bow, arrow, amplify, focus, focusRequest }: P
         <ambientLight intensity={1.1} />
         <directionalLight position={[800, 1600, -1200 * side]} intensity={2.2} />
         <directionalLight position={[-900, -400, 900 * side]} intensity={0.7} />
-        <Bow bow={bow} geometry={geometry} />
+        <Bow geometry={geometry} />
         <CameraRig focus={focus} focusRequest={focusRequest} geometry={geometry} />
         <LabelPins anchors={anchors} />
       </Canvas>
