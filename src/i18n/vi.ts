@@ -19,6 +19,8 @@ export const vi: Messages = {
     flight: 'Tên bay',
     compare: 'So sánh',
     bow: 'Cung 3D (xem thử)',
+    sections: 'Phần của trang',
+    section: { setup: 'Setup', result: 'Kết quả', advice: 'Gợi ý' },
     disclaimer:
       'Trình mô phỏng này dùng một mô hình đơn giản hoá về cung recurve và mũi tên. Kết quả dùng để tìm hiểu và hình dung việc tune, không thay cho việc tune thực tế, thông số của nhà sản xuất hay huấn luyện viên.',
     modelOnly:
@@ -88,6 +90,11 @@ export const vi: Messages = {
     resetLabel: (label, value) => `Đặt lại ${label} về ${value}`,
     resetTitle: (value) => `Đặt lại về ${value}`,
     slider: (label) => `Thanh trượt ${label}`,
+    decrease: (label) => `Giảm ${label}`,
+    increase: (label) => `Tăng ${label}`,
+    changed: (count) => `${count} đã đổi`,
+    fold: (title) => `Ẩn ${title}`,
+    unfold: (title) => `Hiện ${title}`,
   },
 
   rating: {
@@ -126,7 +133,20 @@ export const vi: Messages = {
     energy: 'Động năng',
     tooLight: (grainsPerPound, minimum) =>
       `Mũi tên này quá nhẹ so với lực kéo: ${grainsPerPound} gr/lb, dưới mức ${minimum} gr/lb mà các hãng cung thường đặt làm tối thiểu. Bắn tên quá nhẹ thì cung chịu tải gần như bắn khan. Hãy xem giới hạn của hãng làm cung.`,
-    note: 'Đây là xu hướng từ một mô hình đơn giản hoá, chưa được đối chiếu với bắn thật. Hãy thử trên cung của bạn trước khi đổi thiết bị.',
+    note: 'Mô hình đơn giản hoá, chưa đối chiếu với bắn thật. Hãy thử trên cung của bạn trước khi đổi thiết bị.',
+    showGauges: 'Xem các thước đo',
+    hideGauges: 'Ẩn các thước đo',
+    reading: {
+      matched: 'Tên hợp với cung.',
+      little: { WEAK: 'Tên hơi yếu.', STIFF: 'Tên hơi cứng.' },
+      clearly: { WEAK: 'Tên yếu rõ.', STIFF: 'Tên cứng rõ.' },
+      nock: {
+        NOCK_HIGH: 'Nocking point đang quá cao.',
+        NOCK_LOW: 'Nocking point đang quá thấp.',
+      },
+      clearance: 'Tên dễ chạm cung lúc rời dây.',
+      oscillation: 'Tên lắc nhiều trước khi ổn định.',
+    },
   },
 
   bareShaft: {
@@ -208,6 +228,7 @@ export const vi: Messages = {
     low: 'Thấp',
     view: 'Góc nhìn',
     views: { top: 'Từ trên', side: 'Từ bên', both: 'Cả hai' },
+    viewNames: { top: 'Nhìn từ trên', side: 'Nhìn từ bên', both: 'Hai góc nhìn' },
     distance: 'Cự ly',
     impact: 'Điểm chạm',
     impacts: { one: 'Một điểm', two: 'Hai điểm' },
@@ -222,24 +243,30 @@ export const vi: Messages = {
     pause: 'Dừng',
     restart: 'Chạy lại',
     flyBare: 'Bắn kèm một bareshaft',
+    options: 'Tùy chọn hiển thị',
+    hideDrawing: 'Ẩn hình vẽ',
+    showDrawing: 'Hiện hình vẽ',
+    summary: (view, distance, impact) => `${view}, ${distance} m, ${impact.toLowerCase()} chạm.`,
+    notToScale: 'Không theo tỉ lệ.',
+    about: 'Về hình vẽ này',
     amplify: 'Phóng đại',
     realSpeed: 'Tốc độ thật.',
     slowed: (times) => `Chậm ${times} lần.`,
     amplified: {
       one: {
-        top: 'Độ uốn và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ.',
-        side: 'Góc của tên và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ.',
-        both: 'Độ uốn, góc của tên và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ.',
+        top: 'Độ uốn và độ lệch của bareshaft được phóng đại.',
+        side: 'Góc của tên và độ lệch của bareshaft được phóng đại.',
+        both: 'Độ uốn, góc của tên và độ lệch của bareshaft được phóng đại.',
       },
       two: {
-        top: 'Độ uốn và độ lệch được phóng đại, hình vẽ không theo tỉ lệ.',
-        side: 'Góc của tên và độ lệch được phóng đại, hình vẽ không theo tỉ lệ.',
-        both: 'Độ uốn, góc của tên và độ lệch được phóng đại, hình vẽ không theo tỉ lệ.',
+        top: 'Độ uốn và độ lệch được phóng đại.',
+        side: 'Góc của tên và độ lệch được phóng đại.',
+        both: 'Độ uốn, góc của tên và độ lệch được phóng đại.',
       },
     },
     landing: {
-      one: 'Tên có cánh được coi là đã chỉnh thước vào tâm.',
-      two: 'Mỗi mũi tên cắm đúng chỗ mô hình tính, thước ngắm để nguyên.',
+      one: 'Cung, mũi tên, cự ly và độ lệch mỗi thứ vẽ theo một tỉ lệ riêng. Tên có cánh được coi là đã chỉnh thước vào tâm.',
+      two: 'Cung, mũi tên, cự ly và độ lệch mỗi thứ vẽ theo một tỉ lệ riêng. Mỗi mũi tên cắm đúng chỗ mô hình tính, thước ngắm để nguyên.',
     },
     topViewLabel: (stiffness, oscillation, lateral) =>
       `Tên bay từ cung tới bia, nhìn từ trên. Độ cứng động: ${stiffness}. Dao động: ${oscillation}. Lệch ngang: ${lateral}.`,

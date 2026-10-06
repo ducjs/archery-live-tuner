@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { HEURISTIC_V0, MIN_GRAINS_PER_POUND } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { BareShaftComparison, SimulationResult } from '../../models/simulation.ts'
 import { bareShaftReading } from './bareShaftReading.ts'
+import { resultReading } from './resultReading.ts'
 
 type GaugeProps = {
   title: string
@@ -120,6 +122,11 @@ export function ResultPanel({
   const m = useMessages()
   const text = m.result
   const reading = comparison && bareShaftReading(comparison, handedness, m)
+  // The reading in words comes first. On a phone the gauges behind it wait to
+  // be asked for; a wide screen has room to show them from the start.
+  const [gaugesOpen, setGaugesOpen] = useState(
+    () => window.matchMedia?.('(min-width: 64rem)').matches ?? true,
+  )
   const grainsPerPound = metrics.grainsPerPound.toFixed(1)
   const frontOfCenter = metrics.frontOfCenter.toFixed(1)
 
@@ -128,74 +135,10 @@ export function ResultPanel({
       <h2 id="result-heading" className="font-display text-xl font-semibold">
         {text.heading}
       </h2>
-      <dl className="mt-3 grid gap-x-8 gap-y-5 @lg:grid-cols-2">
-        <DivergingGauge
-          title={text.stiffness}
-          word={m.rating[classification.stiffness]}
-          value={metrics.dynamicBehavior}
-          neutral={thresholds.stiffnessNeutral}
-          lowLabel={m.rating.WEAK}
-          highLabel={m.rating.STIFF}
-          tuningScale
-        />
-        <DivergingGauge
-          title={text.lateral}
-          word={m.rating[classification.lateral]}
-          value={metrics.lateralDeviation}
-          neutral={thresholds.lateralNeutral}
-          lowLabel={m.rating.LEFT}
-          highLabel={m.rating.RIGHT}
-        />
-        <DivergingGauge
-          title={text.vertical}
-          word={m.rating[classification.vertical]}
-          value={metrics.verticalTendency}
-          neutral={thresholds.verticalNeutral}
-          lowLabel={m.rating.NOCK_LOW}
-          highLabel={m.rating.NOCK_HIGH}
-        />
-        <LevelMeter
-          title={text.oscillation}
-          word={m.rating[classification.oscillation]}
-          value={metrics.oscillation}
-        />
-        <LevelMeter
-          title={text.clearance}
-          word={m.rating[classification.clearance]}
-          value={metrics.clearanceRisk}
-        />
-      </dl>
-      {reading && (
-        <div className="border-line mt-5 border-t pt-4">
-          <h3 className="font-semibold">{text.bareShaftHeading}</h3>
-          <p className="mt-1 max-w-prose">
-            {reading.landing} {reading.meaning}
-          </p>
-          <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.bareShaftNote}</p>
-        </div>
-      )}
-      <p className="mt-5">
-        <span className="text-ink-muted">{text.speed}</span>{' '}
-        <span className="font-semibold">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</span>
-        <span className="text-ink-muted">{text.reaching((target.x / 1000).toFixed(0))}</span>{' '}
-        <span className="font-semibold">{target.t.toFixed(2)} s</span>
+      <p className="mt-2 max-w-prose text-lg leading-snug font-medium">
+        {resultReading(result, m).join(' ')}
+        {reading && ` ${reading.landing}`}
       </p>
-      {advanced && (
-        <dl className="mt-3 grid max-w-md gap-1">
-          {(
-            [
-              [text.grainsPerPound, `${grainsPerPound} gr/lb`],
-              [text.frontOfCenter, `${frontOfCenter} %`],
-              [text.energy, `${metrics.kineticEnergy.toFixed(1)} J`],
-            ] as const
-          ).map(([label, value]) => (
-            <div key={label} className="flex items-baseline justify-between gap-3">
-              <dt className="text-ink-muted">{label}</dt>
-              <dd className="font-semibold">{value}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
       {metrics.grainsPerPound < MIN_GRAINS_PER_POUND && (
         <p
           role="status"
@@ -204,6 +147,85 @@ export function ResultPanel({
           {text.tooLight(grainsPerPound, MIN_GRAINS_PER_POUND)}
         </p>
       )}
+      <button
+        type="button"
+        aria-expanded={gaugesOpen}
+        aria-controls="result-gauges"
+        onClick={() => setGaugesOpen(!gaugesOpen)}
+        className="text-accent focus-visible:outline-accent mt-1 min-h-11 cursor-pointer rounded-md font-medium underline underline-offset-4 focus-visible:outline-2"
+      >
+        {gaugesOpen ? text.hideGauges : text.showGauges}
+      </button>
+      <div id="result-gauges" hidden={!gaugesOpen}>
+        <dl className="mt-2 grid gap-x-8 gap-y-5 @lg:grid-cols-2">
+          <DivergingGauge
+            title={text.stiffness}
+            word={m.rating[classification.stiffness]}
+            value={metrics.dynamicBehavior}
+            neutral={thresholds.stiffnessNeutral}
+            lowLabel={m.rating.WEAK}
+            highLabel={m.rating.STIFF}
+            tuningScale
+          />
+          <DivergingGauge
+            title={text.lateral}
+            word={m.rating[classification.lateral]}
+            value={metrics.lateralDeviation}
+            neutral={thresholds.lateralNeutral}
+            lowLabel={m.rating.LEFT}
+            highLabel={m.rating.RIGHT}
+          />
+          <DivergingGauge
+            title={text.vertical}
+            word={m.rating[classification.vertical]}
+            value={metrics.verticalTendency}
+            neutral={thresholds.verticalNeutral}
+            lowLabel={m.rating.NOCK_LOW}
+            highLabel={m.rating.NOCK_HIGH}
+          />
+          <LevelMeter
+            title={text.oscillation}
+            word={m.rating[classification.oscillation]}
+            value={metrics.oscillation}
+          />
+          <LevelMeter
+            title={text.clearance}
+            word={m.rating[classification.clearance]}
+            value={metrics.clearanceRisk}
+          />
+        </dl>
+        {reading && (
+          <div className="border-line mt-5 border-t pt-4">
+            <h3 className="font-semibold">{text.bareShaftHeading}</h3>
+            <p className="mt-1 max-w-prose">
+              {reading.landing} {reading.meaning}
+            </p>
+            <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.bareShaftNote}</p>
+          </div>
+        )}
+        <p className="mt-5">
+          <span className="text-ink-muted">{text.speed}</span>{' '}
+          <span className="font-semibold">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</span>
+          <span className="text-ink-muted">{text.reaching((target.x / 1000).toFixed(0))}</span>{' '}
+          <span className="font-semibold">{target.t.toFixed(2)} s</span>
+        </p>
+        {advanced && (
+          <dl className="mt-3 grid max-w-md gap-1">
+            {(
+              [
+                [text.grainsPerPound, `${grainsPerPound} gr/lb`],
+                [text.frontOfCenter, `${frontOfCenter} %`],
+                [text.energy, `${metrics.kineticEnergy.toFixed(1)} J`],
+              ] as const
+            ).map(([label, value]) => (
+              <div key={label} className="flex items-baseline justify-between gap-3">
+                <dt className="text-ink-muted">{label}</dt>
+                <dd className="font-semibold">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
       <p className="text-ink-muted mt-2 max-w-prose text-sm">{text.note}</p>
     </section>
   )

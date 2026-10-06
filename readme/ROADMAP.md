@@ -6,7 +6,9 @@ Phase tracker for the project. The specification lives in [recurve-tuning-simula
 
 Những việc chỉ chủ dự án làm được: quyết định, cấp quyền, tìm tài liệu, xem bằng mắt. Xong việc nào thì tick, hết thì xóa dòng đó ở lần cập nhật sau.
 
-- [ ] Cho phép push các commit đang chờ để site được deploy, rồi mở site thật trên điện thoại và rà 10 tiêu chí ở spec §33. *Đây là việc cuối cùng của V0.1. Push lên master là site tự cập nhật.*
+- [ ] Mở site thật trên điện thoại và rà 10 tiêu chí ở spec §33. *Đây là việc cuối cùng của V0.1: mọi mục đã tick, chỉ còn bước kiểm này.*
+- [ ] Thử thanh trượt trên điện thoại thật: vuốt dọc ngang qua thanh trượt phải cuộn trang, chỉ kéo đúng nút tròn mới đổi giá trị. *Mới kiểm bằng Chrome giả lập màn cảm ứng trên máy tính, chưa thử trên máy thật.*
+- [ ] Chuyển repo GitHub sang private, rồi nối repo với Cloudflare Pages: lệnh build `npm run build`, thư mục xuất `dist`. *Ở gói GitHub miễn phí, repo private thì GitHub Pages ngừng chạy, nên site sẽ tắt cho tới khi Cloudflare chạy. Nối xong thì báo để bỏ bước deploy GitHub Pages khỏi workflow.*
 - [ ] Xem khối "đang giả định" trong chế độ Cơ bản trên trình duyệt, nhất là trên điện thoại. *Khối này đã qua test nhưng chưa ai nhìn bằng mắt.*
 - [ ] Quyết định điểm cân của center shot: giữ 0 mm, dời ra ngoài khoảng 2,4 mm theo sách Easton, hay đổi nghĩa thông số thành "lệch so với vị trí chuẩn". *Hiện đặt center shot đúng như sách thì mô hình báo bareshaft lệch trái. Chi tiết ở tuning-references.md mục 4.2.*
 - [ ] Quyết định điểm cân của nocking point: giữ 4 mm hay nâng lên. *Các nguồn ghi từ 3 tới 13 mm; 4 mm nằm ở đầu thấp. Chi tiết ở tuning-references.md mục 4.3.*
@@ -28,7 +30,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M6 done; M7 done except the deploy; M8 proposed, not started) |
+| V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -143,20 +145,21 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [x] i18n: Vietnamese + English, with our own typed dictionaries instead of i18next. The simulator follows the browser language at first and remembers the choice. The roadmap and previews pages stay Vietnamese only
 - [x] Unit toggle: lb / inch / grain or kg / cm / gram, for inputs, suggestions, saved setups and the comparison. Setups are stored in internal units either way
 - [x] Scientific disclaimer (§26), at the foot of the simulator, next to the note under the model result
-- [ ] Deploy to static hosting. Ready but not live: the build uses relative paths and `.github/workflows/deploy.yml` tests, builds and publishes to GitHub Pages on every push to `master`. Still needed: a GitHub repository, a push, and Pages set to "GitHub Actions"
+- [x] Deploy to static hosting: the build uses relative paths and `.github/workflows/deploy.yml` tests, builds and publishes to GitHub Pages on every push to `master`. Planned by the owner: make the repository private and move the hosting to Cloudflare Pages
 
 ### M8. A calmer screen
 
 > **Nói đơn giản:** Màn hình đang có quá nhiều thứ cùng lúc, nhìn vào khá rối. Phần này sắp lại để thứ quan trọng hiện trước, phần còn lại mở ra khi cần. Trên điện thoại, vuốt để cuộn trang không còn vô tình kéo trúng thanh trượt.
 
-Raised by the project owner on 2026-10-06. The items are proposals; the owner picks which ones to build.
+Raised by the project owner on 2026-10-06, who then asked for all of it.
 
-- [ ] Sliders on a touch screen move only when their thumb is dragged, and a vertical swipe that starts on a slider scrolls the page. Each value also gets minus and plus buttons, so it can be changed without dragging
-- [ ] Playback options put away: play, restart and the bare shaft switch stay in view; view, distance, points of impact, speed and amplification open from one "display options" button
-- [ ] The result leads with one sentence in plain words (for example "the arrow is a little weak; the bare shaft lands to the right"). The gauges and numbers open on request
-- [ ] Inputs in groups that fold, with the changed values counted on a folded group. On a phone, setup, result and suggestions become three tabs under the animation instead of one long page
-- [ ] The standing notes under the controls and the result (slowed, amplified, not to scale, model limits) shortened to one line each, with the full text behind an "about this drawing" link
-- [ ] The whole screen reviewed with the two UI skills and checked by eye at 400 px wide, in both languages
+- [x] Sliders on a touch screen move only when their thumb is dragged, and a vertical swipe that starts on a slider scrolls the page. Each value also gets minus and plus buttons, so it can be changed without dragging. Checked in Chrome with a touch screen emulated; a real phone is still to be tried
+- [x] Playback options put away: play, restart and the bare shaft switch stay in view; view, distance, points of impact, speed and amplification open from one "display options" button
+- [x] The result leads with one sentence in plain words (for example "the arrow reads a little weak; the bare shaft lands to the right"). The gauges and numbers open on request: put away at first on a phone, shown at first on a wide screen
+- [x] Inputs in groups that fold, with the changed values counted on the group. On a phone, setup, result and suggestions become three tabs under the animation instead of one long page
+- [x] The standing notes under the controls and the result shortened to one line each, with the full text behind an "about this drawing" link
+- [x] The whole screen reviewed with the two UI skills and checked by eye at 400 px wide, in both languages
+- [x] A button that puts the top and side views away and brings them back, to leave a small screen to the values and the result
 
 **Exit criteria:** all ten points of §33 pass, and the engine runs in tests without React.
 

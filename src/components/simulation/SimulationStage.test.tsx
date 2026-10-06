@@ -33,6 +33,9 @@ describe('PlaybackControls', () => {
     )
     expect(screen.getByRole('button', { name: 'Pause' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Restart' })).toBeTruthy()
+    // The options stay put away until they are asked for.
+    expect(screen.queryAllByRole('radio')).toHaveLength(0)
+    await userEvent.click(screen.getByRole('button', { name: 'Display options' }))
     expect(screen.getAllByRole('radio').map((radio) => radio.parentElement?.textContent)).toEqual([
       'Top',
       'Side',
@@ -77,6 +80,7 @@ describe('PlaybackControls', () => {
       />,
     )
     expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
+    await userEvent.click(screen.getByRole('button', { name: 'Display options' }))
 
     await userEvent.click(screen.getByRole('radio', { name: 'Side' }))
     expect(onSettingsChange).toHaveBeenLastCalledWith({ ...settings, view: 'side' })

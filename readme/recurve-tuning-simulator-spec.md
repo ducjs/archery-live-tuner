@@ -178,6 +178,8 @@ The layout must be responsive. Archers tune at the range with a phone, so the pa
 The UI is bilingual (Vietnamese / English) and has a unit toggle (lb/kg, inch/cm, grain/gram).
 
 - Language: the simulator starts in the browser's language when that is Vietnamese, in English otherwise, and remembers the choice. Names of parts that Vietnamese archers keep in English (spine, point, plunger, nocking point, brace height, tiller, bareshaft) are not translated. The roadmap and previews pages are Vietnamese only.
+- Less at once. The screen shows what is used all the time and puts the rest one press away. The playback row keeps play, restart and the bare shaft switch; view, distance, points of impact, speed and amplification open from "display options", and one line under the row says what they are set to. The result opens with its reading in a sentence or two; the gauges and numbers are shown from the start on a wide screen and on request on a phone. The bow and arrow groups fold, and each says how many of its values are changed. The top and side views can be put away with one button.
+- Phone. Under the animation the page is three tabs, setup, result and suggestions, shown one at a time; a wide screen shows all three. A slider moves only when its thumb is dragged, so a swipe to scroll that crosses a slider does not change a value, and every value has minus and plus buttons as a way to change it without dragging.
 - Units: one switch between "lb, in, gr" and "kg, cm, g". It changes inputs, suggestions, saved setup summaries and the comparison table. Values that have no archery unit (brace height in cm, offsets in mm, bow mass in kg) look the same in both. Setups are always stored in internal units, so switching never changes a setup.
 
 ---

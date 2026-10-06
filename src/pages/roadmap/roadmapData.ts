@@ -29,8 +29,18 @@ export type PinnedTask = RoadmapItem & { why: string }
 // Mirrors the pinned list at the top of readme/ROADMAP.md, in the same order.
 export const PINNED: PinnedTask[] = [
   {
-    text: 'Cho phép push các commit đang chờ để site được deploy, rồi mở site thật trên điện thoại và rà 10 tiêu chí ở spec §33',
-    why: 'Đây là việc cuối cùng của V0.1. Push lên master là site tự cập nhật.',
+    text: 'Mở site thật trên điện thoại và rà 10 tiêu chí ở spec §33',
+    why: 'Đây là việc cuối cùng của V0.1: mọi mục đã tick, chỉ còn bước kiểm này.',
+    done: false,
+  },
+  {
+    text: 'Thử thanh trượt trên điện thoại thật: vuốt dọc ngang qua thanh trượt phải cuộn trang, chỉ kéo đúng nút tròn mới đổi giá trị',
+    why: 'Mới kiểm bằng Chrome giả lập màn cảm ứng trên máy tính, chưa thử trên máy thật.',
+    done: false,
+  },
+  {
+    text: 'Chuyển repo GitHub sang private, rồi nối repo với Cloudflare Pages: lệnh build `npm run build`, thư mục xuất `dist`',
+    why: 'Ở gói GitHub miễn phí, repo private thì GitHub Pages ngừng chạy, nên site sẽ tắt cho tới khi Cloudflare chạy. Nối xong thì báo để bỏ bước deploy GitHub Pages khỏi workflow.',
     done: false,
   },
   {
@@ -204,33 +214,36 @@ export const ROADMAP: RoadmapPhase[] = [
           done('Hai ngôn ngữ: tiếng Việt và tiếng Anh, đổi ngay trên thanh trên cùng'),
           done('Đổi đơn vị hiển thị: lb, inch, grain hoặc kg, cm, gram'),
           done('Lời nhắc về giới hạn của mô hình, ở cuối trang mô phỏng'),
-          todo(
-            'Đưa lên mạng với đường link công khai. Đã sẵn sàng cho GitHub Pages, còn thiếu repo trên GitHub và lần push đầu',
+          done(
+            'Đưa lên mạng với đường link công khai, qua GitHub Pages. Chủ dự án dự định chuyển repo sang private và dời sang Cloudflare Pages',
           ),
         ],
       },
       {
         title: 'M8. Màn hình gọn hơn',
         summary:
-          'Màn hình đang có quá nhiều thứ cùng lúc, nhìn vào khá rối. Phần này sắp lại để thứ quan trọng hiện trước, phần còn lại mở ra khi cần. Trên điện thoại, vuốt để cuộn trang không còn vô tình kéo trúng thanh trượt. Các mục dưới đây là đề xuất, chủ dự án chọn mục nào sẽ làm.',
+          'Màn hình đang có quá nhiều thứ cùng lúc, nhìn vào khá rối. Phần này sắp lại để thứ quan trọng hiện trước, phần còn lại mở ra khi cần. Trên điện thoại, vuốt để cuộn trang không còn vô tình kéo trúng thanh trượt.',
         items: [
-          todo(
-            'Trên màn cảm ứng, thanh trượt chỉ chạy khi kéo đúng nút tròn; vuốt dọc bắt đầu trên thanh trượt thì cuộn trang. Mỗi thông số có thêm nút trừ và cộng để chỉnh mà không cần kéo',
+          done(
+            'Trên màn cảm ứng, thanh trượt chỉ chạy khi kéo đúng nút tròn; vuốt dọc bắt đầu trên thanh trượt thì cuộn trang. Mỗi thông số có thêm nút trừ và cộng để chỉnh mà không cần kéo. Đã kiểm bằng Chrome giả lập màn cảm ứng, còn phải thử trên điện thoại thật',
           ),
-          todo(
+          done(
             'Cất bớt tùy chọn phát: chỉ để lại chạy, chạy lại và công tắc bareshaft; góc nhìn, cự ly, điểm chạm, tốc độ và phóng đại mở ra từ một nút "tùy chọn hiển thị"',
           ),
-          todo(
-            'Kết quả mở đầu bằng một câu dễ hiểu (ví dụ "tên hơi yếu, bareshaft cắm lệch phải"). Các thước đo và con số mở ra khi cần',
+          done(
+            'Kết quả mở đầu bằng một câu dễ hiểu (ví dụ "tên hơi yếu, bareshaft cắm lệch phải"). Các thước đo và con số mở ra khi cần: trên điện thoại lúc đầu cất đi, trên màn rộng lúc đầu hiện sẵn',
           ),
-          todo(
-            'Thông số nhập chia nhóm gập lại được, nhóm đang gập ghi số giá trị đã đổi. Trên điện thoại, setup, kết quả và gợi ý thành ba tab dưới hoạt hình thay cho một trang dài',
+          done(
+            'Thông số nhập chia nhóm gập lại được, nhóm ghi số giá trị đã đổi. Trên điện thoại, setup, kết quả và gợi ý thành ba tab dưới hoạt hình thay cho một trang dài',
           ),
-          todo(
+          done(
             'Rút các dòng ghi chú cố định (chiếu chậm, phóng đại, không theo tỉ lệ, giới hạn mô hình) còn mỗi thứ một dòng, bản đầy đủ nằm sau một đường link',
           ),
-          todo(
+          done(
             'Rà cả màn hình bằng hai skill UI và xem bằng mắt ở bề rộng 400 px, cả hai ngôn ngữ',
+          ),
+          done(
+            'Nút cất hình vẽ nhìn từ trên và từ bên đi rồi hiện lại, để màn hình nhỏ dành chỗ cho thông số và kết quả',
           ),
         ],
       },

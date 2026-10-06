@@ -116,6 +116,7 @@ describe('compare', () => {
     ])
 
     // One drawing per setup: the "Both" view is not on offer here.
+    await userEvent.click(screen.getByRole('button', { name: 'Display options' }))
     expect(screen.queryByRole('radio', { name: 'Both' })).toBeNull()
     await userEvent.click(screen.getByRole('radio', { name: 'Side' }))
     expect(screen.getAllByRole('img', { name: /^Side view/ })).toHaveLength(2)

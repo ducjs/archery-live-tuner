@@ -34,6 +34,29 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
 
   const commit = (displayValue: number) =>
     onChange(clampValue(parameter, fromDisplay(parameter, displayValue, shownUnit)))
+  // One step down or up, for changing a value without dragging.
+  const nudge = (steps: number) => {
+    setDraft(null)
+    commit(Math.min(max, Math.max(min, round(shown + steps * step))))
+  }
+  const stepButton = (steps: 1 | -1) => (
+    <button
+      type="button"
+      onClick={() => nudge(steps)}
+      disabled={steps < 0 ? shown <= min + 1e-9 : shown >= max - 1e-9}
+      aria-label={steps < 0 ? m.panels.decrease(label) : m.panels.increase(label)}
+      className="border-line bg-surface text-ink focus-visible:outline-accent grid size-11 shrink-0 cursor-pointer place-items-center rounded-md border focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default disabled:opacity-40"
+    >
+      <svg viewBox="0 0 20 20" className="size-4" fill="none" aria-hidden="true">
+        <path
+          d={steps < 0 ? 'M4 10h12' : 'M4 10h12M10 4v12'}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    </button>
+  )
 
   return (
     <div>
@@ -87,8 +110,8 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
         </div>
       </div>
 
-      <div className="text-ink-muted -mt-1 flex items-center gap-2 text-sm">
-        <span>{min}</span>
+      <div className="mt-1 flex items-center gap-2">
+        {stepButton(-1)}
         <input
           type="range"
           aria-label={m.panels.slider(label)}
@@ -102,10 +125,10 @@ export function ParameterSlider({ parameter, value, onChange, onReset }: Props) 
           }}
           className="accent-accent focus-visible:outline-accent h-11 min-w-0 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
         />
-        <span>{max}</span>
+        {stepButton(1)}
       </div>
 
-      {hint && <p className="text-ink-muted -mt-1 text-sm">{hint}</p>}
+      {hint && <p className="text-ink-muted mt-1 text-sm">{hint}</p>}
     </div>
   )
 }

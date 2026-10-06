@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
@@ -198,6 +198,10 @@ type PlaybackControlsProps = {
   bareShaft?: boolean
   /** Leave out to hide the bare shaft switch. */
   onBareShaftChange?: (shown: boolean) => void
+  /** Whether the drawing is put away, to leave the screen to the numbers. */
+  drawingHidden?: boolean
+  /** Leave out to hide the button that puts the drawing away. */
+  onDrawingHiddenChange?: (hidden: boolean) => void
   settings: ViewSettings
   onSettingsChange: (settings: ViewSettings) => void
   /** Shows the amplification control. View, distance and speed are always shown. */
@@ -215,18 +219,26 @@ export function PlaybackControls({
   onRestart,
   bareShaft = false,
   onBareShaftChange,
+  drawingHidden = false,
+  onDrawingHiddenChange,
   settings,
   onSettingsChange,
   advanced = false,
   views = VIEWS,
 }: PlaybackControlsProps) {
-  const amplifyId = useId()
+  const id = useId()
   const m = useMessages()
   const text = m.stage
+  // The options are set once in a while; the buttons next to them are used all the time.
+  const [optionsOpen, setOptionsOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
+  const speedLabel = (speed: number) => (slowdown(speed) === 1 ? text.real : `1/${slowdown(speed)}`)
+  const pace =
+    slowdown(settings.speed) === 1 ? text.realSpeed : text.slowed(slowdown(settings.speed))
 
   return (
-    <div className="grid gap-3">
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+    <div className="grid gap-2">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
         <div className="flex gap-2">
           <button type="button" onClick={onToggle} className={buttonClass}>
             {playing ? text.pause : text.play}
@@ -248,6 +260,49 @@ export function PlaybackControls({
           </label>
         )}
 
+        <div className="ml-auto flex flex-wrap items-center gap-x-5">
+          {onDrawingHiddenChange && (
+            <button
+              type="button"
+              aria-pressed={drawingHidden}
+              onClick={() => onDrawingHiddenChange(!drawingHidden)}
+              className="text-accent focus-visible:outline-accent min-h-11 cursor-pointer rounded-md font-medium focus-visible:outline-2"
+            >
+              {drawingHidden ? text.showDrawing : text.hideDrawing}
+            </button>
+          )}
+
+          <button
+            type="button"
+            aria-expanded={optionsOpen}
+            aria-controls={`${id}-options`}
+            onClick={() => setOptionsOpen(!optionsOpen)}
+            className="text-accent focus-visible:outline-accent flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md font-medium focus-visible:outline-2"
+          >
+            {text.options}
+            <svg
+              viewBox="0 0 20 20"
+              className={`size-5 transition-transform duration-150 motion-reduce:transition-none ${optionsOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 8l5 5 5-5"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div
+        id={`${id}-options`}
+        hidden={!optionsOpen}
+        className="border-line bg-surface flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border px-3 py-2"
+      >
         <SegmentedControl
           label={text.view}
           options={views.map((view) => ({ value: view, label: text.views[view] }))}
@@ -271,40 +326,52 @@ export function PlaybackControls({
 
         <SegmentedControl
           label={text.speed}
-          options={SPEEDS.map((speed) => ({
-            value: String(speed),
-            label: slowdown(speed) === 1 ? text.real : `1/${slowdown(speed)}`,
-          }))}
+          options={SPEEDS.map((speed) => ({ value: String(speed), label: speedLabel(speed) }))}
           value={String(settings.speed)}
           onChange={(speed) => onSettingsChange({ ...settings, speed: Number(speed) })}
         />
 
         {advanced && (
-          <>
-            <div className="flex min-w-56 flex-1 items-center gap-3">
-              <label htmlFor={amplifyId} className="font-medium">
-                {text.amplify}
-              </label>
-              <input
-                id={amplifyId}
-                type="range"
-                min={MIN_EXAGGERATION}
-                max={MAX_EXAGGERATION}
-                step="0.5"
-                value={settings.exaggeration}
-                onChange={(event) =>
-                  onSettingsChange({ ...settings, exaggeration: Number(event.target.value) })
-                }
-                className="accent-accent focus-visible:outline-accent h-11 min-w-0 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
-              />
-              <span className="w-8 text-right font-semibold">{settings.exaggeration}×</span>
-            </div>
-          </>
+          <div className="flex min-w-56 flex-1 items-center gap-3">
+            <label htmlFor={`${id}-amplify`} className="font-medium">
+              {text.amplify}
+            </label>
+            <input
+              id={`${id}-amplify`}
+              type="range"
+              min={MIN_EXAGGERATION}
+              max={MAX_EXAGGERATION}
+              step="0.5"
+              value={settings.exaggeration}
+              onChange={(event) =>
+                onSettingsChange({ ...settings, exaggeration: Number(event.target.value) })
+              }
+              className="accent-accent focus-visible:outline-accent h-11 min-w-0 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+            />
+            <span className="w-8 text-right font-semibold">{settings.exaggeration}×</span>
+          </div>
         )}
       </div>
 
-      <p className="text-ink-muted max-w-prose text-sm">
-        {slowdown(settings.speed) === 1 ? text.realSpeed : text.slowed(slowdown(settings.speed))}{' '}
+      {/* One line that is always there; what it leaves out opens on request. */}
+      <p className="text-ink-muted text-sm">
+        {text.summary(
+          text.viewNames[settings.view],
+          settings.distance,
+          text.impacts[settings.impact],
+        )}{' '}
+        {pace} {text.notToScale}{' '}
+        <button
+          type="button"
+          aria-expanded={aboutOpen}
+          aria-controls={`${id}-about`}
+          onClick={() => setAboutOpen(!aboutOpen)}
+          className="text-accent focus-visible:outline-accent cursor-pointer rounded-sm underline underline-offset-4 focus-visible:outline-2"
+        >
+          {text.about}
+        </button>
+      </p>
+      <p id={`${id}-about`} hidden={!aboutOpen} className="text-ink-muted max-w-prose text-sm">
         {text.amplified[settings.impact][settings.view]} {text.landing[settings.impact]}
       </p>
     </div>

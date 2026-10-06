@@ -86,6 +86,7 @@ describe('the choice in the playback controls', () => {
   it('reports a change of mode', async () => {
     const onSettingsChange = vi.fn()
     render(controls('one', onSettingsChange))
+    await userEvent.click(screen.getByRole('button', { name: 'Display options' }))
     expect((screen.getByRole('radio', { name: 'One point' }) as HTMLInputElement).checked).toBe(
       true,
     )
@@ -93,8 +94,9 @@ describe('the choice in the playback controls', () => {
     expect(onSettingsChange).toHaveBeenLastCalledWith({ ...settings, impact: 'two' })
   })
 
-  it('says what the drawing assumes in each mode', () => {
+  it('says what the drawing assumes in each mode', async () => {
     const { rerender } = render(controls('one'))
+    await userEvent.click(screen.getByRole('button', { name: 'About this drawing' }))
     expect(screen.getByText(/taken as sighted in on the center/)).toBeTruthy()
 
     rerender(controls('two'))

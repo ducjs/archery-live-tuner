@@ -3,3 +3,4 @@
 - [Commit per feature](commit-per-feature.md) — commit each feature on master without asking, no branches; ask before pushing
 - [Mirror memory into repo](mirror-memory-into-repo.md) — copy every memory change into readme/memory/ and commit it
 - [Check drawings with headless Chrome](check-drawings-with-headless-chrome.md) — render the flight views to a PNG and look before reporting a visual change
+- [Hosting plan](hosting-plan.md) — owner wants a private repo and Cloudflare Pages; do not flip it unasked

@@ -26,14 +26,45 @@ function ParameterPanel({ group, title }: { group: ParameterGroup; title: string
   const setParameter = useTuningStore((state) => state.setParameter)
   const resetParameter = useTuningStore((state) => state.resetParameter)
   const m = useMessages()
+  const [open, setOpen] = useState(true)
+
+  const shown = visibleParameters(group, mode)
+  const changed = modifiedParameters(setup).filter((parameter) => shown.includes(parameter)).length
 
   return (
     <section aria-labelledby={`${group}-heading`}>
-      <h2 id={`${group}-heading`} className="font-display text-xl font-semibold">
-        {title}
-      </h2>
-      <div className="mt-2 grid gap-3">
-        {visibleParameters(group, mode).map((parameter) =>
+      <div className="flex items-center justify-between gap-3">
+        <h2 id={`${group}-heading`} className="font-display text-xl font-semibold">
+          {title}
+        </h2>
+        {/* A folded group still says how much of it differs from the defaults. */}
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={`${group}-values`}
+          aria-label={open ? m.panels.fold(title) : m.panels.unfold(title)}
+          onClick={() => setOpen(!open)}
+          className="text-ink-muted focus-visible:outline-accent flex min-h-11 flex-1 cursor-pointer items-center justify-end gap-2 rounded-md text-sm focus-visible:outline-2"
+        >
+          {changed > 0 && <span>{m.panels.changed(changed)}</span>}
+          <svg
+            viewBox="0 0 20 20"
+            className={`size-5 transition-transform duration-150 motion-reduce:transition-none ${open ? 'rotate-180' : ''}`}
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M5 8l5 5 5-5"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div id={`${group}-values`} hidden={!open} className="mt-2 grid gap-4">
+        {shown.map((parameter) =>
           parameter.kind === 'enum' ? (
             <SegmentedControl
               key={parameter.key}

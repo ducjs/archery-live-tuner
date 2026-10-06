@@ -11,6 +11,7 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 ## What it does today
 
 - Bow and arrow inputs, in Simple and Advanced detail. Simple mode lists the values it assumes for everything it does not ask
+- A screen that leads with the result in a sentence and keeps options, gauges and notes one press away; on a phone, setup, result and suggestions are three tabs, and sliders do not catch a swipe to scroll
 - Arrow flight seen from above, from the side, or both, with a bare shaft flown next to the fletched arrow
 - Two ways to draw where the arrows land: one point of impact (the fletched arrow sighted in on the center, as in a bare shaft test) or two (both arrows where the model throws them)
 - The shot from full draw: the string is drawn back, released on play, and pushes the arrow off the bow

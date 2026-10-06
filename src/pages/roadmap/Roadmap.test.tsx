@@ -45,9 +45,8 @@ describe('Roadmap page', () => {
     const open = [...container.querySelectorAll('details[open] summary')].map(
       (summary) => summary.textContent,
     )
-    expect(open).toHaveLength(2)
-    expect(open[0]).toContain('M7.')
-    expect(open[1]).toContain('M8.')
+    // Every list of V0.1 is finished; the phase stays current until its exit check.
+    expect(open).toHaveLength(0)
   })
 
   it('says in words whether an item is done', () => {

@@ -29,6 +29,8 @@ import { useLibraryStore } from '../state/libraryStore.ts'
 import { useTuningStore } from '../state/tuningStore.ts'
 
 type Stage = 'flight' | 'compare' | 'bow'
+/** The part of the page a phone shows under the animation. A wide screen shows all of them. */
+type Section = 'setup' | 'result' | 'advice'
 
 const DEFAULT_VIEW: ViewSettings = {
   view: 'both',
@@ -82,6 +84,9 @@ export function Simulator() {
     window.location.hash === '#3d' ? 'bow' : 'flight',
   )
   const viewer = useBowViewer(setup.bow)
+  const [section, setSection] = useState<Section>('setup')
+  // The top and side views can be put away, to leave a small screen to the values.
+  const [drawingHidden, setDrawingHidden] = useState(false)
 
   // Compare against the chosen setup. Without a choice, against the saved copy of
   // the setup on screen (before and after), or else the first saved one.
@@ -105,6 +110,10 @@ export function Simulator() {
     ? Math.max(clipSeconds(result), clipSeconds(otherResult))
     : clipSeconds(result)
   const playback = usePlayback(duration, HOLD_SECONDS, view.speed)
+
+  // A comparison has no suggestions of its own.
+  const sections: Section[] = compared ? ['setup', 'result'] : ['setup', 'result', 'advice']
+  const shownSection = sections.includes(section) ? section : 'result'
 
   const onSettingsChange = (next: ViewSettings) =>
     // Simple mode shows the default amplification; do not store that.
@@ -148,7 +157,7 @@ export function Simulator() {
               <p className="border-line bg-surface max-w-prose rounded-lg border p-4">
                 {m.compare.empty}
               </p>
-            ) : (
+            ) : drawingHidden ? null : (
               <>
                 {compared ? (
                   <ComparisonFlight
@@ -211,6 +220,8 @@ export function Simulator() {
                 onRestart={playback.restart}
                 bareShaft={bareShaft}
                 onBareShaftChange={setBareShaft}
+                drawingHidden={drawingHidden}
+                onDrawingHiddenChange={setDrawingHidden}
                 settings={view}
                 onSettingsChange={onSettingsChange}
                 advanced={advanced}
@@ -221,6 +232,8 @@ export function Simulator() {
                 playing={playback.playing}
                 onToggle={playback.toggle}
                 onRestart={playback.restart}
+                drawingHidden={drawingHidden}
+                onDrawingHiddenChange={setDrawingHidden}
                 settings={{ ...view, view: view.view === 'side' ? 'side' : 'top' }}
                 onSettingsChange={onSettingsChange}
                 advanced={advanced}
@@ -228,18 +241,44 @@ export function Simulator() {
               />
             )}
           </div>
-          <div className="order-4 min-w-0 lg:mt-6 2xl:col-start-2 2xl:row-span-2 2xl:row-start-1 2xl:mt-0">
+          {/* On a phone the page is three sections, one at a time, so it stays short. */}
+          <div
+            role="tablist"
+            aria-label={m.simulator.sections}
+            className="border-line bg-surface order-2 grid auto-cols-fr grid-flow-col rounded-md border p-0.5 lg:hidden"
+          >
+            {sections.map((name) => (
+              <button
+                key={name}
+                type="button"
+                role="tab"
+                id={`section-tab-${name}`}
+                aria-selected={shownSection === name}
+                aria-controls={`section-${name === 'advice' ? 'result' : name}`}
+                onClick={() => setSection(name)}
+                className="aria-selected:bg-ink aria-selected:text-surface focus-visible:outline-accent min-h-11 cursor-pointer rounded px-2 font-medium focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                {m.simulator.section[name]}
+              </button>
+            ))}
+          </div>
+          <div
+            id="section-result"
+            className={`order-4 min-w-0 lg:mt-6 lg:block 2xl:col-start-2 2xl:row-span-2 2xl:row-start-1 2xl:mt-0 ${shownSection === 'setup' ? 'hidden' : ''}`}
+          >
             {compared ? (
               <ComparisonTable {...compared} units={units} />
             ) : (
               <>
-                <ResultPanel
-                  result={result}
-                  comparison={bareShaft ? comparison : undefined}
-                  handedness={setup.bow.handedness}
-                  advanced={advanced}
-                />
-                <div className="mt-5">
+                <div className={`lg:block ${shownSection === 'result' ? '' : 'hidden'}`}>
+                  <ResultPanel
+                    result={result}
+                    comparison={bareShaft ? comparison : undefined}
+                    handedness={setup.bow.handedness}
+                    advanced={advanced}
+                  />
+                </div>
+                <div className={`lg:mt-5 lg:block ${shownSection === 'advice' ? '' : 'hidden'}`}>
                   <TuningSuggestions
                     advice={advice}
                     before={{
@@ -255,7 +294,10 @@ export function Simulator() {
           </div>
         </div>
 
-        <div className="order-3 grid min-w-0 gap-5 lg:order-1">
+        <div
+          id="section-setup"
+          className={`order-3 min-w-0 gap-5 lg:order-1 lg:grid ${shownSection === 'setup' ? 'grid' : 'hidden'}`}
+        >
           <SavedSetups
             onCompare={(id) => {
               setChosenId(id)

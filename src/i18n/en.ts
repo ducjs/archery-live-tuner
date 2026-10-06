@@ -36,6 +36,8 @@ export const en = {
     flight: 'Arrow flight',
     compare: 'Compare',
     bow: 'Bow in 3D (preview)',
+    sections: 'Part of the page',
+    section: { setup: 'Setup', result: 'Result', advice: 'Suggestions' },
     disclaimer:
       'This simulator provides a simplified model of recurve bow and arrow behavior. Results are intended for tuning exploration and visualization, not as a substitute for real-world tuning, manufacturer specifications, or professional coaching.',
     modelOnly:
@@ -66,6 +68,11 @@ export const en = {
     resetLabel: (label: string, value: string) => `Reset ${label} to ${value}`,
     resetTitle: (value: string) => `Reset to ${value}`,
     slider: (label: string) => `${label} slider`,
+    decrease: (label: string) => `Decrease ${label}`,
+    increase: (label: string) => `Increase ${label}`,
+    changed: (count: number) => `${count} changed`,
+    fold: (title: string) => `Hide ${title}`,
+    unfold: (title: string) => `Show ${title}`,
   },
 
   rating: {
@@ -104,7 +111,20 @@ export const en = {
     energy: 'Kinetic energy',
     tooLight: (grainsPerPound: string, minimum: number) =>
       `This arrow is too light for the draw weight: ${grainsPerPound} gr/lb, under the ${minimum} gr/lb that bow makers commonly give as the minimum. A bow shot with too light an arrow is loaded almost as in a dry fire. Check the limit of your bow maker.`,
-    note: 'These are tendencies from a simplified model that has not been checked against real shooting. Test on your own bow before changing equipment.',
+    note: 'A simplified model, not checked against real shooting. Test on your own bow before changing equipment.',
+    showGauges: 'Show the gauges',
+    hideGauges: 'Hide the gauges',
+    reading: {
+      matched: 'The arrow matches the bow.',
+      little: { WEAK: 'The arrow reads a little weak.', STIFF: 'The arrow reads a little stiff.' },
+      clearly: { WEAK: 'The arrow reads clearly weak.', STIFF: 'The arrow reads clearly stiff.' },
+      nock: {
+        NOCK_HIGH: 'The nocking point reads too high.',
+        NOCK_LOW: 'The nocking point reads too low.',
+      },
+      clearance: 'It may touch the bow on the way out.',
+      oscillation: 'It wobbles a lot before it settles.',
+    },
   },
 
   bareShaft: {
@@ -190,6 +210,7 @@ export const en = {
     low: 'Low',
     view: 'View',
     views: { top: 'Top', side: 'Side', both: 'Both' },
+    viewNames: { top: 'Top view', side: 'Side view', both: 'Both views' },
     distance: 'Distance',
     impact: 'Impact',
     impacts: { one: 'One point', two: 'Two points' },
@@ -205,24 +226,31 @@ export const en = {
     pause: 'Pause',
     restart: 'Restart',
     flyBare: 'Fly a bare shaft too',
+    options: 'Display options',
+    hideDrawing: 'Hide the drawing',
+    showDrawing: 'Show the drawing',
+    summary: (view: string, distance: number, impact: string) =>
+      `${view}, ${distance} m, ${impact.toLowerCase()} of impact.`,
+    notToScale: 'Not to scale.',
+    about: 'About this drawing',
     amplify: 'Amplify',
     realSpeed: 'Real speed.',
     slowed: (times: number) => `Slowed ${times} times.`,
     amplified: {
       one: {
-        top: 'Bending and the bare shaft offset are amplified, and the drawing is not to scale.',
-        side: 'The arrow angle and the bare shaft offset are amplified, and the drawing is not to scale.',
-        both: 'Bending, arrow angle and the bare shaft offset are amplified, and the drawing is not to scale.',
+        top: 'Bending and the bare shaft offset are amplified.',
+        side: 'The arrow angle and the bare shaft offset are amplified.',
+        both: 'Bending, arrow angle and the bare shaft offset are amplified.',
       },
       two: {
-        top: 'Bending and drift are amplified, and the drawing is not to scale.',
-        side: 'The arrow angle and drift are amplified, and the drawing is not to scale.',
-        both: 'Bending, arrow angle and drift are amplified, and the drawing is not to scale.',
+        top: 'Bending and drift are amplified.',
+        side: 'The arrow angle and drift are amplified.',
+        both: 'Bending, arrow angle and drift are amplified.',
       },
     },
     landing: {
-      one: 'The fletched arrow is taken as sighted in on the center.',
-      two: 'Each arrow lands where the model throws it, with the sight left alone.',
+      one: 'Bow, arrow, distance and offsets each have a scale of their own. The fletched arrow is taken as sighted in on the center.',
+      two: 'Bow, arrow, distance and drift each have a scale of their own. Each arrow lands where the model throws it, with the sight left alone.',
     },
     topViewLabel: (stiffness: string, oscillation: string, lateral: string) =>
       `Top view of the arrow flying from the bow to the target. The arrow is ${stiffness}, with ${oscillation} oscillation and a ${lateral} lateral tendency.`,
