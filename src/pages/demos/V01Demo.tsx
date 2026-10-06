@@ -43,7 +43,13 @@ function SetupColumn({ setup }: { setup: TuningSetup }) {
   return (
     <div className="min-w-0">
       <div className="border-line overflow-hidden rounded-md border">
-        <TopView result={result} handedness={setup.bow.handedness} time={0.02} exaggeration={3} />
+        <TopView
+          result={result}
+          handedness={setup.bow.handedness}
+          impact="one"
+          time={0.02}
+          exaggeration={3}
+        />
       </div>
       <dl className="mt-3 grid gap-1">
         <Fact label="Độ cứng động">{RATING[classification.stiffness]}</Fact>

@@ -6,12 +6,15 @@ import { SegmentedControl } from '../common/SegmentedControl.tsx'
 import { SideView } from './SideView.tsx'
 import { sampleTrajectory } from './arrowGeometry.ts'
 import {
+  DEFAULT_IMPACT,
   DISTANCES,
+  IMPACT_MODES,
   MAX_EXAGGERATION,
   MIN_EXAGGERATION,
   clipTime,
   SPEEDS,
   slowdown,
+  type ImpactMode,
 } from './timing.ts'
 import { TopView } from './TopView.tsx'
 
@@ -23,6 +26,8 @@ type FlightViewProps = {
   /** A bare shaft to fly alongside the fletched arrow. */
   bare?: SimulationResult
   handedness: Handedness
+  /** How the landing is drawn. One point of impact when left out. */
+  impact?: ImpactMode
   /** s, time on screen since the loop started, at normal playback speed */
   elapsed: number
   exaggeration: number
@@ -57,6 +62,7 @@ export function FlightView({
   result,
   bare,
   handedness,
+  impact = DEFAULT_IMPACT,
   elapsed,
   exaggeration,
   caption,
@@ -92,6 +98,7 @@ export function FlightView({
               result={result}
               bare={bare}
               handedness={handedness}
+              impact={impact}
               time={time}
               exaggeration={exaggeration}
             />
@@ -106,7 +113,13 @@ export function FlightView({
         )}
         {view !== 'top' && (
           <div className={frameClass}>
-            <SideView result={result} bare={bare} time={time} exaggeration={exaggeration} />
+            <SideView
+              result={result}
+              bare={bare}
+              impact={impact}
+              time={time}
+              exaggeration={exaggeration}
+            />
             <span className="text-ink-muted absolute top-2 left-3 text-sm">{m.stage.high}</span>
             <span className="text-ink-muted absolute bottom-2 left-3 text-sm">{m.stage.low}</span>
             {!both && legend}
@@ -173,6 +186,7 @@ export type ViewSettings = {
   view: FlightViewKind
   /** m, distance to the target */
   distance: number
+  impact: ImpactMode
   speed: number
   exaggeration: number
 }
@@ -249,6 +263,13 @@ export function PlaybackControls({
         />
 
         <SegmentedControl
+          label={text.impact}
+          options={IMPACT_MODES.map((impact) => ({ value: impact, label: text.impacts[impact] }))}
+          value={settings.impact}
+          onChange={(impact) => onSettingsChange({ ...settings, impact: impact as ImpactMode })}
+        />
+
+        <SegmentedControl
           label={text.speed}
           options={SPEEDS.map((speed) => ({
             value: String(speed),
@@ -284,7 +305,7 @@ export function PlaybackControls({
 
       <p className="text-ink-muted max-w-prose text-sm">
         {slowdown(settings.speed) === 1 ? text.realSpeed : text.slowed(slowdown(settings.speed))}{' '}
-        {text.amplified[settings.view]}
+        {text.amplified[settings.impact][settings.view]} {text.landing[settings.impact]}
       </p>
     </div>
   )

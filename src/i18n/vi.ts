@@ -204,6 +204,8 @@ export const vi: Messages = {
     view: 'Góc nhìn',
     views: { top: 'Từ trên', side: 'Từ bên', both: 'Cả hai' },
     distance: 'Cự ly',
+    impact: 'Điểm chạm',
+    impacts: { one: 'Một điểm', two: 'Hai điểm' },
     speed: 'Tốc độ',
     real: 'Thật',
     bowAngle: (degrees) => `Cung ngửa ${degrees.replace('.', ',')}°`,
@@ -219,9 +221,20 @@ export const vi: Messages = {
     realSpeed: 'Tốc độ thật.',
     slowed: (times) => `Chậm ${times} lần.`,
     amplified: {
-      top: 'Độ uốn và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ. Tên có cánh được coi là đã chỉnh thước vào tâm.',
-      side: 'Góc của tên và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ. Tên có cánh được coi là đã chỉnh thước vào tâm.',
-      both: 'Độ uốn, góc của tên và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ. Tên có cánh được coi là đã chỉnh thước vào tâm.',
+      one: {
+        top: 'Độ uốn và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ.',
+        side: 'Góc của tên và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ.',
+        both: 'Độ uốn, góc của tên và độ lệch của bareshaft được phóng đại, hình vẽ không theo tỉ lệ.',
+      },
+      two: {
+        top: 'Độ uốn và độ lệch được phóng đại, hình vẽ không theo tỉ lệ.',
+        side: 'Góc của tên và độ lệch được phóng đại, hình vẽ không theo tỉ lệ.',
+        both: 'Độ uốn, góc của tên và độ lệch được phóng đại, hình vẽ không theo tỉ lệ.',
+      },
+    },
+    landing: {
+      one: 'Tên có cánh được coi là đã chỉnh thước vào tâm.',
+      two: 'Mỗi mũi tên cắm đúng chỗ mô hình tính, thước ngắm để nguyên.',
     },
     topViewLabel: (stiffness, oscillation, lateral) =>
       `Tên bay từ cung tới bia, nhìn từ trên. Độ cứng động: ${stiffness}. Dao động: ${oscillation}. Lệch ngang: ${lateral}.`,

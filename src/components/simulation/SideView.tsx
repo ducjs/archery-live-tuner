@@ -2,7 +2,7 @@ import { useMessages } from '../../i18n/useMessages.ts'
 import type { SimulationResult, TrajectoryPoint } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
-import { SCENE, drawBack, driftPixels, launchEase } from './timing.ts'
+import { SCENE, drawBack, driftPixels, launchEase, type ImpactMode } from './timing.ts'
 
 // Visual amplification. The drawing is not to scale.
 /**
@@ -24,6 +24,7 @@ type Props = {
   result: SimulationResult
   /** A bare shaft to fly alongside. */
   bare?: SimulationResult
+  impact: ImpactMode
   /** s, simulated time since the nock left the string; negative while it is on it */
   time: number
   /** 1..5, how much the arrow's attitude is amplified */
@@ -31,7 +32,7 @@ type Props = {
 }
 
 /** The flight seen from the side. Shaft bending is sideways, so none is drawn here. */
-export function SideView({ result, bare, time, exaggeration }: Props) {
+export function SideView({ result, bare, impact, time, exaggeration }: Props) {
   const m = useMessages()
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
@@ -62,10 +63,11 @@ export function SideView({ result, bare, time, exaggeration }: Props) {
   )
   const pixelsPerMm = rise / apex
 
-  // As in the top view: the fletched arrows are sighted in on the center, and
-  // a bare shaft is drawn by how far it lands from them.
-  const driftScale = driftPixels(distance) / result.fullDrift.vertical
-  const sightedIn = landing(result)
+  // As in the top view: with one point of impact the fletched arrows are
+  // sighted in on the center, and a bare shaft is drawn by how far it lands
+  // from them. With two, each lands where the model puts it.
+  const driftScale = driftPixels(distance, impact) / result.fullDrift.vertical
+  const sightedIn = impact === 'one' ? landing(result) : 0
 
   const project = (flight: SimulationResult, point: TrajectoryPoint): ScreenPoint => {
     const along = point.x / distance

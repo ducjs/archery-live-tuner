@@ -4,6 +4,7 @@ import { PARAMETERS, formatValue, getValue, type UnitSystem } from '../../models
 import type { TuningSetup } from '../../models/setup.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { FlightView } from '../simulation/SimulationStage.tsx'
+import type { ImpactMode } from '../simulation/timing.ts'
 
 /** One side of a comparison: a setup and what the model makes of it. */
 export type Compared = {
@@ -15,13 +16,14 @@ type FlightProps = {
   saved: Compared
   now: Compared
   view: 'top' | 'side'
+  impact: ImpactMode
   /** s, time on screen since the loop started, at normal playback speed */
   elapsed: number
   exaggeration: number
 }
 
 /** The saved setup and the one on screen, flown at the same moment. */
-export function ComparisonFlight({ saved, now, view, elapsed, exaggeration }: FlightProps) {
+export function ComparisonFlight({ saved, now, view, impact, elapsed, exaggeration }: FlightProps) {
   const m = useMessages()
   const sides = [
     { ...saved, title: m.compare.saved },
@@ -36,6 +38,7 @@ export function ComparisonFlight({ saved, now, view, elapsed, exaggeration }: Fl
             view={view}
             result={result}
             handedness={setup.bow.handedness}
+            impact={impact}
             elapsed={elapsed}
             exaggeration={exaggeration}
             caption={`${title}: ${setup.name}`}

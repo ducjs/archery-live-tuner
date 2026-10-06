@@ -53,14 +53,27 @@ export function launchEase(time: number): number {
 }
 
 /**
- * SVG units from the center that stand for a full-scale tendency left
- * unsteered. The fletched arrows are taken as sighted in on the center, so
- * what is drawn is how far a bare shaft lands from them: at most about half of
- * full scale, which this puts just outside the target face. The model gives
- * tendencies, not centimetres, so this is for reading the direction.
+ * How the views draw where the arrows land. With one point of impact the
+ * fletched arrows are taken as sighted in on the center and a bare shaft is
+ * drawn by how far it lands from them, as in a bare shaft test. With two, both
+ * land where the model puts them.
  */
-export function driftPixels(distance: number): number {
-  return 2.4 * (targetFaceDiameter(distance) / 2) * EQUIPMENT_SCALE
+export type ImpactMode = 'one' | 'two'
+export const IMPACT_MODES: ImpactMode[] = ['one', 'two']
+export const DEFAULT_IMPACT: ImpactMode = 'one'
+
+/**
+ * SVG units from the center that stand for a full-scale tendency left
+ * unsteered. With one point of impact, what is drawn is how far a bare shaft
+ * lands from the fletched arrows: at most about half of full scale, which this
+ * puts just outside the target face. With two, a bare shaft at full scale
+ * lands a little outside the face, and a fletched arrow, which is steered
+ * back, stays on it. The model gives tendencies, not centimetres, so this is
+ * for reading the direction.
+ */
+export function driftPixels(distance: number, impact: ImpactMode): number {
+  const reach = impact === 'one' ? 2.4 : 1.4
+  return reach * (targetFaceDiameter(distance) / 2) * EQUIPMENT_SCALE
 }
 
 /** Shared drawing area of the top and side views, in SVG units. */

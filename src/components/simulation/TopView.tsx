@@ -3,7 +3,7 @@ import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
-import { SCENE, drawBack, driftPixels, launchEase } from './timing.ts'
+import { SCENE, drawBack, driftPixels, launchEase, type ImpactMode } from './timing.ts'
 
 // Visual amplification per unit of exaggeration. The drawing is not to scale.
 // Sideways movement of the middle of the shaft, as a share of its length, at
@@ -17,6 +17,7 @@ type Props = {
   /** A bare shaft to fly alongside. */
   bare?: SimulationResult
   handedness: Handedness
+  impact: ImpactMode
   /** s, simulated time since the nock left the string; negative while it is on it */
   time: number
   /** 1..5, how much bending and yaw are amplified */
@@ -24,15 +25,16 @@ type Props = {
 }
 
 /** The flight seen from above. This is the view that shows the shaft bending. */
-export function TopView({ result, bare, handedness, time, exaggeration }: Props) {
+export function TopView({ result, bare, handedness, impact, time, exaggeration }: Props) {
   const m = useMessages()
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
-  // The fletched arrows are the reference, as in a bare shaft test: the sight
-  // is set so that they hit the center, and a bare shaft is read against them.
-  // So the drift of the fletched arrow is taken out of both paths.
-  const driftScale = driftPixels(distance) / result.fullDrift.lateral
-  const sightedIn = result.trajectory.at(-1)!.z ?? 0
+  // With one point of impact the fletched arrows are the reference, as in a
+  // bare shaft test: the sight is set so that they hit the center, and a bare
+  // shaft is read against them. So the drift of the fletched arrow is taken
+  // out of both paths. With two, both paths are drawn as the model has them.
+  const driftScale = driftPixels(distance, impact) / result.fullDrift.lateral
+  const sightedIn = impact === 'one' ? (result.trajectory.at(-1)!.z ?? 0) : 0
 
   const startX = SCENE.bowX + SCENE.arrowLength / 2
   const endX = SCENE.targetX - SCENE.arrowLength / 2

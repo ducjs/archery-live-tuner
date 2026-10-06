@@ -8,7 +8,13 @@ import { FlightView, PlaybackControls, type ViewSettings } from './SimulationSta
 
 afterEach(cleanup)
 
-const settings: ViewSettings = { view: 'top', distance: 18, speed: 1, exaggeration: 3 }
+const settings: ViewSettings = {
+  view: 'top',
+  distance: 18,
+  impact: 'one',
+  speed: 1,
+  exaggeration: 3,
+}
 const noop = () => {}
 
 describe('PlaybackControls', () => {
@@ -36,6 +42,8 @@ describe('PlaybackControls', () => {
       '50 m',
       '70 m',
       '90 m',
+      'One point',
+      'Two points',
       '1/48',
       '1/24',
       '1/12',

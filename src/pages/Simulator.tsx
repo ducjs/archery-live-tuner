@@ -14,6 +14,7 @@ import {
 import {
   DEFAULT_DISTANCE,
   DEFAULT_EXAGGERATION,
+  DEFAULT_IMPACT,
   DEFAULT_SPEED,
   HOLD_SECONDS,
   clipSeconds,
@@ -32,6 +33,7 @@ type Stage = 'flight' | 'compare' | 'bow'
 const DEFAULT_VIEW: ViewSettings = {
   view: 'both',
   distance: DEFAULT_DISTANCE,
+  impact: DEFAULT_IMPACT,
   speed: DEFAULT_SPEED,
   exaggeration: DEFAULT_EXAGGERATION,
 }
@@ -152,6 +154,7 @@ export function Simulator() {
                   <ComparisonFlight
                     {...compared}
                     view={view.view === 'side' ? 'side' : 'top'}
+                    impact={view.impact}
                     elapsed={playback.elapsed}
                     exaggeration={view.exaggeration}
                   />
@@ -161,6 +164,7 @@ export function Simulator() {
                     result={result}
                     bare={bareShaft ? comparison.bare : undefined}
                     handedness={setup.bow.handedness}
+                    impact={view.impact}
                     elapsed={playback.elapsed}
                     exaggeration={view.exaggeration}
                   />

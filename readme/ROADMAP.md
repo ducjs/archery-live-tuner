@@ -28,7 +28,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | In progress (M1–M4 and M6 done; M5 has one item open; M7 done except the deploy) |
+| V0.1 | Basic simulator (MVP) | In progress (M1–M6 done; M7 done except the deploy) |
 | V0.2 | Improved dynamic model | Not started |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | Not started |
 | V0.4 | Real-world calibration | Not started |
@@ -125,7 +125,7 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 - [x] Live update while dragging sliders (§15)
 - [x] Bare shaft and fletched arrow flown together in both views, with the reading in plain words (weak / stiff, nocking point too high / too low)
 - [x] One point of impact: the fletched arrow is taken as sighted in on the gold, and the bare shaft is drawn by how far it lands from it, as in a real bare shaft test
-- [ ] A choice between two ways of drawing where the arrows land. "One point of impact" is the above and stays the default. "Two points of impact" lets both arrows land where the model puts them, so the tendency of the fletched arrow shows as a miss too
+- [x] A choice between two ways of drawing where the arrows land, in Simple and Advanced and in the comparison. "One point of impact" is the above and stays the default. "Two points of impact" lets both arrows land where the model puts them, so the tendency of the fletched arrow shows as a miss too
 
 ### M6. Snapshots and comparison
 

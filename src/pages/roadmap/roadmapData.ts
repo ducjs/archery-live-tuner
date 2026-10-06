@@ -174,8 +174,8 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Một điểm chạm: tên có cánh coi như đã chỉnh thước vào tâm vàng, bareshaft vẽ theo độ lệch so với nó, đúng như phép thử bareshaft ngoài bãi',
           ),
-          todo(
-            'Chọn giữa hai cách vẽ điểm chạm. "Một điểm chạm" là cách trên, vẫn là mặc định. "Hai điểm chạm" để cả hai mũi tên cắm đúng chỗ mô hình tính, nên xu hướng lệch của tên có cánh cũng hiện thành trượt tâm',
+          done(
+            'Chọn giữa hai cách vẽ điểm chạm, có ở cả Cơ bản, Nâng cao và phần so sánh. "Một điểm chạm" là cách trên, vẫn là mặc định. "Hai điểm chạm" để cả hai mũi tên cắm đúng chỗ mô hình tính, nên xu hướng lệch của tên có cánh cũng hiện thành trượt tâm',
           ),
         ],
       },
