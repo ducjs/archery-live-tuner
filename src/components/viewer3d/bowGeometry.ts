@@ -1,17 +1,19 @@
 import type { ArrowSetup } from '../../models/arrow.ts'
-import type { BowSetup } from '../../models/bow.ts'
+import { bowLength, riserLength, type BowSetup } from '../../models/bow.ts'
+import { convert } from '../../utils/units.ts'
 
 /** mm. X points at the target, Y is up, Z is the archer's right. */
 export type Vec3 = [number, number, number]
 
 // The origin is where the arrow sits on the rest, straight above the grip.
 // The line through it along X is both the string line (seen from above) and
-// the line square to the string (seen from the side).
+// the line square to the string (seen from the side), on a bow whose limbs are
+// in line. Limbs out of line carry the string, and its line, to the side.
 
 /** mm, half the length of a 25 in riser */
 export const RISER_HALF_LENGTH = 300
 /**
- * Centerline of the riser seen from the side, as [x, y] from the lower limb
+ * Centerline of a 25 in riser seen from the side, as [x, y] from the lower limb
  * pocket to the upper one. The middle bows away from the archer and the
  * pockets lean back, which is what sets the limbs at their angle.
  */
@@ -37,110 +39,189 @@ export const STABILIZER_HEIGHT = -130
 const STABILIZER_MOUNT = 36
 /** mm, length of a side rod (10 in) */
 const SIDE_ROD_LENGTH = 254
-/** mm, how far the limb tips are from the arrow line on a 68 in bow */
+/** mm, how far the limb tips are from the arrow line on a 68 in bow at brace height */
 const TIP_HEIGHT = 850
-/** mm, where the string leaves the limb */
-const STRING_CONTACT_HEIGHT = 795
+/** mm, how far inside the tip the string leaves the limb */
+const TIP_TO_STRING = 55
+/** How far along the limb, from pocket to tip, the tiller is measured: just outside the riser. */
+const TILLER_AT = 0.26
+/** Share of the draw that the limb tips come back by. Chosen by eye. */
+const TIP_FOLLOW = 0.35
 
 export type BowGeometry = {
   /** +1 when the riser is on the archer's right of the arrow (right-handed), -1 otherwise. */
   side: 1 | -1
-  /** X of the string at brace height. */
+  /** X of the string where the arrow sits on it: at brace height, or drawn back. */
   stringX: number
+  /** Z of the string where the arrow sits on it. Zero unless the limbs are out of line. */
+  stringZ: number
   nock: Vec3
   point: Vec3
   /** Center of the shaft where it crosses the rest and plunger. */
   atRest: Vec3
   shaftRadius: number
-  /** Upper limb centerline as [x, y] pairs, from the riser to the tip. Mirror in Y for the lower limb. */
-  limb: [number, number][]
+  /** mm, length of the point in front of the shaft. Longer for a heavier point. */
+  pointLength: number
+  /** Centerlines of the upper and the lower limb, from the riser to the tip. */
+  limbs: [Vec3[], Vec3[]]
   /** The string as a polyline from the upper tip to the lower tip. */
   string: Vec3[]
+  /** mm, thickness of the string. More strands make a thicker string. */
+  stringRadius: number
   /** Centerline of the riser, from the lower pocket to the upper one. It steps aside at the sight window. */
   riser: Vec3[]
   /** Where the limbs sit on the riser: the lower pocket, then the upper one. */
   pockets: [Vec3, Vec3]
+  /** Where tiller is measured: from each limb just outside the riser, square to the string. Upper first. */
+  tiller: [{ from: Vec3; to: Vec3 }, { from: Vec3; to: Vec3 }]
+  /** How far the plunger's adjusting collar sits out along its barrel, in mm. Further for more preload. */
+  plungerCollar: number
   /** The long rod, from its mount on the riser to where its weight starts. */
   longRod: { from: Vec3; to: Vec3 }
+  /** mm, length of the weight on the long rod. Longer for more mass. */
+  weightLength: number
   /** The two side rods, from the V-bar back past the archer's hand. */
   sideRods: { from: Vec3; to: Vec3 }[]
 }
 
-/**
- * Positions of the parts that depend on the setup. `amplify` multiplies the
- * nocking point and center shot offsets so that a few millimetres can be seen.
- */
+export type GeometryOptions = {
+  /**
+   * Multiplies the offsets that are a few millimetres in reality (nocking
+   * point, center shot, tiller, limb alignment) so that they can be seen.
+   */
+  amplify: number
+  /** Shows the bow at full draw instead of at brace height. */
+  drawn?: boolean
+}
+
+/** Positions of the parts that depend on the setup. */
 export function bowGeometry(
   setup: { bow: BowSetup; arrow: ArrowSetup },
-  amplify: number,
+  options: number | GeometryOptions,
 ): BowGeometry {
+  const { amplify, drawn = false } = typeof options === 'number' ? { amplify: options } : options
   const { bow, arrow } = setup
   const brace = bow.braceHeight
-  const stringX = -brace
-
-  // The nock sits on the string, the shaft lies on the rest at the origin, and
-  // the point ends up wherever that line leads.
-  const nockY = bow.nockingPointHeight * amplify
-  const pointY = nockY * (1 - arrow.length / brace)
-
-  // Center shot is measured at the point; the nock stays on the string line.
-  const pointZ = bow.centerShot * amplify
-  const restZ = (pointZ * brace) / arrow.length
-
   const side = bow.handedness === 'RH' ? 1 : -1
-  // The riser stands in the string plane, except at the sight window, which is
-  // set to the bow hand's side so the arrow can lie on the string line.
+
+  // Riser. A longer riser is the same shape, stretched along its length.
+  const stretch = riserLength(bow) / 25
+  // It stands in the string plane, except at the sight window, which is set to
+  // the bow hand's side so the arrow can lie on the string line.
   const riser: Vec3[] = RISER_PROFILE.map(([x, y]) => [
     x,
-    y,
+    y * stretch,
     y > WINDOW.from && y < WINDOW.to ? side * WINDOW_OFFSET : 0,
   ])
-  const pocket = RISER_PROFILE.at(-1)!
+  const lowerPocket = riser[0]!
+  const upperPocket = riser.at(-1)!
+
+  // Limbs. The tips are half the bow length from the middle, less what the
+  // curve of the bow takes up; they come back and in as the string is drawn.
+  const pull = drawn ? Math.max(0, bow.drawLength - brace) : 0
+  const reach = TIP_HEIGHT + ((bowLength(bow) - 68) * 25.4) / 2
+  const tipX = -brace + 30 - TIP_FOLLOW * pull
+  // The string keeps its length: what it gains toward the nock, the tips give up in height.
+  const halfString = reach - TIP_TO_STRING
+  const contactX = -brace - TIP_FOLLOW * pull
+  const stringX = -brace - pull
+  const contactY = Math.sqrt(Math.max(1, halfString ** 2 - (contactX - stringX) ** 2))
+  const tipY = contactY + TIP_TO_STRING
+
+  // Tiller is the gap between limb and string where the limb leaves the riser,
+  // top minus bottom. A positive tiller opens the upper limb and closes the lower.
+  const tillerShift = (bow.tiller * amplify) / 2
+  const limb = (up: 1 | -1, alignment: number): Vec3[] => {
+    const pocket = up === 1 ? upperPocket : lowerPocket
+    const base: [number, number] = [pocket[0] + 4, Math.abs(pocket[1]) - 30]
+    const tipZ = alignment * amplify
+    const span = tipY - base[1]
+    // [x, height above the arrow line, how far along the limb].
+    const shape: [number, number, number][] = [
+      [base[0], base[1], 0],
+      [-42 - 0.1 * pull, base[1] + TILLER_AT * span, TILLER_AT],
+      [-brace * 0.45 - 0.2 * pull, base[1] + 0.54 * span, 0.54],
+      [-brace * 0.85 - 0.3 * pull, base[1] + 0.8 * span, 0.8],
+      [contactX - 8, contactY, 0.93],
+      [tipX, tipY, 1],
+    ]
+    return shape.map(([x, y, along]) => [
+      // The limb is held in its pocket and by the string at its tip. Tiller is
+      // what the limb bolt does to the stretch in between, most of all just
+      // outside the riser, where it is measured.
+      x +
+        up * tillerShift * (along < TILLER_AT ? along / TILLER_AT : (1 - along) / (1 - TILLER_AT)),
+      up * y,
+      // A limb out of line leaves the pocket straight and ends up to one side.
+      tipZ * along,
+    ])
+  }
+  const upper = limb(1, bow.limbAlignmentTop)
+  const lower = limb(-1, bow.limbAlignmentBottom)
+  // Where the string leaves each limb: on the limb's face, just in front of its centerline.
+  const contact = (points: Vec3[]): Vec3 => {
+    const [, y, z] = points.at(-2)!
+    return [contactX, y, z]
+  }
+  const upperContact = contact(upper)
+  const lowerContact = contact(lower)
+  // The string runs straight between the limbs, so it sits halfway between them at the arrow.
+  const stringZ = (upperContact[2] + lowerContact[2]) / 2
+
+  // The nock sits on the string, the shaft lies on the rest, and the point ends
+  // up wherever that line leads. The rest is on the riser: it does not move
+  // with the string. Center shot is where the point would be with the limbs in line.
+  const nockY = bow.nockingPointHeight * amplify
+  const restZ = (bow.centerShot * amplify * brace) / arrow.length
+  const nock: Vec3 = [stringX, nockY, stringZ]
+  const atRest: Vec3 = [0, 0, restZ]
+  const toRest = -stringX
+  const point: Vec3 = [
+    stringX + arrow.length,
+    nockY * (1 - arrow.length / toRest),
+    stringZ + (restZ - stringZ) * (arrow.length / toRest),
+  ]
 
   const mount: Vec3 = [STABILIZER_MOUNT, STABILIZER_HEIGHT, 0]
   // Side rods run back and outward from the V-bar, and a little down.
   const lean = [-0.8, -0.17, 0.57]
-  const reach = SIDE_ROD_LENGTH / Math.hypot(...lean)
+  const rodScale = SIDE_ROD_LENGTH / Math.hypot(...lean)
   const sideRods = [1, -1].map((outward) => {
     const from: Vec3 = [mount[0] + 14, mount[1], outward * 14]
     const to: Vec3 = [
-      from[0] + lean[0]! * reach,
-      from[1] + lean[1]! * reach,
-      from[2] + outward * lean[2]! * reach,
+      from[0] + lean[0]! * rodScale,
+      from[1] + lean[1]! * rodScale,
+      from[2] + outward * lean[2]! * rodScale,
     ]
     return { from, to }
   })
 
-  const tip: [number, number] = [stringX + 30, TIP_HEIGHT]
-  const limb: [number, number][] = [
-    [pocket[0] + 4, pocket[1] - 30],
-    [-42, 430],
-    [-brace * 0.45, 580],
-    [-brace * 0.85, 720],
-    [stringX - 8, STRING_CONTACT_HEIGHT],
-    tip,
-  ]
+  const tillerMark = (points: Vec3[]) => {
+    const from = points[1]!
+    // Square to the string at brace height, which stands upright.
+    return { from, to: [contactX, from[1], from[2]] as Vec3 }
+  }
 
   return {
     side,
     stringX,
-    nock: [stringX, nockY, 0],
-    point: [stringX + arrow.length, pointY, pointZ],
-    atRest: [0, 0, restZ],
+    stringZ,
+    nock,
+    point,
+    atRest,
     shaftRadius: arrow.shaftDiameter / 2,
-    limb,
-    string: [
-      [tip[0], tip[1], 0],
-      [stringX, STRING_CONTACT_HEIGHT, 0],
-      [stringX, -STRING_CONTACT_HEIGHT, 0],
-      [tip[0], -tip[1], 0],
-    ],
+    // A 100 gr point is about an inch long; 20 gr more is a few millimetres.
+    pointLength: 10 + convert(arrow.pointWeight, 'g', 'gr') * 0.16,
+    limbs: [upper, lower],
+    string: [upper.at(-1)!, upperContact, nock, lowerContact, lower.at(-1)!],
+    stringRadius: 0.7 + bow.string.strandCount * 0.05,
     riser,
-    pockets: [
-      [RISER_PROFILE[0]![0], RISER_PROFILE[0]![1], 0],
-      [pocket[0], pocket[1], 0],
-    ],
+    pockets: [lowerPocket, upperPocket],
+    tiller: [tillerMark(upper), tillerMark(lower)],
+    plungerCollar: 8 + bow.plungerPreload * 4,
     longRod: { from: mount, to: [mount[0] + bow.stabilizerPosition, mount[1], 0] },
+    // The mass is drawn as one weight on the long rod, though a real set spreads it.
+    weightLength: 12 + bow.stabilizerMass * 0.12,
     sideRods,
   }
 }

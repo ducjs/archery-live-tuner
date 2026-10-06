@@ -271,8 +271,11 @@ export const en = {
     lookAt: 'Look at',
     focus: { bow: 'Whole bow', centerShot: 'Center shot', nockingPoint: 'Nocking point' },
     amplify: (times: number) => `Draw offsets ${times} times larger`,
+    drawn: 'At full draw',
+    notDrawn:
+      'Nothing to draw for draw weight, spine, shaft weight, plunger stiffness, string mass, nock fit, bow mass, or the weight of insert, nock and vanes: they change how the arrow flies, not where a part sits.',
     about:
-      'Preview: only center shot and nocking point height move the model so far. Change either one and the camera goes to it. Drag to turn the bow, scroll or pinch to zoom. The dashed gold line is the string line from above and the line square to the string from the side. Labels show real values; the bow is a simplified shape, not your equipment.',
+      'The bow follows the setup: riser and limbs, brace height, tiller, limb alignment, nocking point, center shot, plunger preload, arrow length, point weight, stabilizer and string strands. Drag to turn it, scroll or pinch to zoom. The dashed gold line is the string line from above and the line square to the string from the side. Offsets of a few millimetres are drawn larger; labels show real values. The bow is a simplified shape, not your equipment.',
     loading: 'Loading the 3D view.',
     failed:
       'The 3D view could not start. It needs WebGL, which this browser or device has turned off. The arrow flight views work without it.',

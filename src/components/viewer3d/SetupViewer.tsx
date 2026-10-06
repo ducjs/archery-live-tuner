@@ -48,6 +48,7 @@ export function BowViewer({ bow, arrow, viewer }: BowViewerProps) {
             bow={bow}
             arrow={arrow}
             amplify={viewer.amplified ? AMPLIFY : 1}
+            drawn={viewer.drawn}
             focus={viewer.focus}
             focusRequest={viewer.focusRequest}
           />
@@ -84,8 +85,18 @@ export function BowViewerControls({ viewer }: { viewer: BowViewerState }) {
           />
           {m.viewer.amplify(AMPLIFY)}
         </label>
+        <label className="flex min-h-11 cursor-pointer items-center gap-2 font-medium">
+          <input
+            type="checkbox"
+            checked={viewer.drawn}
+            onChange={(event) => viewer.setDrawn(event.target.checked)}
+            className="accent-accent focus-visible:outline-accent size-5 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+          />
+          {m.viewer.drawn}
+        </label>
       </div>
       <p className="text-ink-muted max-w-prose text-sm">{m.viewer.about}</p>
+      <p className="text-ink-muted max-w-prose text-sm">{m.viewer.notDrawn}</p>
     </div>
   )
 }

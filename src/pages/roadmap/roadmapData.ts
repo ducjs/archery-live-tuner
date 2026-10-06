@@ -314,19 +314,19 @@ export const ROADMAP: RoadmapPhase[] = [
         title: 'Cây cung 3D',
         summary:
           'Một cây cung 3D xoay được. Chỉnh thông số nào thì bộ phận đó chuyển động theo, camera tự bay tới chỗ đó và hiện thước đo. Mục đích là hiểu "thông số này nằm ở đâu trên cung", không phải mô phỏng bay.',
-        note: 'Làm theo ba đợt. Đợt một đã xong: cung có đủ bộ phận. Còn lại: nối các thông số còn thiếu (đợt hai), rồi camera, góc nhìn có sẵn và điện thoại (đợt ba). Mở bằng "Hiển thị: Cung 3D". Hiện mới có center shot và nocking point làm cung chuyển động.',
+        note: 'Làm theo ba đợt. Hai đợt đã xong: cung có đủ bộ phận, và mọi thông số có gì để vẽ đều làm cung chuyển động. Còn lại đợt ba: camera bay tới từng chỗ thay đổi, góc nhìn có sẵn và điện thoại. Mở bằng "Hiển thị: Cung 3D".',
         items: [
           done('Cảnh 3D, chỉ tải khi mở'),
           done('Cung dựng bằng code để từng bộ phận chuyển động được'),
           done(
             'Các bộ phận: riser có cửa sổ ngắm, grip và ổ limb; limb; dây có center serving và nocking point; plunger; rest; tên; long rod có damper và tạ; V-bar và hai side rod',
           ),
-          todo(
-            'Thông số thấy được trên cung: tay thuận, center shot, brace height, tiller, nocking point, plunger preload, draw length, chiều dài tên, point weight, stabilizer, số sợi dây',
+          done(
+            'Thông số thấy được trên cung: tay thuận, cỡ riser và cánh, center shot, cánh lệch ngang, brace height, tiller, nocking point, plunger preload, draw length (tư thế kéo hết dây), chiều dài tên, point weight, stabilizer, số sợi dây',
           ),
           todo('Kéo thanh trượt thì camera bay tới bộ phận đó, tô sáng và hiện thước đo'),
-          todo('Phóng đại độ lệch, có ghi rõ không theo tỉ lệ'),
-          todo('Thông số không có gì để vẽ thì nói rõ, không bịa hình'),
+          done('Phóng đại độ lệch, có ghi rõ không theo tỉ lệ'),
+          done('Thông số không có gì để vẽ thì nói rõ, không bịa hình'),
           todo('Xoay, zoom, các góc nhìn có sẵn'),
           todo('Chạy trên điện thoại; không có WebGL thì quay về hình 2D'),
         ],

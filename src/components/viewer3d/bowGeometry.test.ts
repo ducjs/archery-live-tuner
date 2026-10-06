@@ -34,11 +34,11 @@ describe('bowGeometry', () => {
   it('moves the point sideways by the center shot and leaves the nock on the string line', () => {
     const right = bowGeometry(withValue('bow.centerShot', 2), 1)
     expect(right.nock[2]).toBe(0)
-    expect(right.point[2]).toBe(2)
+    expect(right.point[2]).toBeCloseTo(2, 9)
     expect(right.atRest[2]).toBeCloseTo((2 * 220) / 685.8, 9)
 
     const left = bowGeometry(withValue('bow.centerShot', -3), 1)
-    expect(left.point[2]).toBe(-3)
+    expect(left.point[2]).toBeCloseTo(-3, 9)
   })
 
   it('amplifies both offsets and nothing else', () => {
@@ -50,7 +50,7 @@ describe('bowGeometry', () => {
     const real = bowGeometry(setup, 1)
     const amplified = bowGeometry(setup, 6)
     expect(amplified.nock[1]).toBe(30)
-    expect(amplified.point[2]).toBe(12)
+    expect(amplified.point[2]).toBeCloseTo(12, 9)
     expect(amplified.point[0]).toBe(real.point[0])
     expect(amplified.stringX).toBe(real.stringX)
   })
@@ -64,7 +64,7 @@ describe('bowGeometry', () => {
     const geometry = bowGeometry(withValue('bow.braceHeight', 240), 1)
     expect(geometry.stringX).toBe(-240)
     expect(geometry.string[1]![0]).toBe(-240)
-    expect(geometry.limb.at(-1)![0]).toBe(-210)
+    expect(geometry.limbs[0].at(-1)![0]).toBe(-210)
   })
 })
 
@@ -93,7 +93,7 @@ describe('parts of the bow', () => {
   })
 
   it('starts each limb in its pocket', () => {
-    const [x, y] = right.limb[0]!
+    const [x, y] = right.limbs[0][0]!
     expect(Math.hypot(x - right.pockets[1][0], y - right.pockets[1][1])).toBeLessThan(40)
   })
 
@@ -119,6 +119,97 @@ describe('parts of the bow', () => {
     }
     expect(one!.to[2]).toBe(-other!.to[2])
     expect(one!.to[0]).toBe(other!.to[0])
+  })
+})
+
+describe('the setup on the bow', () => {
+  const base = bowGeometry(reference, 1)
+  const tipHeight = (geometry: typeof base) => geometry.limbs[0].at(-1)![1]
+
+  it('makes a longer riser longer, and the bow with it', () => {
+    const long = bowGeometry(withValue('bow.riserSize', 'H27'), 1)
+    expect(long.pockets[1][1]).toBeCloseTo((RISER_HALF_LENGTH * 27) / 25, 9)
+    // Two inches more of bow is one inch more to each tip.
+    expect(tipHeight(long) - tipHeight(base)).toBeCloseTo(25.4, 9)
+  })
+
+  it('makes the bow longer with longer limbs, on the same riser', () => {
+    const long = bowGeometry(withValue('bow.limbSize', '70'), 1)
+    expect(long.pockets).toEqual(base.pockets)
+    expect(tipHeight(long) - tipHeight(base)).toBeCloseTo(25.4, 9)
+  })
+
+  it('carries the string to the side with limbs out of line, and leaves the rest where it is', () => {
+    const both = bowGeometry(
+      setValue(withValue('bow.limbAlignmentTop', 2), getParameter('bow.limbAlignmentBottom'), 2),
+      1,
+    )
+    expect(both.limbs[0].at(-1)![2]).toBe(2)
+    expect(both.limbs[1].at(-1)![2]).toBe(2)
+    // The limb leaves its pocket straight.
+    expect(both.limbs[0][0]![2]).toBe(0)
+    expect(both.stringZ).toBeGreaterThan(1.5)
+    expect(both.nock[2]).toBe(both.stringZ)
+    expect(both.atRest[2]).toBe(0)
+    // The point ends up on the other side of the string line, by about three times as much.
+    expect(both.point[2] - both.stringZ).toBeCloseTo(-both.stringZ * (685.8 / 220), 9)
+  })
+
+  it('keeps the string in the middle when the limbs point apart', () => {
+    const apart = bowGeometry(
+      setValue(withValue('bow.limbAlignmentTop', 2), getParameter('bow.limbAlignmentBottom'), -2),
+      1,
+    )
+    expect(apart.stringZ).toBeCloseTo(0, 9)
+    expect(apart.string[1]![2]).toBeGreaterThan(0)
+    expect(apart.string[3]![2]).toBeLessThan(0)
+  })
+
+  it('opens the upper limb and closes the lower one for a positive tiller', () => {
+    const even = bowGeometry(withValue('bow.tiller', 0), 1)
+    const positive = bowGeometry(withValue('bow.tiller', 8), 1)
+    const gap = (mark: { from: [number, number, number]; to: [number, number, number] }) =>
+      mark.from[0] - mark.to[0]
+    expect(gap(even.tiller[0])).toBeCloseTo(gap(even.tiller[1]), 9)
+    // Top tiller minus bottom tiller is the value entered.
+    expect(gap(positive.tiller[0]) - gap(positive.tiller[1])).toBeCloseTo(8, 9)
+    // The tips, and so the string, stay where they are; so do the limbs in their pockets.
+    expect(positive.limbs[0].at(-1)).toEqual(even.limbs[0].at(-1))
+    expect(positive.limbs[0][0]).toEqual(even.limbs[0][0])
+    expect(positive.limbs[1][0]).toEqual(even.limbs[1][0])
+  })
+
+  it('draws the string back to the draw length, and keeps its length', () => {
+    const drawn = bowGeometry(reference, { amplify: 1, drawn: true })
+    expect(drawn.stringX).toBeCloseTo(-711.2, 9)
+    expect(drawn.nock[0]).toBe(drawn.stringX)
+    // At full draw the point comes back to just behind the rest.
+    expect(drawn.point[0]).toBeCloseTo(-711.2 + 685.8, 9)
+
+    const length = (points: [number, number, number][]) =>
+      points
+        .slice(1)
+        .reduce(
+          (sum, point, index) =>
+            sum + Math.hypot(point[0] - points[index]![0], point[1] - points[index]![1]),
+          0,
+        )
+    // Without the nocking point height, which kinks the string a little.
+    const square = withValue('bow.nockingPointHeight', 0)
+    const atBrace = bowGeometry(square, 1).string.slice(1, 4)
+    const atDraw = bowGeometry(square, { amplify: 1, drawn: true }).string.slice(1, 4)
+    expect(length(atDraw)).toBeCloseTo(length(atBrace), 6)
+    // The limb tips come back and in.
+    expect(drawn.limbs[0].at(-1)![0]).toBeLessThan(base.limbs[0].at(-1)![0])
+    expect(tipHeight(drawn)).toBeLessThan(tipHeight(base))
+  })
+
+  it('sizes the point, the stabilizer weight, the string and the plunger collar from their values', () => {
+    const more = (key: string, value: number) => bowGeometry(withValue(key, value), 1)
+    expect(more('arrow.pointWeight', 9).pointLength).toBeGreaterThan(base.pointLength)
+    expect(more('bow.stabilizerMass', 600).weightLength).toBeGreaterThan(base.weightLength)
+    expect(more('bow.string.strandCount', 20).stringRadius).toBeGreaterThan(base.stringRadius)
+    expect(more('bow.plungerPreload', 3).plungerCollar).toBeGreaterThan(base.plungerCollar)
   })
 })
 

@@ -299,9 +299,12 @@ export const vi: Messages = {
   viewer: {
     lookAt: 'Nhìn vào',
     focus: { bow: 'Cả cây cung', centerShot: 'Center shot', nockingPoint: 'Nocking point' },
+    drawn: 'Kéo hết dây',
+    notDrawn:
+      'Không có gì để vẽ cho lực kéo, spine, khối lượng thân tên, độ cứng plunger, khối lượng dây, độ khít nock, khối lượng cung, hay khối lượng insert, nock và cánh: chúng đổi cách tên bay, không đổi vị trí bộ phận nào.',
     amplify: (times) => `Vẽ độ lệch lớn gấp ${times} lần`,
     about:
-      'Bản xem thử: hiện chỉ center shot và độ cao nocking point làm mô hình thay đổi. Đổi một trong hai thì camera tự quay tới đó. Kéo để xoay cung, cuộn hoặc chụm ngón để phóng to. Đường vàng đứt là đường dây khi nhìn từ trên, và là đường vuông góc với dây khi nhìn từ bên. Nhãn ghi giá trị thật; cây cung là hình đơn giản hoá, không phải thiết bị của bạn.',
+      'Cây cung đi theo setup: riser và cánh, brace height, tiller, cánh lệch ngang, nocking point, center shot, plunger preload, chiều dài tên, point weight, stabilizer và số sợi dây. Kéo để xoay cung, cuộn hoặc chụm ngón để phóng to. Đường vàng đứt là đường dây khi nhìn từ trên, và là đường vuông góc với dây khi nhìn từ bên. Các độ lệch vài mm được vẽ lớn hơn; nhãn ghi giá trị thật. Cây cung là hình đơn giản hoá, không phải thiết bị của bạn.',
     loading: 'Đang tải hình 3D.',
     failed:
       'Không mở được hình 3D. Nó cần WebGL, mà trình duyệt hoặc thiết bị này đang tắt. Các góc nhìn tên bay vẫn dùng được.',

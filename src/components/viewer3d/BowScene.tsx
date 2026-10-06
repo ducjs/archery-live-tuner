@@ -12,8 +12,10 @@ export type Focus = 'bow' | 'centerShot' | 'nockingPoint'
 type Props = {
   bow: BowSetup
   arrow: ArrowSetup
-  /** How many times the two offsets are enlarged. 1 is true scale. */
+  /** How many times the small offsets are enlarged. 1 is true scale. */
   amplify: number
+  /** Shows the bow at full draw. */
+  drawn: boolean
   focus: Focus
   /** Changes whenever the camera should fly to `focus` again. */
   focusRequest: number
@@ -86,15 +88,19 @@ function Vanes({ from, to, radius, color }: Omit<RodProps, 'endRadius'>) {
   )
 }
 
-function Limb({ points, color }: { points: [number, number][]; color: string }) {
+/** A limb is this many times wider than it is thick. */
+const LIMB_WIDTH = 3.6
+
+function Limb({ points, color }: { points: Vec3[]; color: string }) {
   const geometry = useMemo(() => {
-    const curve = new CatmullRomCurve3(points.map(([x, y]) => new Vector3(x, y, 0)))
+    // The tube is widened afterwards, so what its path has of sideways is narrowed first.
+    const curve = new CatmullRomCurve3(points.map(([x, y, z]) => new Vector3(x, y, z / LIMB_WIDTH)))
     return new TubeGeometry(curve, 48, 5, 10)
   }, [points])
   useEffect(() => () => geometry.dispose(), [geometry])
   // A round tube squashed sideways reads as a flat limb.
   return (
-    <mesh geometry={geometry} scale={[1, 1, 3.6]}>
+    <mesh geometry={geometry} scale={[1, 1, LIMB_WIDTH]}>
       <meshStandardMaterial color={color} roughness={0.5} />
     </mesh>
   )
@@ -221,12 +227,13 @@ function LabelPins({ anchors }: { anchors: Anchor[] }) {
 
 function Bow({ geometry }: { geometry: BowGeometry }) {
   const palette = useMemo(() => readPalette(), [])
-  const { side, stringX, nock, point, atRest, shaftRadius, limb, string } = geometry
-  const { riser, pockets, longRod, sideRods } = geometry
-  const lowerLimb = useMemo(() => limb.map(([x, y]): [number, number] => [x, -y]), [limb])
+  const { side, stringX, stringZ, nock, point, atRest, shaftRadius, limbs, string } = geometry
+  const { riser, pockets, longRod, sideRods, weightLength, plungerCollar } = geometry
+  const [upperLimb, lowerLimb] = limbs
 
   // Drawn a little thicker than life, or the shaft vanishes at this size.
   const radius = shaftRadius * 1.4
+  const arrowLength = Math.hypot(point[0] - nock[0], point[1] - nock[1], point[2] - nock[2])
   // Z of the riser beside the arrow: the inner face of the sight window.
   const windowZ = riser.find(([, y]) => y > 0)![2]
 
@@ -252,11 +259,30 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
         </group>
       ))}
 
-      <Limb points={limb} color={palette.ink} />
+      <Limb points={upperLimb} color={palette.ink} />
       <Limb points={lowerLimb} color={palette.ink} />
-      <Line points={string} color={palette.ink} lineWidth={1.5} />
-      {/* Center serving: the thicker wrap where the arrow and the fingers go. */}
-      <Rod from={[stringX, -90, 0]} to={[stringX, 90, 0]} radius={1.6} color={palette.muted} />
+      {/* The string, strand count and all, with the thicker center serving around the nock. */}
+      {string.slice(1).map((end, index) => (
+        <Rod
+          key={index}
+          from={string[index]!}
+          to={end}
+          radius={geometry.stringRadius}
+          color={palette.ink}
+        />
+      ))}
+      <Rod
+        from={along(nock, string[1]!, 0.12)}
+        to={nock}
+        radius={geometry.stringRadius + 0.6}
+        color={palette.muted}
+      />
+      <Rod
+        from={nock}
+        to={along(nock, string[3]!, 0.12)}
+        radius={geometry.stringRadius + 0.6}
+        color={palette.muted}
+      />
 
       {/* Long rod, with a damper and its weight at the far end. */}
       <Rod from={longRod.from} to={longRod.to} radius={7} color={palette.ink} />
@@ -268,7 +294,7 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
       />
       <Rod
         from={[longRod.to[0] + 14, longRod.to[1], 0]}
-        to={[longRod.to[0] + 54, longRod.to[1], 0]}
+        to={[longRod.to[0] + 14 + weightLength, longRod.to[1], 0]}
         radius={13}
         color={palette.muted}
       />
@@ -295,12 +321,18 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
         radius={3.2}
         color={palette.gold}
       />
-      {/* The barrel of the plunger, on the outside of the riser. */}
+      {/* The barrel of the plunger, on the outside of the riser, and the collar that sets its preload. */}
       <Rod
         from={[0, 0, windowZ + side * 14]}
         to={[0, 0, windowZ + side * 44]}
         radius={6}
         color={palette.muted}
+      />
+      <Rod
+        from={[0, 0, windowZ + side * (14 + plungerCollar)]}
+        to={[0, 0, windowZ + side * (20 + plungerCollar)]}
+        radius={8.5}
+        color={palette.gold}
       />
       <Rod
         from={[6, -radius - 1, windowZ]}
@@ -312,8 +344,8 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
       {/* The reference: string line seen from above, square to the string seen from the side. */}
       <Line
         points={[
-          [stringX, 0, 0],
-          [point[0] + 90, 0, 0],
+          [stringX, 0, stringZ],
+          [point[0] + 90, 0, stringZ],
         ]}
         color={palette.gold}
         lineWidth={2}
@@ -326,7 +358,7 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
       <Rod from={nock} to={point} radius={radius} color={palette.ink} />
       <Rod
         from={point}
-        to={along(nock, point, 1.04)}
+        to={along(nock, point, 1 + geometry.pointLength / arrowLength)}
         radius={radius * 1.3}
         endRadius={0.2}
         color={palette.muted}
@@ -343,8 +375,8 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
       {[-11, 5].map((offset) => (
         <Rod
           key={offset}
-          from={[stringX, nock[1] + offset, 0]}
-          to={[stringX, nock[1] + offset + 6, 0]}
+          from={[stringX, nock[1] + offset, stringZ]}
+          to={[stringX, nock[1] + offset + 6, stringZ]}
           radius={2.2}
           color={palette.gold}
         />
@@ -353,15 +385,15 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
       {/* The two offsets, drawn from the reference line to the arrow. */}
       <Line
         points={[
-          [stringX - 14, 0, 0],
-          [stringX - 14, nock[1], 0],
+          [stringX - 14, 0, stringZ],
+          [stringX - 14, nock[1], stringZ],
         ]}
         color={palette.accent}
         lineWidth={4}
       />
       <Line
         points={[
-          [point[0], 0, 0],
+          [point[0], 0, stringZ],
           [point[0], 0, point[2]],
         ]}
         color={palette.accent}
@@ -374,9 +406,12 @@ function Bow({ geometry }: { geometry: BowGeometry }) {
 const labelClass =
   'border-line bg-surface text-ink absolute top-0 left-0 rounded-md border px-2 py-1 text-sm font-medium whitespace-nowrap shadow-sm'
 
-export default function BowScene({ bow, arrow, amplify, focus, focusRequest }: Props) {
+export default function BowScene({ bow, arrow, amplify, drawn, focus, focusRequest }: Props) {
   const m = useMessages()
-  const geometry = useMemo(() => bowGeometry({ bow, arrow }, amplify), [bow, arrow, amplify])
+  const geometry = useMemo(
+    () => bowGeometry({ bow, arrow }, { amplify, drawn }),
+    [bow, arrow, amplify, drawn],
+  )
   const nockLabel = useRef<HTMLSpanElement>(null)
   const pointLabel = useRef<HTMLSpanElement>(null)
   const { nock, point, side } = geometry
@@ -408,7 +443,8 @@ export default function BowScene({ bow, arrow, amplify, focus, focusRequest }: P
           {m.viewer.nockingPoint}: {m.viewer.nockingPointValue(bow.nockingPointHeight)}
         </span>
         <span ref={pointLabel} className={labelClass}>
-          {m.viewer.centerShot}: {m.viewer.centerShotValue(bow.centerShot)}
+          {/* Against the string as the limbs carry it, which is what the arrow sees. */}
+          {m.viewer.centerShot}: {m.viewer.centerShotValue((point[2] - geometry.stringZ) / amplify)}
         </span>
       </div>
     </div>
