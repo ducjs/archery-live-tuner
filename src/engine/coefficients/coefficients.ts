@@ -1,4 +1,4 @@
-import base from './heuristic-0.1.json'
+import base from './heuristic-0.2.json'
 
 // Every number in the coefficient file is a HEURISTIC. None of them has been
 // validated against real shooting data. They are tuned so that the reference
@@ -132,7 +132,17 @@ export type Coefficients = {
 
   clearance: {
     base: number
+    /** For how hard the shaft bends: a mismatched arrow swings wider past the riser. */
     mismatch: number
+    /** For bad timing: the risk added when the tail passes the riser at the worst moment. */
+    phase: number
+    /** Bending cycles away from the neutral count at which the timing is at its worst. */
+    phaseSpan: number
+    /**
+     * Bending cycles the shaft has gone through when its tail passes the riser,
+     * for the reference setup. The model takes that timing as the good one.
+     */
+    neutralCycles: number
     perMmTowardRiser: number
     tightNock: number
     looseNock: number

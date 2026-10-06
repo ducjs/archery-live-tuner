@@ -8,7 +8,13 @@ import type { TuningSetup } from '../../models/setup.ts'
 import { HEURISTIC_V0, type Coefficients } from '../coefficients/coefficients.ts'
 import { clamp01 } from '../math/scalar.ts'
 import { bendingFrequency } from './arrowModel.ts'
-import { launchSpeed, powerStroke, relativeBowInertia, timeOnString } from './bowModel.ts'
+import {
+  launchSpeed,
+  powerStroke,
+  relativeBowInertia,
+  riserPassTime,
+  timeOnString,
+} from './bowModel.ts'
 import { classify } from './classification.ts'
 import { frontOfCenter, grainsPerPound, kineticEnergy } from './derivedMetrics.ts'
 import { stiffnessMismatch } from './dynamicSpine.ts'
@@ -103,9 +109,20 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
       : bow.string.nockFit === 'LOOSE'
         ? c.clearance.looseNock
         : 0
+  // Clearance is a matter of timing (spec §34.2): the shaft is still bending
+  // when its tail passes the riser, and whether the tail is then swung away from
+  // the bow or toward it depends on how many cycles it has gone through. The
+  // reference setup sets the good count; half a cycle from it is the worst.
+  const frequency = bendingFrequency(arrow, c)
+  const clearanceCycles = frequency * riserPassTime(bow, arrow, c)
+  const mistiming = Math.min(
+    1,
+    Math.abs(clearanceCycles - c.clearance.neutralCycles) / c.clearance.phaseSpan,
+  )
   const clearanceRisk = clamp01(
     c.clearance.base +
       c.clearance.mismatch * Math.abs(dynamicBehavior) +
+      c.clearance.phase * mistiming +
       c.clearance.perMmTowardRiser * Math.max(0, centerShot) +
       nockFit +
       c.clearance.lowBrace * Math.max(0, Math.log(reference.braceHeight / bow.braceHeight)) +
@@ -124,7 +141,7 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     dynamicBehavior,
     flexAmplitude,
     oscillation,
-    oscillationFrequency: bendingFrequency(arrow, c),
+    oscillationFrequency: frequency,
     oscillationDecay,
     lateralDeviation,
     verticalTendency,
@@ -133,6 +150,7 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     pitch: -c.vertical.maxPitch * verticalTendency,
     stabilityTime,
     clearanceRisk,
+    clearanceCycles,
     launchSpeed: speed,
     kineticEnergy: kineticEnergy(arrow, speed),
     grainsPerPound: grainsPerPound(bow, arrow),

@@ -46,6 +46,8 @@ export type SimulationMetrics = {
   stabilityTime: number
   /** 0..1 */
   clearanceRisk: number
+  /** Bending cycles the shaft has gone through when its tail passes the riser. */
+  clearanceCycles: number
   /** mm/s, estimated */
   launchSpeed: number
   /** J, of the arrow at that speed */

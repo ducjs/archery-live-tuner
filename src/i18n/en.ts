@@ -109,6 +109,7 @@ export const en = {
     grainsPerPound: 'Grains per pound',
     frontOfCenter: 'Front of center (FOC)',
     energy: 'Kinetic energy',
+    clearanceCycles: 'Bending cycles when the tail passes the bow',
     tooLight: (grainsPerPound: string, minimum: number) =>
       `This arrow is too light for the draw weight: ${grainsPerPound} gr/lb, under the ${minimum} gr/lb that bow makers commonly give as the minimum. A bow shot with too light an arrow is loaded almost as in a dry fire. Check the limit of your bow maker.`,
     note: 'A simplified model, not checked against real shooting. Test on your own bow before changing equipment.',

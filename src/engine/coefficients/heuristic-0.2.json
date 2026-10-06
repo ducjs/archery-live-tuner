@@ -1,5 +1,5 @@
 {
-  "version": "heuristic-0.1",
+  "version": "heuristic-0.2",
   "reference": {
     "drawWeight": 169.03242137989898,
     "drawLength": 711.1999999999999,
@@ -71,7 +71,10 @@
   },
   "clearance": {
     "base": 0.15,
-    "mismatch": 0.5,
+    "mismatch": 0.25,
+    "phase": 0.4,
+    "phaseSpan": 0.5,
+    "neutralCycles": 1.434708093846098,
     "perMmTowardRiser": 0.06,
     "tightNock": 0.1,
     "looseNock": -0.03,

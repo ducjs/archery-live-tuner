@@ -4,6 +4,7 @@ import { getParameter, setValue, type NumberParameter } from '../../models/param
 import { numberValueArbitrary, setupArbitrary } from '../../models/setup.arbitrary.ts'
 import { createDefaultSetup, type TuningSetup } from '../../models/setup.ts'
 import { convert } from '../../utils/units.ts'
+import { HEURISTIC_V0 } from '../coefficients/coefficients.ts'
 import { MIN_GRAINS_PER_POUND } from './derivedMetrics.ts'
 import { heuristicModel } from './simulate.ts'
 
@@ -328,5 +329,62 @@ describe('derived metrics', () => {
   it('counts fewer grains per pound on a heavier bow', () => {
     const heavyBow = withDisplay(reference, 'bow.drawWeight', 48)
     expect(heuristicModel.analyze(heavyBow).metrics.grainsPerPound).toBeCloseTo(308 / 48, 6)
+  })
+})
+
+describe('clearance as timing (§34.2)', () => {
+  const { clearance } = HEURISTIC_V0
+  const analyze = (setup: TuningSetup) => heuristicModel.analyze(setup).metrics
+  const neutral = analyze(reference)
+
+  it('takes the timing of the reference setup as the good one', () => {
+    expect(neutral.clearanceCycles).toBeCloseTo(clearance.neutralCycles, 9)
+    expect(neutral.clearanceRisk).toBeCloseTo(clearance.base, 9)
+  })
+
+  it('counts more bending cycles for a stiffer shaft and fewer for a weaker one', () => {
+    expect(analyze(withDisplay(reference, 'arrow.spine', 500)).clearanceCycles).toBeGreaterThan(
+      neutral.clearanceCycles,
+    )
+    expect(analyze(withDisplay(reference, 'arrow.spine', 900)).clearanceCycles).toBeLessThan(
+      neutral.clearanceCycles,
+    )
+  })
+
+  it('counts fewer cycles on a faster bow, which leaves the shaft less time', () => {
+    expect(analyze(withDisplay(reference, 'bow.drawWeight', 48)).clearanceCycles).toBeLessThan(
+      neutral.clearanceCycles,
+    )
+  })
+
+  it('raises the risk when the timing is off in either direction', () => {
+    for (const spine of [500, 900]) {
+      expect(analyze(withDisplay(reference, 'arrow.spine', spine)).clearanceRisk).toBeGreaterThan(
+        neutral.clearanceRisk,
+      )
+    }
+  })
+
+  it('raises the risk for timing alone, with weak and stiff unchanged', () => {
+    // Shaft weight changes how fast the shaft bends and flies, not how it matches the bow.
+    const heavyShaft = setValue(
+      reference,
+      numberParameter('arrow.shaftGpi'),
+      reference.arrow.shaftGpi * 1.4,
+    )
+    const metrics = analyze(heavyShaft)
+    expect(metrics.dynamicBehavior).toBeCloseTo(neutral.dynamicBehavior, 9)
+    expect(metrics.clearanceCycles).not.toBeCloseTo(neutral.clearanceCycles, 2)
+    expect(metrics.clearanceRisk).toBeGreaterThan(neutral.clearanceRisk)
+  })
+
+  it('counts a finite, positive number of cycles for any valid setup', () => {
+    fc.assert(
+      fc.property(setupArbitrary, (setup) => {
+        const metrics = analyze(setup)
+        expect(metrics.clearanceCycles).toBeGreaterThan(0)
+        expect(Number.isFinite(metrics.clearanceCycles)).toBe(true)
+      }),
+    )
   })
 })

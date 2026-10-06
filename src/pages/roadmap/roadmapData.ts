@@ -264,7 +264,9 @@ export const ROADMAP: RoadmapPhase[] = [
           ),
           done('Tính độ cứng thật của thân tên từ chỉ số spine'),
           done('Tính tần số dao động của mũi tên từ độ cứng, khối lượng và chiều dài'),
-          todo('Tính khả năng chạm cung theo nhịp dao động lúc tên rời dây'),
+          done(
+            'Tính khả năng chạm cung theo nhịp dao động: thân tên đã uốn bao nhiêu chu kỳ lúc đuôi của nó đi ngang qua cung. Bộ hệ số lên phiên bản heuristic-0.2',
+          ),
           done('Thông số dây cung có ảnh hưởng tới kết quả'),
           done(
             'Chỉ số phụ: FOC, grains mỗi pound kèm cảnh báo, tốc độ ước lượng. Con số hiện ở chế độ Nâng cao; cảnh báo tên dưới 5 gr/lb hiện ở cả hai chế độ',

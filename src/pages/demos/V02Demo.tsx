@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
-import { MIN_GRAINS_PER_POUND, heuristicModel } from '../../engine/index.ts'
+import { HEURISTIC_V0, MIN_GRAINS_PER_POUND, heuristicModel } from '../../engine/index.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
 import { DemoCard, Fact } from './demoParts.tsx'
+import { RATING } from './demoText.ts'
 
 function DerivedDemo() {
   const setup = useTuningStore((state) => state.setup)
@@ -136,13 +137,12 @@ function WalkBackDemo() {
 /** Sideways swing of the nock end over time, with the moment the arrow leaves the string. */
 function ClearanceDemo() {
   const setup = useTuningStore((state) => state.setup)
-  const { metrics } = useMemo(() => heuristicModel.analyze(setup), [setup])
-  const stroke = (setup.bow.drawLength - setup.bow.braceHeight) / 1000
-  // Constant acceleration over the power stroke: time on the string is 2 s / v.
-  const onString = (2 * stroke) / (metrics.launchSpeed / 1000)
-  const cycles = onString * metrics.oscillationFrequency
-  const swing = -Math.cos(2 * Math.PI * cycles)
-  const away = swing > 0.3
+  const { metrics, classification } = useMemo(() => heuristicModel.analyze(setup), [setup])
+  // The moment the tail passes the riser, as the model counts it.
+  const cycles = metrics.clearanceCycles
+  const onString = cycles / metrics.oscillationFrequency
+  const neutral = HEURISTIC_V0.clearance.neutralCycles
+  const off = cycles - neutral
 
   const width = 300
   const span = onString * 1.6
@@ -165,7 +165,7 @@ function ClearanceDemo() {
         <path d={path} fill="none" className="stroke-ink" strokeWidth="2" />
         <line x1={leaveX} y1="4" x2={leaveX} y2="76" className="stroke-accent" strokeWidth="2" />
         <text x={leaveX + 5} y="13" className="fill-ink" fontSize="10">
-          rời dây
+          qua cung
         </text>
         <text x="2" y="76" className="fill-ink-muted" fontSize="9">
           phía cung
@@ -175,13 +175,18 @@ function ClearanceDemo() {
         </text>
       </svg>
       <dl className="grid max-w-md gap-1">
-        <Fact label="Thời gian trên dây">{(onString * 1000).toFixed(1)} ms</Fact>
-        <Fact label="Số chu kỳ dao động lúc rời dây">{cycles.toFixed(2)}</Fact>
-        <Fact label="Đuôi tên lúc đó">{away ? 'Đang lệch xa cung' : 'Đang ở gần cung'}</Fact>
+        <Fact label="Từ lúc thả tới lúc đuôi tên qua cung">{(onString * 1000).toFixed(1)} ms</Fact>
+        <Fact label="Số chu kỳ uốn tới lúc đó">{cycles.toFixed(2)}</Fact>
+        <Fact label="So với setup tham chiếu">
+          {Math.abs(off) < 0.03
+            ? 'Đúng nhịp'
+            : `${off > 0 ? 'Nhanh' : 'Chậm'} ${Math.abs(off).toFixed(2)} chu kỳ`}
+        </Fact>
+        <Fact label="Nguy cơ chạm cung">{RATING[classification.clearance]}</Fact>
       </dl>
       <p className="text-ink-muted max-w-prose text-sm">
-        Đuôi tên qua cung an toàn nhất khi nó đang lệch ra xa. Công thức thời gian ở đây giả định
-        gia tốc đều, nên chỉ để minh hoạ ý tưởng.
+        Mô hình coi nhịp của setup tham chiếu ({neutral.toFixed(2)} chu kỳ) là nhịp tốt; lệch nửa
+        chu kỳ là tệ nhất. Thời gian tính với gia tốc đều trên dây, nên đây vẫn là ước chừng.
       </p>
     </div>
   )
@@ -219,8 +224,8 @@ export function V02Demo() {
       </DemoCard>
       <DemoCard
         title="Chạm cung theo nhịp dao động"
-        kind="simple"
-        intro="Mũi tên dao động khi còn trên dây. Khả năng chạm cung phụ thuộc vào việc đuôi tên đang ở đâu trong nhịp đó lúc rời dây."
+        kind="model"
+        intro="Mũi tên còn đang uốn khi đuôi của nó đi ngang qua cung. Nguy cơ chạm cung phụ thuộc vào việc đuôi tên đang ở đâu trong nhịp uốn đó. Phần này đã nằm trong kết quả của trang Simulator."
       >
         <ClearanceDemo />
       </DemoCard>

@@ -245,10 +245,17 @@ Nock cao thì đuôi tên rời cung ở trên, tức mũi chúi xuống, nên `
 
 ### 7.6 Nguy cơ chạm cung (clearance)
 
+Chạm cung là chuyện nhịp (§34.2): thân tên còn đang uốn khi đuôi của nó đi ngang qua cung. Lúc đó đuôi đang lệch ra xa hay áp vào cung là tùy thân tên đã uốn được bao nhiêu chu kỳ.
+
 ```text
+t_qua_cung = timeOnString + braceHeight / v        từ lúc thả tới lúc đuôi tên qua cung
+chu_kỳ     = f_uốn · t_qua_cung                     metrics.clearanceCycles
+lệch_nhịp  = min(1, |chu_kỳ − 1.435| / 0.5)
+
 clearanceRisk = clamp01(
     0.15
-  + 0.50 · |dynamicBehavior|
+  + 0.25 · |dynamicBehavior|                 uốn mạnh thì đuôi văng rộng
+  + 0.40 · lệch_nhịp
   + 0.06 · max(0, centerShot)                mỗi mm về phía riser
   + nockFit                                  TIGHT +0.10, NORMAL 0, LOOSE −0.03
   + 0.60 · max(0, ln(220 / braceHeight))     chỉ khi brace height thấp hơn 220 mm
@@ -274,6 +281,12 @@ FOC % = (điểm_cân_bằng − L/2) / L · 100
 - Dưới 5 gr/lb thì bảng kết quả hiện cảnh báo tên quá nhẹ, ở cả Cơ bản và Nâng cao. 5 gr/lb là mức tối thiểu theo AMO mà các hãng cung hay dẫn; chưa đối chiếu được với trang 17–32 của sách Easton vì bản đang có thiếu các trang đó.
 - Ba con số chỉ hiện ở chế độ Nâng cao.
 - FOC chưa có cảnh báo. Sách Easton ghi 7 tới 16 %, nhưng cách tính ở đây đặt cả point lẫn insert ở đúng đầu thân tên và không tính chiều dài point, nên ra số cao hơn cách đo của sách: setup tham chiếu đã là 19,3 %. So với khoảng của sách thì sẽ báo sai.
+
+- 1,435 chu kỳ là con số của setup tham chiếu (`neutralCycles`). Mô hình coi đó là nhịp tốt, giống cách nó coi setup tham chiếu là đã cân. Lệch nửa chu kỳ là tệ nhất; lệch hơn nữa vẫn tính là tệ nhất, không quay vòng lại thành tốt.
+- Ví dụ: spine 900 uốn chậm hơn, 1,27 chu kỳ, lệch 0,17, nguy cơ 0,45. Spine 400 là 1,90 chu kỳ, lệch 0,46, nguy cơ 0,75 (mức Cao). Cung 48 lb bắn nhanh hơn nên thân tên có ít thời gian hơn: 1,28 chu kỳ.
+- Khối lượng thân tên (`shaftGpi`) giờ có ảnh hưởng tới clearance qua tần số uốn và vận tốc, dù không đổi weak / stiff.
+- Chỗ còn ước chừng: `f_uốn` là tần số của tên bay tự do, trong khi trên dây đuôi tên bị dây giữ; thời gian trên dây giả định lực đẩy đều; cung coi như nằm cách dây đúng bằng brace height.
+- Từ phiên bản hệ số `heuristic-0.2`. Ở `heuristic-0.1` clearance chỉ dùng `0.50 · |dynamicBehavior|`, không có nhịp.
 
 ## 8. Phân loại
 
@@ -429,8 +442,7 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 ## 13. Giới hạn đã biết
 
 - Không có lực cản không khí. Vận tốc không giảm trên đường bay, nên thời gian bay ở cự ly xa bị ngắn hơn thực tế.
-- Clearance chưa tính theo pha dao động so với thời gian tên còn trên dây (§34.2). Tần số uốn đã có nhưng chưa được dùng cho việc này.
-- `shaftGpi` chỉ ảnh hưởng tần số uốn và vận tốc, không ảnh hưởng weak / stiff. `shaftDiameter` chỉ ảnh hưởng clearance.
+- `shaftGpi` chỉ ảnh hưởng tần số uốn và vận tốc (và qua đó clearance), không ảnh hưởng weak / stiff. `shaftDiameter` chỉ ảnh hưởng clearance.
 - Bow mass và stabilizer chỉ ảnh hưởng mức dao động.
 - Tốc độ tắt của rung uốn (14 /s) và tần số lắc đuôi (6 Hz) là hằng số, không phụ thuộc setup.
 - Độ trôi ngang và dọc tuyến tính theo khoảng cách và không có đơn vị thật.
@@ -480,7 +492,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 
 | Nội dung | File |
 |---|---|
-| Mọi hệ số và ngưỡng (con số) | `src/engine/coefficients/heuristic-0.1.json` |
+| Mọi hệ số và ngưỡng (con số) | `src/engine/coefficients/heuristic-0.2.json` |
 | Ý nghĩa từng hệ số, kiểm tra file khi nạp | `src/engine/coefficients/coefficients.ts` |
 | Khối lượng tên | `src/models/arrow.ts` |
 | `EI`, tần số uốn | `src/engine/simulation/arrowModel.ts` |

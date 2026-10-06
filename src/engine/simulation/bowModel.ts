@@ -27,6 +27,20 @@ export function timeOnString(bow: BowSetup, arrow: ArrowSetup, coefficients: Coe
   return (2 * powerStroke(bow)) / launchSpeed(bow, arrow, coefficients)
 }
 
+/**
+ * s from release until the tail of the arrow passes the riser. The nock leaves
+ * the string at brace height, and from there it has the brace height to go.
+ */
+export function riserPassTime(
+  bow: BowSetup,
+  arrow: ArrowSetup,
+  coefficients: Coefficients,
+): number {
+  return (
+    timeOnString(bow, arrow, coefficients) + bow.braceHeight / launchSpeed(bow, arrow, coefficients)
+  )
+}
+
 /** Resistance of the bow to being moved by the shot, relative to the reference bow. */
 export function relativeBowInertia(bow: BowSetup, coefficients: Coefficients): number {
   const inertia = (mass: number, stabilizerMass: number, position: number) =>

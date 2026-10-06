@@ -216,6 +216,7 @@ export function ResultPanel({
                 [text.grainsPerPound, `${grainsPerPound} gr/lb`],
                 [text.frontOfCenter, `${frontOfCenter} %`],
                 [text.energy, `${metrics.kineticEnergy.toFixed(1)} J`],
+                [text.clearanceCycles, metrics.clearanceCycles.toFixed(2)],
               ] as const
             ).map(([label, value]) => (
               <div key={label} className="flex items-baseline justify-between gap-3">

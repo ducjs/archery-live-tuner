@@ -131,6 +131,7 @@ export const vi: Messages = {
     grainsPerPound: 'Grains mỗi pound',
     frontOfCenter: 'FOC (trọng tâm lệch về trước)',
     energy: 'Động năng',
+    clearanceCycles: 'Số chu kỳ uốn lúc đuôi tên qua cung',
     tooLight: (grainsPerPound, minimum) =>
       `Mũi tên này quá nhẹ so với lực kéo: ${grainsPerPound} gr/lb, dưới mức ${minimum} gr/lb mà các hãng cung thường đặt làm tối thiểu. Bắn tên quá nhẹ thì cung chịu tải gần như bắn khan. Hãy xem giới hạn của hãng làm cung.`,
     note: 'Mô hình đơn giản hoá, chưa đối chiếu với bắn thật. Hãy thử trên cung của bạn trước khi đổi thiết bị.',

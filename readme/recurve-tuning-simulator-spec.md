@@ -1386,6 +1386,8 @@ From `EI`, shaft mass per length and arrow length, the first bending mode freque
 
 Clearance depends on phase: where the arrow is in its oscillation cycle when the tail passes the riser. Compare the oscillation period (34.1) with the time the arrow spends on the string. `clearanceRisk` should come from this phase mismatch.
 
+As built (coefficient set `heuristic-0.2`): the model counts the bending cycles the shaft has gone through when its tail passes the riser, which is the time on the string plus the time to cover the brace height. The count of the reference setup is taken as the good timing, and the risk grows with the distance from it, up to half a cycle. A share of the risk still follows how far the arrow is from matched, because a mismatched shaft bends harder. The count is part of the result and is shown in Advanced.
+
 ## 34.3 Virtual tuning tests
 
 Report results in the language archers already use, so they can be checked against real shooting:

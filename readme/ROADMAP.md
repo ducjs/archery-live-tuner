@@ -31,7 +31,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | Phase | Theme | Status |
 |---|---|---|
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
-| V0.2 | Improved dynamic model | Not started |
+| V0.2 | Improved dynamic model | In progress (5 of 8 done; paper tear, walk-back and the spine chart test wait for reference documents) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | Not started |
 | V0.4 | Real-world calibration | Not started |
 | V0.5 | Advanced parameters and recommendations | Not started |
@@ -43,7 +43,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 Every phase has a demo on the "Xem trước" page of the app (`#demo-v0-1` to `#demo-v1-0`, one tab per phase). Each demo card says whether it runs on the current model, on a simple stand-in calculation, or on fake data. A demo does not tick its roadmap item: the items below stay open until the real feature is built.
 
 Done ahead of their phase:
-- V0.2: bending stiffness and frequency from spine, string parameters in the model, bare shaft test
+- V0.2: everything except the paper tear and walk-back tests and the spine chart test, which wait for the Easton documents in the pinned list
 - V0.3: a preview of the 3D setup viewer (center shot and nocking point height only)
 - V0.5: ranked tuning suggestions
 
@@ -174,7 +174,7 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 - [x] Coefficients moved to versioned JSON, `modelVersion` in results (§34.7). The file is checked when it is loaded, so a calibrated set with a missing number is refused
 - [x] Bending stiffness `EI` from static spine (§34.1) (done early in M3, drives the animation frequency)
 - [x] First bending mode frequency from `EI`, mass and length (end-mass correction is still heuristic)
-- [ ] Clearance from oscillation phase vs time on string (§34.2)
+- [x] Clearance from oscillation phase vs time on string (§34.2): the risk now depends on how many bending cycles the shaft has gone through when its tail passes the riser. Coefficient set `heuristic-0.2`
 - [x] String parameters feed the model (§5)
 - [x] Derived metrics: FOC, grains per pound with warning, estimated speed (§34.4). The numbers show in Advanced; the warning for an arrow under 5 gr/lb shows in both modes
 - [x] Virtual tuning test: bare shaft (done early in M5)
