@@ -4,6 +4,7 @@ import type {
   SimulationResult,
   TuningClassification,
 } from '../../models/simulation.ts'
+import { BRACE_PER_INCH, bowLength, braceHeightRange } from '../../models/bow.ts'
 import type { TuningSetup } from '../../models/setup.ts'
 import { HEURISTIC_V0, type Coefficients } from '../coefficients/coefficients.ts'
 import { clamp01 } from '../math/scalar.ts'
@@ -66,7 +67,16 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
   // The model works in the right-handed frame and mirrors left-handed setups:
   // for a right-handed archer the riser is to the right of the arrow.
   const side = bow.handedness === 'RH' ? 1 : -1
-  const centerShot = bow.centerShot * side
+
+  // Limb alignment. When both tips sit to one side, the string sits there too,
+  // while the rest stays on the riser: the arrow is turned about its nock, and
+  // its point ends up on the other side of the string line. That is a center
+  // shot error, larger than the limb error by arrow length over brace height.
+  const stringShift = (bow.limbAlignmentTop + bow.limbAlignmentBottom) / 2
+  const effectiveCenterShot = bow.centerShot - stringShift * (arrow.length / bow.braceHeight)
+  const centerShot = effectiveCenterShot * side
+  // When the tips sit apart, the string plane is twisted against the riser.
+  const limbTwist = Math.abs(bow.limbAlignmentTop - bow.limbAlignmentBottom)
 
   const mismatch = stiffnessMismatch(bow, arrow, c) + plungerBehaviorShift(bow, c)
   const dynamicBehavior = Math.tanh(c.behavior.gain * mismatch)
@@ -79,7 +89,8 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
       c.oscillation.mismatch * Math.abs(dynamicBehavior) +
       c.oscillation.weakExtra * Math.max(0, -dynamicBehavior) +
       c.oscillation.perMmCenterShot * Math.abs(centerShot) +
-      c.oscillation.perMmPreloadOffset * Math.abs(preloadOffset) -
+      c.oscillation.perMmPreloadOffset * Math.abs(preloadOffset) +
+      c.oscillation.perMmLimbTwist * limbTwist -
       c.oscillation.bowInertia * Math.log(relativeBowInertia(bow, c)),
   )
 
@@ -119,13 +130,16 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     1,
     Math.abs(clearanceCycles - c.clearance.neutralCycles) / c.clearance.phaseSpan,
   )
+  // A longer bow is braced higher, so what counts as a low brace height moves with it.
+  const neutralBrace = reference.braceHeight + (bowLength(bow) - 68) * BRACE_PER_INCH
   const clearanceRisk = clamp01(
     c.clearance.base +
       c.clearance.mismatch * Math.abs(dynamicBehavior) +
       c.clearance.phase * mistiming +
       c.clearance.perMmTowardRiser * Math.max(0, centerShot) +
       nockFit +
-      c.clearance.lowBrace * Math.max(0, Math.log(reference.braceHeight / bow.braceHeight)) +
+      c.clearance.lowBrace * Math.max(0, Math.log(neutralBrace / bow.braceHeight)) +
+      c.clearance.perMmLimbTwist * limbTwist +
       c.clearance.vertical * Math.abs(verticalTendency) +
       c.clearance.perMmDiameter * (arrow.shaftDiameter - reference.shaftDiameter),
   )
@@ -137,6 +151,7 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     oscillationDecay
 
   const speed = launchSpeed(bow, arrow, c)
+  const braceRange = braceHeightRange(bow)
   const metrics: SimulationMetrics = {
     dynamicBehavior,
     flexAmplitude,
@@ -155,6 +170,10 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     kineticEnergy: kineticEnergy(arrow, speed),
     grainsPerPound: grainsPerPound(bow, arrow),
     frontOfCenter: frontOfCenter(arrow),
+    bowLength: bowLength(bow),
+    braceHeightMin: braceRange.min,
+    braceHeightMax: braceRange.max,
+    effectiveCenterShot,
   }
 
   return {

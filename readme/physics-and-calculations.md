@@ -231,6 +231,17 @@ yaw = 0.02 · lateralDeviation                rad
 
 Tay phải: tên yếu đi phải, tên cứng đi trái. Tăng preload đẩy tên ra xa riser, tức sang trái.
 
+`centerShot` ở đây là center shot hiệu dụng, đã tính cánh cung lệch (từ `heuristic-0.3`):
+
+```text
+dây_lệch          = (limbAlignmentTop + limbAlignmentBottom) / 2          mm, dương là sang phải
+centerShot_hiệu_dụng = centerShot − dây_lệch · (arrowLength / braceHeight)
+cánh_vặn          = |limbAlignmentTop − limbAlignmentBottom|            mm
+```
+
+- Hai đầu cánh lệch cùng phía thì dây lệch theo, còn rest vẫn nằm trên riser. Tên xoay quanh nock, đầu tên lệch sang phía ngược lại so với đường dây. Đây là hình học thuần, không có hệ số: với tên 27 in và brace 22 cm, 1 mm lệch ở cánh bằng 3,1 mm center shot.
+- Hai đầu cánh lệch ngược phía (`cánh_vặn`) thì mặt phẳng dây bị vặn. Mô hình cộng `0.04 · cánh_vặn` vào mức dao động và `0.04 · cánh_vặn` vào nguy cơ chạm cung. Không cộng vào lệch trái / phải vì chưa biết chiều. Hai hệ số này là ước chừng, chưa có số liệu.
+
 ### 7.5 Lệch dọc
 
 ```text
@@ -258,7 +269,8 @@ clearanceRisk = clamp01(
   + 0.40 · lệch_nhịp
   + 0.06 · max(0, centerShot)                mỗi mm về phía riser
   + nockFit                                  TIGHT +0.10, NORMAL 0, LOOSE −0.03
-  + 0.60 · max(0, ln(220 / braceHeight))     chỉ khi brace height thấp hơn 220 mm
+  + 0.60 · max(0, ln(brace_chuẩn / braceHeight))   chỉ khi brace height thấp hơn brace_chuẩn
+  + 0.04 · cánh_vặn                          mỗi mm, xem 7.4
   + 0.10 · |verticalTendency|
   + 0.03 · (shaftDiameter − 4.2) )           mỗi mm
 ```
@@ -282,6 +294,7 @@ FOC % = (điểm_cân_bằng − L/2) / L · 100
 - Ba con số chỉ hiện ở chế độ Nâng cao.
 - FOC chưa có cảnh báo. Sách Easton ghi 7 tới 16 %, nhưng cách tính ở đây đặt cả point lẫn insert ở đúng đầu thân tên và không tính chiều dài point, nên ra số cao hơn cách đo của sách: setup tham chiếu đã là 19,3 %. So với khoảng của sách thì sẽ báo sai.
 
+- `brace_chuẩn = 220 + (chiều_dài_cung − 68) · 3,175` mm: cung dài hơn thì brace height chuẩn cao hơn, theo đúng bước 1/8 in mỗi inch trong bảng của Easton. Chiều dài cung = số ghi trên cánh + (riser − 25), ví dụ H25 + 68 = 68 in. Khoảng brace height Easton khuyên là 8¼ tới 9½ in cho cung 68 in, dịch cùng bước đó; bảng kết quả báo khi brace height nằm ngoài khoảng. Cỡ cung không đổi weak / stiff.
 - 1,435 chu kỳ là con số của setup tham chiếu (`neutralCycles`). Mô hình coi đó là nhịp tốt, giống cách nó coi setup tham chiếu là đã cân. Lệch nửa chu kỳ là tệ nhất; lệch hơn nữa vẫn tính là tệ nhất, không quay vòng lại thành tốt.
 - Ví dụ: spine 900 uốn chậm hơn, 1,27 chu kỳ, lệch 0,17, nguy cơ 0,45. Spine 400 là 1,90 chu kỳ, lệch 0,46, nguy cơ 0,75 (mức Cao). Cung 48 lb bắn nhanh hơn nên thân tên có ít thời gian hơn: 1,28 chu kỳ.
 - Khối lượng thân tên (`shaftGpi`) giờ có ảnh hưởng tới clearance qua tần số uốn và vận tốc, dù không đổi weak / stiff.
@@ -491,7 +504,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 
 | Nội dung | File |
 |---|---|
-| Mọi hệ số và ngưỡng (con số) | `src/engine/coefficients/heuristic-0.2.json` |
+| Mọi hệ số và ngưỡng (con số) | `src/engine/coefficients/heuristic-0.3.json` |
 | Ý nghĩa từng hệ số, kiểm tra file khi nạp | `src/engine/coefficients/coefficients.ts` |
 | Khối lượng tên | `src/models/arrow.ts` |
 | `EI`, tần số uốn | `src/engine/simulation/arrowModel.ts` |

@@ -53,6 +53,8 @@ describe('parameter table', () => {
       (parameter) => parameter.key,
     )
     expect(simple).toEqual([
+      'bow.riserSize',
+      'bow.limbSize',
       'bow.handedness',
       'bow.drawWeight',
       'bow.drawLength',

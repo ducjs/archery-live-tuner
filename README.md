@@ -10,6 +10,7 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 
 ## What it does today
 
+- Bow size first: riser (H23, H25, H27) and limbs (66, 68, 70), which give the bow length and the brace height range for it
 - Bow and arrow inputs, in Simple and Advanced detail. Simple mode lists the values it assumes for everything it does not ask
 - A screen that leads with the result in a sentence and keeps options, gauges and notes one press away; on a phone, setup, result and suggestions are three tabs, and sliders do not catch a swipe to scroll
 - Arrow flight seen from above, from the side, or both, with a bare shaft flown next to the fletched arrow

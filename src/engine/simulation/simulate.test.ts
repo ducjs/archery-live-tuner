@@ -1,6 +1,6 @@
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-import { getParameter, setValue, type NumberParameter } from '../../models/parameters.ts'
+import { getParameter, getValue, setValue, type NumberParameter } from '../../models/parameters.ts'
 import { numberValueArbitrary, setupArbitrary } from '../../models/setup.arbitrary.ts'
 import { createDefaultSetup, type TuningSetup } from '../../models/setup.ts'
 import { convert } from '../../utils/units.ts'
@@ -174,21 +174,21 @@ describe('properties over all valid setups', () => {
     fc.assert(
       fc.property(setupArbitrary, (setup) => {
         const rightHanded = setValue(setup, getParameter('bow.handedness'), 'RH')
-        const mirrored = setValue(
-          setValue(setup, getParameter('bow.handedness'), 'LH'),
-          getParameter('bow.centerShot'),
-          -setup.bow.centerShot,
-        )
+        // Everything that has a left and a right is mirrored with the archer.
+        const mirrored = ['bow.centerShot', 'bow.limbAlignmentTop', 'bow.limbAlignmentBottom']
+          .map(numberParameter)
+          .reduce(
+            (flipped, parameter) => setValue(flipped, parameter, -getValue(setup, parameter)),
+            setValue(setup, getParameter('bow.handedness'), 'LH'),
+          )
         const rh = heuristicModel.simulate(rightHanded)
         const lh = heuristicModel.simulate(mirrored)
 
         expect(lh.metrics.lateralDeviation).toBeCloseTo(-rh.metrics.lateralDeviation, 12)
         expect(lh.metrics.yaw).toBeCloseTo(-rh.metrics.yaw, 12)
-        expect({ ...lh.metrics, lateralDeviation: 0, yaw: 0 }).toEqual({
-          ...rh.metrics,
-          lateralDeviation: 0,
-          yaw: 0,
-        })
+        expect(lh.metrics.effectiveCenterShot).toBeCloseTo(-rh.metrics.effectiveCenterShot, 12)
+        const sided = { lateralDeviation: 0, yaw: 0, effectiveCenterShot: 0 }
+        expect({ ...lh.metrics, ...sided }).toEqual({ ...rh.metrics, ...sided })
 
         const last = rh.trajectory.length - 1
         expect(lh.trajectory.length).toBe(rh.trajectory.length)
@@ -386,5 +386,94 @@ describe('clearance as timing (§34.2)', () => {
         expect(Number.isFinite(metrics.clearanceCycles)).toBe(true)
       }),
     )
+  })
+})
+
+describe('bow size', () => {
+  const analyze = (setup: TuningSetup) => heuristicModel.analyze(setup).metrics
+  const sized = (riser: string, limbs: string) =>
+    setValue(
+      setValue(reference, getParameter('bow.riserSize'), riser),
+      getParameter('bow.limbSize'),
+      limbs,
+    )
+
+  it('adds the riser to what the limbs make on a 25 in riser', () => {
+    expect(analyze(reference).bowLength).toBe(68)
+    expect(analyze(sized('H23', '68')).bowLength).toBe(66)
+    expect(analyze(sized('H27', '70')).bowLength).toBe(72)
+    expect(analyze(sized('H23', '66')).bowLength).toBe(64)
+  })
+
+  it('gives the brace height range Easton lists for each length', () => {
+    // 64 in: 19.7 to 22.9 cm. 68 in: 21.0 to 24.1 cm. 70 in: 21.6 to 24.8 cm.
+    const range = (riser: string, limbs: string) => {
+      const metrics = analyze(sized(riser, limbs))
+      return [metrics.braceHeightMin / 10, metrics.braceHeightMax / 10]
+    }
+    expect(range('H25', '68')[0]).toBeCloseTo(21.0, 1)
+    expect(range('H25', '68')[1]).toBeCloseTo(24.1, 1)
+    expect(range('H23', '66')[0]).toBeCloseTo(19.7, 1)
+    expect(range('H23', '66')[1]).toBeCloseTo(22.9, 1)
+    expect(range('H25', '70')[0]).toBeCloseTo(21.6, 1)
+    expect(range('H25', '70')[1]).toBeCloseTo(24.8, 1)
+  })
+
+  it('leaves weak and stiff alone', () => {
+    expect(analyze(sized('H27', '70')).dynamicBehavior).toBeCloseTo(0, 9)
+  })
+
+  it('counts the same brace height as lower on a longer bow', () => {
+    const low = withDisplay(reference, 'bow.braceHeight', 21)
+    const onLong = setValue(low, getParameter('bow.limbSize'), '70')
+    expect(analyze(onLong).clearanceRisk).toBeGreaterThan(analyze(low).clearanceRisk)
+  })
+})
+
+describe('limb alignment', () => {
+  const analyze = (setup: TuningSetup) => heuristicModel.analyze(setup).metrics
+  const aligned = (top: number, bottom: number, from: TuningSetup = reference) =>
+    setValue(
+      setValue(from, numberParameter('bow.limbAlignmentTop'), top),
+      numberParameter('bow.limbAlignmentBottom'),
+      bottom,
+    )
+  const neutral = analyze(reference)
+
+  it('changes nothing when the limbs are in line', () => {
+    expect(analyze(aligned(0, 0))).toEqual(neutral)
+    expect(neutral.effectiveCenterShot).toBe(0)
+  })
+
+  it('turns both limbs to one side into a center shot error the other way', () => {
+    // The string goes right with the limbs; the rest stays, so the point ends up left.
+    const metrics = analyze(aligned(1, 1))
+    const leverage = reference.arrow.length / reference.bow.braceHeight
+    expect(metrics.effectiveCenterShot).toBeCloseTo(-leverage, 9)
+    expect(leverage).toBeGreaterThan(3)
+  })
+
+  it('reads the same as entering that center shot by hand', () => {
+    const byLimbs = analyze(aligned(1, 1))
+    const byHand = analyze(
+      setValue(reference, numberParameter('bow.centerShot'), byLimbs.effectiveCenterShot),
+    )
+    expect(byLimbs.lateralDeviation).toBeCloseTo(byHand.lateralDeviation, 12)
+    expect(byLimbs.oscillation).toBeCloseTo(byHand.oscillation, 12)
+  })
+
+  it('can be taken out again with the center shot', () => {
+    const leverage = reference.arrow.length / reference.bow.braceHeight
+    const corrected = setValue(aligned(1, 1), numberParameter('bow.centerShot'), leverage)
+    expect(analyze(corrected).lateralDeviation).toBeCloseTo(0, 9)
+  })
+
+  it('adds wobble and clearance risk when the limbs point apart, without a side', () => {
+    const twisted = analyze(aligned(2, -2))
+    expect(twisted.effectiveCenterShot).toBe(0)
+    expect(twisted.lateralDeviation).toBeCloseTo(0, 9)
+    expect(twisted.oscillation).toBeGreaterThan(neutral.oscillation)
+    expect(twisted.clearanceRisk).toBeGreaterThan(neutral.clearanceRisk)
+    expect(analyze(aligned(-2, 2))).toEqual(twisted)
   })
 })

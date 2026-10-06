@@ -121,7 +121,7 @@ Mỗi lần chỉ đổi một thông số. Phần đọc bia ở trang "Xem tr�
 | 68 in | 21,6 – 22,2 cm | 21,0 – 24,1 cm |
 | 70 in | 21,7 – 22,5 cm | 21,6 – 24,8 cm |
 
-Brace height tốt nhất là chỗ cung êm và ít rung nhất. Mô hình chưa có thông số chiều dài cung; giới hạn nhập hiện là 15 tới 30 cm.
+Brace height tốt nhất là chỗ cung êm và ít rung nhất. Từ 2026-10-06 mô hình có cỡ riser và cánh, tính ra chiều dài cung và dùng bảng này: bảng kết quả báo khi brace height nằm ngoài dải tối đa. Cung 62 và 72 in không có trong bảng, mô hình kéo dài theo cùng bước 1/8 in mỗi inch. Giới hạn nhập vẫn là 15 tới 30 cm.
 
 ### Các ngưỡng khác
 

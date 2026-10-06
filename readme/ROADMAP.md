@@ -45,7 +45,7 @@ Every phase has a demo on the "Xem trước" page of the app (`#demo-v0-1` to `#
 Done ahead of their phase:
 - V0.2: everything except the paper tear and walk-back tests and the spine chart test, which wait for the Easton documents in the pinned list
 - V0.3: everything except the full 3D setup viewer, of which there is a preview (center shot and nocking point height only)
-- V0.5: ranked tuning suggestions
+- V0.5: ranked tuning suggestions, bow size, limb alignment
 
 ---
 
@@ -269,6 +269,8 @@ Goal: cover more equipment detail and suggest what to try next.
 
 - [ ] Stabilizer breakdown: long rod, side rods, extender, weights (§5)
 - [ ] Release parameters (§7)
+- [x] Bow size: riser (H23, H25, H27) and limbs (66, 68, 70), in a section of their own above the other inputs. They give the bow length, which sets the recommended brace height range (done early, asked for by the owner on 2026-10-06)
+- [x] Limb alignment: how far each limb tip sits to the side, in mm. Both to one side act as a center shot error; apart, they add wobble and clearance risk. Coefficient set `heuristic-0.3` (done early, same request)
 - [ ] Barebow support (§1)
 - [ ] Extra arrow detail: point length, fletching position (§6)
 - [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button, shown in two groups: "Adjust directly" on the bow, and "Equipment")

@@ -3,7 +3,8 @@ import type { ArrowSetup } from './arrow.ts'
 import type { BowSetup } from './bow.ts'
 
 export type ParameterTier = 'simple' | 'advanced'
-export type ParameterGroup = 'bow' | 'arrow'
+/** `size` is the riser and the limbs: what the bow is, before anything on it is set. */
+export type ParameterGroup = 'size' | 'bow' | 'arrow'
 
 type ParameterBase = {
   /** Path into the setup, e.g. `bow.string.strandCount`. Also the i18n key. */
@@ -56,6 +57,11 @@ const HINTS: Record<string, string> = {
   'bow.centerShot': 'Arrow point from the string line. Negative is left, positive is right.',
   'bow.plungerStiffness': '0 is very soft, 1 is medium, 2 is very stiff.',
   'bow.tiller': 'Top tiller minus bottom tiller.',
+  'bow.limbSize': 'As marked on the limbs: the bow length they make on a 25 in riser.',
+  'bow.limbAlignmentTop':
+    'Limb tip to the side of the riser centerline. Negative is left, positive is right.',
+  'bow.limbAlignmentBottom':
+    'Limb tip to the side of the riser centerline. Negative is left, positive is right.',
   'bow.bowMass': 'Everything held in the bow hand, stabilizers included.',
   'bow.stabilizerPosition': 'How far in front of the riser the weight sits.',
   'arrow.length': 'Nock groove to the end of the shaft, without the point.',
@@ -63,7 +69,10 @@ const HINTS: Record<string, string> = {
   'arrow.fletchingWeight': 'All vanes together.',
 }
 
+const SIZE_KEYS = ['bow.riserSize', 'bow.limbSize']
+
 function groupOf(key: string): ParameterGroup {
+  if (SIZE_KEYS.includes(key)) return 'size'
   return key.startsWith('arrow.') ? 'arrow' : 'bow'
 }
 
@@ -110,6 +119,8 @@ function choice(
 
 // Defaults follow the development reference setup (spec §19). Tiers follow spec §4.1.
 export const PARAMETERS: readonly Parameter[] = [
+  choice('bow.riserSize', 'simple', 'Riser', { H23: 'H23', H25: 'H25', H27: 'H27' }, 'H25'),
+  choice('bow.limbSize', 'simple', 'Limbs', { '66': '66', '68': '68', '70': '70' }, '68'),
   choice('bow.handedness', 'simple', 'Handedness', { RH: 'Right-handed', LH: 'Left-handed' }, 'RH'),
   num('bow.drawWeight', 'simple', 'Draw weight', {
     units: ['N', 'lbf'],
@@ -157,6 +168,20 @@ export const PARAMETERS: readonly Parameter[] = [
     min: -5,
     max: 15,
     default: 4,
+    step: 0.5,
+  }),
+  num('bow.limbAlignmentTop', 'advanced', 'Top limb alignment', {
+    units: ['mm', 'mm'],
+    min: -5,
+    max: 5,
+    default: 0,
+    step: 0.5,
+  }),
+  num('bow.limbAlignmentBottom', 'advanced', 'Bottom limb alignment', {
+    units: ['mm', 'mm'],
+    min: -5,
+    max: 5,
+    default: 0,
     step: 0.5,
   }),
   num('bow.plungerPreload', 'advanced', 'Plunger preload', {

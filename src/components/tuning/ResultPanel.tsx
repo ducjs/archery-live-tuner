@@ -108,6 +108,10 @@ type ResultPanelProps = {
   handedness: Handedness
   /** Shows the numbers behind the ratings: grains per pound, front of center, energy. */
   advanced?: boolean
+  /** mm, as entered. Given, the panel says when it is outside the range for the bow. */
+  braceHeight?: number
+  /** mm, as entered. Given, the panel says what limb alignment adds to it. */
+  centerShot?: number
 }
 
 export function ResultPanel({
@@ -115,6 +119,8 @@ export function ResultPanel({
   comparison,
   handedness,
   advanced = false,
+  braceHeight,
+  centerShot,
 }: ResultPanelProps) {
   const { metrics, classification } = result
   const thresholds = HEURISTIC_V0.thresholds
@@ -128,6 +134,11 @@ export function ResultPanel({
     () => window.matchMedia?.('(min-width: 64rem)').matches ?? true,
   )
   const grainsPerPound = metrics.grainsPerPound.toFixed(1)
+  const braceOff =
+    braceHeight !== undefined &&
+    (braceHeight < metrics.braceHeightMin - 0.05 || braceHeight > metrics.braceHeightMax + 0.05)
+  // What the limbs add to the center shot the archer entered.
+  const limbShift = centerShot === undefined ? 0 : metrics.effectiveCenterShot - centerShot
   const frontOfCenter = metrics.frontOfCenter.toFixed(1)
 
   return (
@@ -145,6 +156,20 @@ export function ResultPanel({
           className="border-weak bg-weak/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2"
         >
           {text.tooLight(grainsPerPound, MIN_GRAINS_PER_POUND)}
+        </p>
+      )}
+      {braceOff && (
+        <p className="border-gold bg-gold/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2">
+          {text.braceOutside(
+            metrics.bowLength,
+            (metrics.braceHeightMin / 10).toFixed(1),
+            (metrics.braceHeightMax / 10).toFixed(1),
+          )}
+        </p>
+      )}
+      {Math.abs(limbShift) >= 0.05 && (
+        <p className="border-gold bg-gold/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2">
+          {text.limbsOff(`${limbShift > 0 ? '+' : '−'}${Math.abs(limbShift).toFixed(1)}`)}
         </p>
       )}
       <button

@@ -29,7 +29,21 @@ export const vi: Messages = {
   },
 
   parameter: {
+    'bow.riserSize': { label: 'Riser', options: { H23: 'H23', H25: 'H25', H27: 'H27' } },
+    'bow.limbSize': {
+      label: 'Cánh cung',
+      hint: 'Theo số ghi trên cánh: chiều dài cung khi lắp vào riser 25 in.',
+      options: { '66': '66', '68': '68', '70': '70' },
+    },
     'bow.handedness': { label: 'Tay thuận', options: { RH: 'Tay phải', LH: 'Tay trái' } },
+    'bow.limbAlignmentTop': {
+      label: 'Cánh trên lệch ngang',
+      hint: 'Đầu cánh so với đường tâm riser. Âm là lệch trái, dương là lệch phải.',
+    },
+    'bow.limbAlignmentBottom': {
+      label: 'Cánh dưới lệch ngang',
+      hint: 'Đầu cánh so với đường tâm riser. Âm là lệch trái, dương là lệch phải.',
+    },
     'bow.drawWeight': { label: 'Lực kéo', hint: 'Lực trên ngón tay khi kéo hết.' },
     'bow.drawLength': { label: 'Chiều dài kéo' },
     'bow.braceHeight': { label: 'Brace height' },
@@ -76,6 +90,8 @@ export const vi: Messages = {
     detail: 'Mức chi tiết',
     simple: 'Cơ bản',
     advanced: 'Nâng cao',
+    size: 'Cỡ cung',
+    bowLength: (inches) => `Cung dài ${inches} in`,
     bow: 'Cung',
     arrow: 'Tên',
     advancedChanged: (count) => `${count} thông số nâng cao đã đổi và vẫn ảnh hưởng tới kết quả.`,
@@ -132,6 +148,10 @@ export const vi: Messages = {
     grainsPerPound: 'Grains mỗi pound',
     frontOfCenter: 'FOC (trọng tâm lệch về trước)',
     energy: 'Động năng',
+    braceOutside: (length, low, high) =>
+      `Brace height nằm ngoài khoảng Easton khuyên cho cung ${length} in: ${low} tới ${high} cm.`,
+    limbsOff: (shift) =>
+      `Cánh cung lệch làm dây lệch theo, tương đương center shot lệch thêm ${shift} mm.`,
     clearanceCycles: 'Số chu kỳ uốn lúc đuôi tên qua cung',
     tooLight: (grainsPerPound, minimum) =>
       `Mũi tên này quá nhẹ so với lực kéo: ${grainsPerPound} gr/lb, dưới mức ${minimum} gr/lb mà các hãng cung thường đặt làm tối thiểu. Bắn tên quá nhẹ thì cung chịu tải gần như bắn khan. Hãy xem giới hạn của hãng làm cung.`,

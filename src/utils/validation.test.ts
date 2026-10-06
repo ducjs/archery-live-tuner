@@ -91,3 +91,30 @@ describe('clampValue', () => {
     expect(clampValue(strands, Number.NaN)).toBe(strands.default)
   })
 })
+
+describe('setups stored before a parameter was added', () => {
+  const current = createDefaultSetup('Old one')
+
+  it('get the default for what they lack, and keep what they have', () => {
+    const { riserSize: _riser, limbAlignmentTop: _top, ...oldBow } = current.bow
+    const old = { ...current, bow: { ...oldBow, drawWeight: 150 } }
+    const parsed = parseSetup(old)
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) return
+    expect(parsed.setup.bow.riserSize).toBe('H25')
+    expect(parsed.setup.bow.limbAlignmentTop).toBe(0)
+    expect(parsed.setup.bow.drawWeight).toBe(150)
+  })
+
+  it('get a missing value inside the string group too', () => {
+    const { nockFit: _fit, ...oldString } = current.bow.string
+    const parsed = parseSetup({ ...current, bow: { ...current.bow, string: oldString } })
+    expect(parsed.ok && parsed.setup.bow.string.nockFit).toBe('NORMAL')
+  })
+
+  it('are still refused when a value is wrong, not missing', () => {
+    expect(parseSetup({ ...current, bow: { ...current.bow, riserSize: 'H99' } }).ok).toBe(false)
+    expect(parseSetup({ ...current, bow: 'none' }).ok).toBe(false)
+    expect(parseSetup(null).ok).toBe(false)
+  })
+})

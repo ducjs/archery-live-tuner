@@ -408,6 +408,12 @@ export const ROADMAP: RoadmapPhase[] = [
         items: [
           todo('Tách stabilizer: thanh dài, thanh bên, extender, tạ'),
           todo('Thông số thả dây'),
+          done(
+            'Cỡ cung: riser (H23, H25, H27) và cánh (66, 68, 70), nằm ở một mục riêng trên cùng. Từ đó ra chiều dài cung và khoảng brace height nên dùng',
+          ),
+          done(
+            'Cánh cung lệch ngang: đầu mỗi cánh lệch trái hay phải bao nhiêu mm. Hai cánh lệch cùng phía thì như center shot bị lệch; lệch ngược phía thì tên lắc hơn và dễ chạm cung hơn',
+          ),
           todo('Hỗ trợ barebow'),
           todo('Chi tiết thêm cho tên: chiều dài point, vị trí cánh'),
           done(

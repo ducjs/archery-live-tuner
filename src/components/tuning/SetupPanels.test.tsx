@@ -116,9 +116,9 @@ describe('SetupPanels', () => {
 
   it('names the hidden values that Simple mode assumes', async () => {
     render(<SetupPanels />)
-    const assumed = screen.getByRole('region', { name: 'Simple mode assumes 13 more values' })
+    const assumed = screen.getByRole('region', { name: 'Simple mode assumes 15 more values' })
     expect(assumed.textContent).toContain(
-      'Plunger preload 1.0 mm, String mass 105 gr, Insert weight 12 gr and 10 more',
+      'Plunger preload 1.0 mm, String mass 105 gr, Insert weight 12 gr and 12 more',
     )
     expect(within(assumed).queryByText('Tiller')).toBeNull()
 

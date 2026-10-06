@@ -4,6 +4,7 @@ import { SegmentedControl } from '../common/SegmentedControl.tsx'
 import { parameterText } from '../../i18n/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import { arrowTotalMass } from '../../models/arrow.ts'
+import { bowLength } from '../../models/bow.ts'
 import {
   PARAMETERS,
   formatValue,
@@ -63,7 +64,11 @@ function ParameterPanel({ group, title }: { group: ParameterGroup; title: string
           </svg>
         </button>
       </div>
-      <div id={`${group}-values`} hidden={!open} className="mt-2 grid gap-4">
+      <div
+        id={`${group}-values`}
+        hidden={!open}
+        className={`mt-2 grid gap-4 ${group === 'size' ? 'sm:grid-cols-2 lg:grid-cols-1' : ''}`}
+      >
         {shown.map((parameter) =>
           parameter.kind === 'enum' ? (
             <SegmentedControl
@@ -194,12 +199,18 @@ export function SetupPanels() {
   const mode = useTuningStore((state) => state.mode)
   const setMode = useTuningStore((state) => state.setMode)
   const arrow = useTuningStore((state) => state.setup.arrow)
+  const bow = useTuningStore((state) => state.setup.bow)
   const units = useTuningStore((state) => state.units)
   const m = useMessages()
   const mass = arrowTotalMass(arrow)
 
   return (
     <div className="grid gap-6">
+      {/* What the bow is comes first: the rest is set on a bow of this size. */}
+      <div>
+        <ParameterPanel group="size" title={m.panels.size} />
+        <p className="text-ink-muted mt-2 text-sm">{m.panels.bowLength(bowLength(bow))}</p>
+      </div>
       <SegmentedControl
         label={m.panels.detail}
         options={[

@@ -1,4 +1,4 @@
-import base from './heuristic-0.2.json'
+import base from './heuristic-0.3.json'
 
 // Every number in the coefficient file is a HEURISTIC. None of them has been
 // validated against real shooting data. They are tuned so that the reference
@@ -92,6 +92,8 @@ export type Coefficients = {
     weakExtra: number
     perMmCenterShot: number
     perMmPreloadOffset: number
+    /** Per mm that the two limb tips sit apart sideways: a twisted string plane throws the nock sideways. */
+    perMmLimbTwist: number
     bowInertia: number
     /** 1/s */
     baseDecay: number
@@ -149,6 +151,8 @@ export type Coefficients = {
     lowBrace: number
     vertical: number
     perMmDiameter: number
+    /** Per mm that the two limb tips sit apart sideways. */
+    perMmLimbTwist: number
   }
 
   energy: {

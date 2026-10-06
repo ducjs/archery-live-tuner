@@ -72,9 +72,46 @@ export type ValidationIssue = {
 export type ParseResult =
   { ok: true; setup: TuningSetup } | { ok: false; issues: ValidationIssue[] }
 
+/**
+ * Gives a setup the default of every value it does not have. A setup stored
+ * before a parameter was added to the app is still a good setup; without this
+ * it would be refused, and saved work would vanish with every new parameter.
+ */
+function withDefaults(input: unknown): unknown {
+  if (input === null || typeof input !== 'object') return input
+  let setup = input as Record<string, unknown>
+  for (const parameter of PARAMETERS) {
+    const path = parameter.key.split('.')
+    let node: unknown = setup
+    for (const segment of path) {
+      node = node !== null && typeof node === 'object' ? (node as Tree)[segment] : undefined
+    }
+    if (node !== undefined) continue
+    // Only a missing value is filled in. A parent that is there but is not a
+    // group of values is left for the schema to refuse.
+    const parents = path.slice(0, -1)
+    let parent: unknown = setup
+    for (const segment of parents) parent = (parent as Tree)?.[segment]
+    if (parents.length > 0 && (parent === null || typeof parent !== 'object')) continue
+    setup = fill(setup, path, parameter.default)
+  }
+  return setup
+}
+
+type Tree = Record<string, unknown>
+
+function fill(tree: Tree, path: string[], value: unknown): Tree {
+  const [head, ...rest] = path
+  if (head === undefined) return tree
+  return {
+    ...tree,
+    [head]: rest.length === 0 ? value : fill((tree[head] ?? {}) as Tree, rest, value),
+  }
+}
+
 /** Validates untrusted input (imported JSON, URL state, localStorage). */
 export function parseSetup(input: unknown): ParseResult {
-  const result = setupSchema.safeParse(input)
+  const result = setupSchema.safeParse(withDefaults(input))
   if (result.success) {
     return { ok: true, setup: result.data as TuningSetup }
   }

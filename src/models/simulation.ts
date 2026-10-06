@@ -56,6 +56,14 @@ export type SimulationMetrics = {
   grainsPerPound: number
   /** %, how far the balance point sits ahead of the middle of the shaft */
   frontOfCenter: number
+  /** in, riser and limbs together */
+  bowLength: number
+  /** mm, the lowest brace height recommended for a bow of this length */
+  braceHeightMin: number
+  /** mm, the highest */
+  braceHeightMax: number
+  /** mm, center shot against the string as the limbs carry it: the entered value, moved by limb alignment */
+  effectiveCenterShot: number
 }
 
 /**

@@ -51,6 +51,8 @@ export const en = {
     detail: 'Detail',
     simple: 'Simple',
     advanced: 'Advanced',
+    size: 'Bow size',
+    bowLength: (inches: number) => `${inches} in bow`,
     bow: 'Bow',
     arrow: 'Arrow',
     advancedChanged: (count: number) =>
@@ -110,6 +112,10 @@ export const en = {
     grainsPerPound: 'Grains per pound',
     frontOfCenter: 'Front of center (FOC)',
     energy: 'Kinetic energy',
+    braceOutside: (length: number, low: string, high: string) =>
+      `Brace height is outside the range Easton gives for a ${length} in bow: ${low} to ${high} cm.`,
+    limbsOff: (shift: string) =>
+      `The limbs carry the string off line, which acts like ${shift} mm more of center shot.`,
     clearanceCycles: 'Bending cycles when the tail passes the bow',
     tooLight: (grainsPerPound: string, minimum: number) =>
       `This arrow is too light for the draw weight: ${grainsPerPound} gr/lb, under the ${minimum} gr/lb that bow makers commonly give as the minimum. A bow shot with too light an arrow is loaded almost as in a dry fire. Check the limit of your bow maker.`,

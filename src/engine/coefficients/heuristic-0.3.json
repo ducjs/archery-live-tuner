@@ -1,5 +1,5 @@
 {
-  "version": "heuristic-0.2",
+  "version": "heuristic-0.3",
   "reference": {
     "drawWeight": 169.03242137989898,
     "drawLength": 711.1999999999999,
@@ -45,6 +45,7 @@
     "weakExtra": 0.15,
     "perMmCenterShot": 0.05,
     "perMmPreloadOffset": 0.05,
+    "perMmLimbTwist": 0.04,
     "bowInertia": 0.08,
     "baseDecay": 12,
     "decayPerGrainFletching": 2,
@@ -80,7 +81,8 @@
     "looseNock": -0.03,
     "lowBrace": 0.6,
     "vertical": 0.1,
-    "perMmDiameter": 0.03
+    "perMmDiameter": 0.03,
+    "perMmLimbTwist": 0.04
   },
   "energy": {
     "drawCurveFactor": 1.14,

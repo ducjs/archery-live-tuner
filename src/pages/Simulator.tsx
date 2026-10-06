@@ -317,6 +317,8 @@ export function Simulator() {
                     comparison={bareShaft ? comparison : undefined}
                     handedness={setup.bow.handedness}
                     advanced={advanced}
+                    braceHeight={setup.bow.braceHeight}
+                    centerShot={setup.bow.centerShot}
                   />
                 </div>
                 <div className={`lg:mt-5 lg:block ${shownSection === 'advice' ? '' : 'hidden'}`}>

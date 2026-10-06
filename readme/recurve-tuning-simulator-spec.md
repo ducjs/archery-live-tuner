@@ -239,6 +239,20 @@ Unit: mm or cm.
 
 Influences launch timing and bow behavior.
 
+### Bow size
+Riser: `H23`, `H25` or `H27`, the length of the riser in inches. Limbs: `66`, `68` or `70`, as limbs are marked, which is the length of the bow they make on a 25 in riser (short, medium, long).
+
+```text
+bow length = limbs + (riser − 25)        H25 + 68 = 68 in, H23 + 68 = 66 in, H27 + 70 = 72 in
+```
+
+Both are Simple values and have a section of their own, "Bow size", above everything else: the rest is set on a bow of this size. The bow length sets the brace height range that Easton recommends, 8 1/4 to 9 1/2 in for 68 in and 1/8 in more per inch of bow, and with it what counts as a low brace height for clearance. The result says when the brace height entered is outside that range. Bow size does not move weak and stiff: there is no source here for how much it would.
+
+### Limb alignment
+Unit: mm, one value per limb: how far the limb tip sits to the side of the riser's centerline. Negative is left, positive is right, as for center shot. Default 0. Advanced.
+
+When both tips sit to one side, the string sits there too, while the rest stays on the riser. The arrow turns about its nock and its point ends up on the other side of the string line, by the limb error times arrow length over brace height (about three times). The model takes that as center shot, and the result says how much it adds. When the tips sit apart, the string plane is twisted: the model adds oscillation and clearance risk, but no left or right, since the direction is not known. In reality this is a fault to remove, not a value to tune; it is in the simulator to show what it does.
+
 ### Tiller
 Unit: mm.
 
