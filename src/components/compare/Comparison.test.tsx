@@ -3,11 +3,13 @@ import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import App from '../../App.tsx'
+import { heuristicModel } from '../../engine/simulation/simulate.ts'
 import { getParameter, setValue } from '../../models/parameters.ts'
 import { createDefaultSetup, type TuningSetup } from '../../models/setup.ts'
 import { useLibraryStore } from '../../state/libraryStore.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
 import { createLocalStorageRepository } from '../../storage/localStorageRepository.ts'
+import { ComparisonTable } from './Comparison.tsx'
 
 const withSpine = (name: string, spine: number): TuningSetup => ({
   ...setValue(createDefaultSetup(name), getParameter('arrow.spine'), spine),
@@ -124,5 +126,40 @@ describe('comparing more than two setups', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Compare: Matched shafts' }))
     await userEvent.click(check('Twin'))
     expect(screen.getByText('All of these setups have the same values.')).toBeTruthy()
+  })
+})
+
+describe('the draw force curves of the compared setups', () => {
+  it('draws the draw force curves of all sides on one chart', () => {
+    const saved = createDefaultSetup('Before')
+    const now = setValue(saved, getParameter('bow.drawCurve'), 'FULL')
+    render(
+      <ComparisonTable
+        saved={[{ setup: saved, result: heuristicModel.simulate(saved) }]}
+        now={{ setup: now, result: heuristicModel.simulate(now) }}
+        units="archery"
+      />,
+    )
+    expect(screen.getByRole('heading', { name: 'Draw force curve' })).toBeTruthy()
+    expect(screen.getByRole('img').querySelectorAll('polyline')).toHaveLength(2)
+    const energy = screen.getByRole('row', { name: /Stored in the bow/ })
+    const values = [...energy.querySelectorAll('td')].map((cell) => cell.textContent)
+    expect(values).toHaveLength(2)
+    expect(Number.parseFloat(values[1]!)).toBeGreaterThan(Number.parseFloat(values[0]!))
+  })
+
+  it('keeps the clicker label readable where a dashed curve runs behind it', () => {
+    const heavy = createDefaultSetup('Heavier')
+    const now = setValue(heavy, getParameter('bow.drawWeight'), 200)
+    render(
+      <ComparisonTable
+        saved={[{ setup: heavy, result: heuristicModel.simulate(heavy) }]}
+        now={{ setup: now, result: heuristicModel.simulate(now) }}
+        units="archery"
+      />,
+    )
+    const label = screen.getByText('Clicker')
+    expect(label.getAttribute('paint-order')).toBe('stroke')
+    expect(label.getAttribute('stroke')).toBeTruthy()
   })
 })

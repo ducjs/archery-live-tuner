@@ -1,10 +1,14 @@
+import { shapeOf } from '../../engine/index.ts'
 import { parameterText } from '../../i18n/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import { PARAMETERS, formatValue, getValue, type UnitSystem } from '../../models/parameters.ts'
 import type { TuningSetup } from '../../models/setup.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
+import { convert, unitLabel } from '../../utils/units.ts'
 import { FlightView } from '../simulation/SimulationStage.tsx'
 import type { ImpactMode } from '../simulation/timing.ts'
+import { DrawCurveChart } from '../tuning/DrawCurveChart.tsx'
+import { curveUnits } from '../tuning/drawCurveReading.ts'
 
 /** One side of a comparison: a setup and what the model makes of it. */
 export type Compared = {
@@ -112,12 +116,24 @@ export function ComparisonTable({ saved, now, units }: TableProps) {
 
   const speed = (result: SimulationResult) =>
     `${(result.metrics.launchSpeed / 1000).toFixed(1)} m/s`
+  const { length, force } = curveUnits(units)
+  const gain = (result: SimulationResult) =>
+    m.curve.perLength(
+      (convert(result.metrics.clickerGain, 'N', force) * convert(1, length, 'mm')).toFixed(1),
+      unitLabel(force),
+      unitLabel(length),
+    )
   const results: Row[] = [
     ...RATED.map((key) => ({
       label: m.result[key],
       values: sides.map((side) => m.rating[side.result.classification[key]]),
     })),
     { label: m.result.speed, values: sides.map((side) => speed(side.result)) },
+    {
+      label: m.curve.storedEnergy,
+      values: sides.map((side) => `${side.result.metrics.storedEnergy.toFixed(1)} J`),
+    },
+    { label: m.curve.gain, values: sides.map((side) => gain(side.result)) },
   ]
 
   // Two setups are "saved" and "now"; more than two need their names.
@@ -166,6 +182,18 @@ export function ComparisonTable({ saved, now, units }: TableProps) {
           <Rows rows={results} />
         </table>
       </div>
+      <h2 className="font-display mt-6 text-xl font-semibold">{m.curve.heading}</h2>
+      <div className="mt-2">
+        <DrawCurveChart
+          curves={sides.map((side) => ({
+            name: side.setup.name,
+            bow: side.setup.bow,
+            shape: shapeOf(side.result.metrics),
+          }))}
+          units={units}
+        />
+      </div>
+      <p className="text-ink-muted mt-1 max-w-prose text-sm">{m.curve.compared}</p>
       <p className="text-ink-muted mt-3 max-w-prose text-sm">
         {several ? m.compare.noteAll : m.compare.note}
       </p>

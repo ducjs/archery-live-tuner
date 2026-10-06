@@ -137,6 +137,7 @@ export const en = {
   },
 
   curve: {
+    compared: 'The solid line is the setup on screen; dashed lines are the saved ones.',
     heading: 'Draw force curve',
     chart: (weight: string, length: string) =>
       `Force on the fingers over the draw, reaching ${weight} at ${length}.`,

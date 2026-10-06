@@ -460,7 +460,7 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Tự đo: nhập lực ở một hoặc hai chỗ kéo ngắn hơn, đọc từ cân cung. Số đo thay cho ước lượng và được lưu cùng setup',
           ),
-          todo(
+          done(
             'Đồ thị đường lực kéo, kèm năng lượng tích và lực tăng mỗi inch ở clicker; khi so sánh hai setup thì vẽ hai đường',
           ),
           todo(

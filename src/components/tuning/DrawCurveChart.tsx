@@ -121,6 +121,10 @@ export function DrawCurveChart({ curves, units }: Props) {
         fontSize="11"
         className="text-accent"
         fill="currentColor"
+        stroke="var(--color-surface)"
+        strokeWidth="3"
+        strokeLinejoin="round"
+        paintOrder="stroke"
       >
         {m.curve.clicker}
       </text>

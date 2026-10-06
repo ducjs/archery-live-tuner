@@ -186,6 +186,7 @@ export const vi: Messages = {
   },
 
   curve: {
+    compared: 'Nét liền là setup đang mở; nét đứt là các setup đã lưu.',
     heading: 'Đường lực kéo',
     chart: (weight: string, length: string) =>
       `Lực trên ngón tay trong lúc kéo, đạt ${weight} ở ${length}.`,
