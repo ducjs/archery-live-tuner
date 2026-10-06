@@ -99,6 +99,11 @@ export const en = {
       'The bare shaft is weighted to match. Plunger and center shot move it sideways too, not only spine.',
     speed: 'Estimated speed',
     reaching: (metres: string) => `, reaching ${metres} m in`,
+    grainsPerPound: 'Grains per pound',
+    frontOfCenter: 'Front of center (FOC)',
+    energy: 'Kinetic energy',
+    tooLight: (grainsPerPound: string, minimum: number) =>
+      `This arrow is too light for the draw weight: ${grainsPerPound} gr/lb, under the ${minimum} gr/lb that bow makers commonly give as the minimum. A bow shot with too light an arrow is loaded almost as in a dry fire. Check the limit of your bow maker.`,
     note: 'These are tendencies from a simplified model that has not been checked against real shooting. Test on your own bow before changing equipment.',
   },
 

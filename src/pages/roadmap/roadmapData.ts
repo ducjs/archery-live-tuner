@@ -228,7 +228,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done('Tính tần số dao động của mũi tên từ độ cứng, khối lượng và chiều dài'),
           todo('Tính khả năng chạm cung theo nhịp dao động lúc tên rời dây'),
           done('Thông số dây cung có ảnh hưởng tới kết quả'),
-          todo('Chỉ số phụ: FOC, grains mỗi pound kèm cảnh báo, tốc độ ước lượng'),
+          done(
+            'Chỉ số phụ: FOC, grains mỗi pound kèm cảnh báo, tốc độ ước lượng. Con số hiện ở chế độ Nâng cao; cảnh báo tên dưới 5 gr/lb hiện ở cả hai chế độ',
+          ),
           done('Bài test ảo: bareshaft'),
           todo('Bài test ảo: xé giấy, walk-back'),
           todo('Đối chiếu với bảng spine của nhà sản xuất'),

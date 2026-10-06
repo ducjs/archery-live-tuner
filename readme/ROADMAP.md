@@ -160,7 +160,7 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 - [x] First bending mode frequency from `EI`, mass and length (end-mass correction is still heuristic)
 - [ ] Clearance from oscillation phase vs time on string (§34.2)
 - [x] String parameters feed the model (§5)
-- [ ] Derived metrics: FOC, grains per pound with warning, estimated speed (§34.4)
+- [x] Derived metrics: FOC, grains per pound with warning, estimated speed (§34.4). The numbers show in Advanced; the warning for an arrow under 5 gr/lb shows in both modes
 - [x] Virtual tuning test: bare shaft (done early in M5)
 - [ ] Virtual tuning tests: paper tear, walk-back (§34.3)
 - [ ] Spine chart sanity test (§25 Test 8)

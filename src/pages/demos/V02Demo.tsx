@@ -1,14 +1,13 @@
 import { useMemo } from 'react'
-import { heuristicModel } from '../../engine/index.ts'
+import { MIN_GRAINS_PER_POUND, heuristicModel } from '../../engine/index.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
 import { DemoCard, Fact } from './demoParts.tsx'
-import { frontOfCenter, grainsPerPound, kineticEnergy } from './logic/derived.ts'
 
 function DerivedDemo() {
   const setup = useTuningStore((state) => state.setup)
   const { metrics } = useMemo(() => heuristicModel.analyze(setup), [setup])
-  const gpp = grainsPerPound(setup.bow, setup.arrow)
-  const foc = frontOfCenter(setup.arrow)
+  const gpp = metrics.grainsPerPound
+  const foc = metrics.frontOfCenter
 
   return (
     <div className="grid gap-3">
@@ -16,11 +15,9 @@ function DerivedDemo() {
         <Fact label="Grains mỗi pound">{gpp.toFixed(1)} gr/lb</Fact>
         <Fact label="FOC (trọng tâm lệch về trước)">{foc.toFixed(1)} %</Fact>
         <Fact label="Tốc độ ước lượng">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</Fact>
-        <Fact label="Động năng">
-          {kineticEnergy(setup.arrow, metrics.launchSpeed).toFixed(1)} J
-        </Fact>
+        <Fact label="Động năng">{metrics.kineticEnergy.toFixed(1)} J</Fact>
       </dl>
-      {gpp < 6 && (
+      {gpp < MIN_GRAINS_PER_POUND && (
         <p
           role="status"
           className="border-weak bg-weak/10 max-w-prose rounded-md border-l-4 px-3 py-2"
@@ -202,7 +199,7 @@ export function V02Demo() {
       <DemoCard
         title="Chỉ số phụ"
         kind="model"
-        intro="Các con số người bắn hay hỏi, tính từ setup đang mở. Đổi point weight ở trang Simulator rồi quay lại để thấy số thay đổi."
+        intro="Các con số người bắn hay hỏi, tính từ setup đang mở. Phần này đã có trong bảng kết quả của trang Simulator: cảnh báo tên quá nhẹ hiện ở cả hai chế độ, các con số hiện ở chế độ Nâng cao."
       >
         <DerivedDemo />
       </DemoCard>

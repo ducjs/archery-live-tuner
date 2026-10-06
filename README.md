@@ -16,6 +16,7 @@ A web-based simulator for exploring how a recurve bow and arrow setup behaves wh
 - The shot from full draw: the string is drawn back, released on play, and pushes the arrow off the bow
 - Play, pause, a slider to jump to any moment, playback from 1/48 of real time up to real speed, and target distances from 18 m to 90 m
 - Model result: dynamic behavior, lateral and vertical tendency, oscillation, clearance sensitivity, bare shaft test
+- Grains per pound, front of center and kinetic energy in Advanced, and a warning when the arrow is too light for the bow
 - Tuning suggestions in two groups, adjustments on the bow and changes of equipment, each in order of priority and with a button to try it
 - Saved setups: save, open, rename, delete, save as new. They are kept in this browser, and the setup on screen survives a reload
 - Compare: the saved setup and the one on screen fly together, with a table of the values and model results that differ

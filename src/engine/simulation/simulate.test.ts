@@ -4,6 +4,7 @@ import { getParameter, setValue, type NumberParameter } from '../../models/param
 import { numberValueArbitrary, setupArbitrary } from '../../models/setup.arbitrary.ts'
 import { createDefaultSetup, type TuningSetup } from '../../models/setup.ts'
 import { convert } from '../../utils/units.ts'
+import { MIN_GRAINS_PER_POUND } from './derivedMetrics.ts'
 import { heuristicModel } from './simulate.ts'
 
 const reference = createDefaultSetup('Reference')
@@ -299,5 +300,33 @@ describe('trajectory', () => {
     })
     expect(far.trajectory[far.trajectory.length - 1]!.x).toBeCloseTo(70_000, 6)
     expect(far.trajectory.length).toBeLessThan(500)
+  })
+})
+
+describe('derived metrics', () => {
+  const { metrics } = heuristicModel.analyze(reference)
+
+  it('gives grains per pound, front of center and energy for the reference setup', () => {
+    expect(metrics.grainsPerPound).toBeCloseTo(308 / 38, 6)
+    // 162 gr shaft at the middle, 132 gr at the front, 9 gr at the back, 5 gr near the back.
+    expect(metrics.frontOfCenter).toBeCloseTo(((132 - 9 - 5 * 0.84) / 2 / 308) * 100, 6)
+    expect(metrics.kineticEnergy).toBeGreaterThan(25)
+    expect(metrics.kineticEnergy).toBeLessThan(45)
+  })
+
+  it('finds the reference arrow heavy enough for its bow', () => {
+    expect(metrics.grainsPerPound).toBeGreaterThan(MIN_GRAINS_PER_POUND)
+  })
+
+  it('moves the balance forward with a heavier point', () => {
+    const heavy = withDisplay(reference, 'arrow.pointWeight', 150)
+    expect(heuristicModel.analyze(heavy).metrics.frontOfCenter).toBeGreaterThan(
+      metrics.frontOfCenter,
+    )
+  })
+
+  it('counts fewer grains per pound on a heavier bow', () => {
+    const heavyBow = withDisplay(reference, 'bow.drawWeight', 48)
+    expect(heuristicModel.analyze(heavyBow).metrics.grainsPerPound).toBeCloseTo(308 / 48, 6)
   })
 })

@@ -10,6 +10,7 @@ import { clamp01 } from '../math/scalar.ts'
 import { bendingFrequency } from './arrowModel.ts'
 import { launchSpeed, powerStroke, relativeBowInertia, timeOnString } from './bowModel.ts'
 import { classify } from './classification.ts'
+import { frontOfCenter, grainsPerPound, kineticEnergy } from './derivedMetrics.ts'
 import { stiffnessMismatch } from './dynamicSpine.ts'
 import { plungerBehaviorShift, plungerLateralPush } from './plungerModel.ts'
 import {
@@ -118,6 +119,7 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     Math.log(Math.max(oscillation, c.oscillation.settledLevel) / c.oscillation.settledLevel) /
     oscillationDecay
 
+  const speed = launchSpeed(bow, arrow, c)
   const metrics: SimulationMetrics = {
     dynamicBehavior,
     flexAmplitude,
@@ -131,7 +133,10 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     pitch: -c.vertical.maxPitch * verticalTendency,
     stabilityTime,
     clearanceRisk,
-    launchSpeed: launchSpeed(bow, arrow, c),
+    launchSpeed: speed,
+    kineticEnergy: kineticEnergy(arrow, speed),
+    grainsPerPound: grainsPerPound(bow, arrow),
+    frontOfCenter: frontOfCenter(arrow),
   }
 
   return {

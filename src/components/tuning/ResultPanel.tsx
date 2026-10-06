@@ -1,4 +1,4 @@
-import { HEURISTIC_V0 } from '../../engine/index.ts'
+import { HEURISTIC_V0, MIN_GRAINS_PER_POUND } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { BareShaftComparison, SimulationResult } from '../../models/simulation.ts'
@@ -104,15 +104,24 @@ type ResultPanelProps = {
   /** Leave out to hide the bare shaft test. */
   comparison?: BareShaftComparison
   handedness: Handedness
+  /** Shows the numbers behind the ratings: grains per pound, front of center, energy. */
+  advanced?: boolean
 }
 
-export function ResultPanel({ result, comparison, handedness }: ResultPanelProps) {
+export function ResultPanel({
+  result,
+  comparison,
+  handedness,
+  advanced = false,
+}: ResultPanelProps) {
   const { metrics, classification } = result
   const thresholds = HEURISTIC_V0.thresholds
   const target = result.trajectory.at(-1)!
   const m = useMessages()
   const text = m.result
   const reading = comparison && bareShaftReading(comparison, handedness, m)
+  const grainsPerPound = metrics.grainsPerPound.toFixed(1)
+  const frontOfCenter = metrics.frontOfCenter.toFixed(1)
 
   return (
     <section aria-labelledby="result-heading" className="@container">
@@ -171,6 +180,30 @@ export function ResultPanel({ result, comparison, handedness }: ResultPanelProps
         <span className="text-ink-muted">{text.reaching((target.x / 1000).toFixed(0))}</span>{' '}
         <span className="font-semibold">{target.t.toFixed(2)} s</span>
       </p>
+      {advanced && (
+        <dl className="mt-3 grid max-w-md gap-1">
+          {(
+            [
+              [text.grainsPerPound, `${grainsPerPound} gr/lb`],
+              [text.frontOfCenter, `${frontOfCenter} %`],
+              [text.energy, `${metrics.kineticEnergy.toFixed(1)} J`],
+            ] as const
+          ).map(([label, value]) => (
+            <div key={label} className="flex items-baseline justify-between gap-3">
+              <dt className="text-ink-muted">{label}</dt>
+              <dd className="font-semibold">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {metrics.grainsPerPound < MIN_GRAINS_PER_POUND && (
+        <p
+          role="status"
+          className="border-weak bg-weak/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2"
+        >
+          {text.tooLight(grainsPerPound, MIN_GRAINS_PER_POUND)}
+        </p>
+      )}
       <p className="text-ink-muted mt-2 max-w-prose text-sm">{text.note}</p>
     </section>
   )

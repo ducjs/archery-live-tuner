@@ -7,7 +7,6 @@ import {
   type NumberParameter,
 } from '../../../models/parameters.ts'
 import { createDefaultSetup, type TuningSetup } from '../../../models/setup.ts'
-import { frontOfCenter, grainsPerPound, kineticEnergy } from './derived.ts'
 import {
   LANDSCAPE_POINTS,
   LANDSCAPE_SPINES,
@@ -25,22 +24,6 @@ function withDisplay(setup: TuningSetup, key: string, displayValue: number): Tun
   const parameter = getParameter(key) as NumberParameter
   return setValue(setup, parameter, fromDisplay(parameter, displayValue))
 }
-
-describe('derived metrics', () => {
-  it('computes grains per pound, front of center and energy for the reference setup', () => {
-    expect(grainsPerPound(reference.bow, reference.arrow)).toBeCloseTo(308 / 38, 6)
-    // 162 gr shaft at the middle, 132 gr at the front, 9 gr at the back, 5 gr near the back.
-    expect(frontOfCenter(reference.arrow)).toBeCloseTo(((132 - 9 - 5 * 0.84) / 2 / 308) * 100, 6)
-    const speed = heuristicModel.analyze(reference).metrics.launchSpeed
-    expect(kineticEnergy(reference.arrow, speed)).toBeGreaterThan(25)
-    expect(kineticEnergy(reference.arrow, speed)).toBeLessThan(45)
-  })
-
-  it('moves the balance forward with a heavier point', () => {
-    const heavy = withDisplay(reference, 'arrow.pointWeight', 150)
-    expect(frontOfCenter(heavy.arrow)).toBeGreaterThan(frontOfCenter(reference.arrow))
-  })
-})
 
 describe('landscape', () => {
   const grid = landscape(heuristicModel, reference)

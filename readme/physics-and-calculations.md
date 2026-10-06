@@ -256,6 +256,25 @@ clearanceRisk = clamp01(
   + 0.03 · (shaftDiameter − 4.2) )           mỗi mm
 ```
 
+### 7.7 Chỉ số phụ (§34.4)
+
+Số học thuần từ setup, không dùng hệ số ước chừng nào ngoài vận tốc.
+
+```text
+grains per pound = m_tổng (gr) / drawWeight (lb)
+
+FOC % = (điểm_cân_bằng − L/2) / L · 100
+điểm_cân_bằng = (m_thân · L/2 + m_trước · L + m_cánh · 0.08·L) / m_tổng
+        vị trí đo từ nock; nock đặt ở 0, cánh ở 8 % chiều dài
+
+động năng = ½ · m_tổng · v²                                    J
+```
+
+- Setup tham chiếu: 308 gr trên cung 38 lb là 8,1 gr/lb; FOC 19,3 %.
+- Dưới 5 gr/lb thì bảng kết quả hiện cảnh báo tên quá nhẹ, ở cả Cơ bản và Nâng cao. 5 gr/lb là mức tối thiểu theo AMO mà các hãng cung hay dẫn; chưa đối chiếu được với trang 17–32 của sách Easton vì bản đang có thiếu các trang đó.
+- Ba con số chỉ hiện ở chế độ Nâng cao.
+- FOC chưa có cảnh báo. Sách Easton ghi 7 tới 16 %, nhưng cách tính ở đây đặt cả point lẫn insert ở đúng đầu thân tên và không tính chiều dài point, nên ra số cao hơn cách đo của sách: setup tham chiếu đã là 19,3 %. So với khoảng của sách thì sẽ báo sai.
+
 ## 8. Phân loại
 
 | Kết quả | Chỉ số | Ngưỡng |
@@ -421,17 +440,7 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 
 ## 14. Tính toán ở trang "Xem trước"
 
-Các công thức dưới đây chỉ chạy trong demo (`src/pages/demos/logic/`), chưa thuộc engine.
-
-```text
-grains per pound = m_tổng (gr) / drawWeight (lb)
-
-FOC % = (điểm_cân_bằng − L/2) / L · 100
-điểm_cân_bằng = (m_thân · L/2 + m_trước · L + m_cánh · 0.08·L) / m_tổng
-        vị trí đo từ nock; nock đặt ở 0, cánh ở 8 % chiều dài
-
-động năng = ½ · m_tổng · v²                                    J
-```
+Các công thức dưới đây chỉ chạy trong demo (`src/pages/demos/logic/`), chưa thuộc engine. Chỉ số phụ (grains per pound, FOC, động năng) đã chuyển vào engine, xem mục 7.7.
 
 - Landscape: `dynamicBehavior` trên lưới spine 500..900 (bước 50) × point 80..140 gr (bước 10), các giá trị khác giữ nguyên.
 - Sensitivity: tăng từng thông số thêm 1/10 khoảng giới hạn của nó (giảm nếu hết chỗ tăng), ghi độ đổi của `dynamicBehavior`, bỏ mức dưới 0.005, xếp theo độ lớn.
@@ -479,6 +488,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 | Spine cần thiết, mismatch | `src/engine/simulation/dynamicSpine.ts` |
 | Plunger | `src/engine/simulation/plungerModel.ts` |
 | Các chỉ số, bare shaft | `src/engine/simulation/simulate.ts` |
+| Grains per pound, FOC, động năng | `src/engine/simulation/derivedMetrics.ts` |
 | Ngưỡng phân loại | `src/engine/simulation/classification.ts` |
 | Đường bay | `src/engine/simulation/trajectory.ts` |
 | Gợi ý | `src/engine/recommendation/suggest.ts` |

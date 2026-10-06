@@ -48,6 +48,12 @@ export type SimulationMetrics = {
   clearanceRisk: number
   /** mm/s, estimated */
   launchSpeed: number
+  /** J, of the arrow at that speed */
+  kineticEnergy: number
+  /** gr/lb, arrow mass per pound of draw weight */
+  grainsPerPound: number
+  /** %, how far the balance point sits ahead of the middle of the shaft */
+  frontOfCenter: number
 }
 
 /**

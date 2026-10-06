@@ -121,6 +121,11 @@ export const vi: Messages = {
       'Bareshaft được thêm tạ cho bằng khối lượng tên có cánh. Plunger và center shot cũng đẩy nó sang ngang, không riêng gì spine.',
     speed: 'Tốc độ ước tính',
     reaching: (metres) => `, tới bia ${metres} m sau`,
+    grainsPerPound: 'Grains mỗi pound',
+    frontOfCenter: 'FOC (trọng tâm lệch về trước)',
+    energy: 'Động năng',
+    tooLight: (grainsPerPound, minimum) =>
+      `Mũi tên này quá nhẹ so với lực kéo: ${grainsPerPound} gr/lb, dưới mức ${minimum} gr/lb mà các hãng cung thường đặt làm tối thiểu. Bắn tên quá nhẹ thì cung chịu tải gần như bắn khan. Hãy xem giới hạn của hãng làm cung.`,
     note: 'Đây là xu hướng từ một mô hình đơn giản hoá, chưa được đối chiếu với bắn thật. Hãy thử trên cung của bạn trước khi đổi thiết bị.',
   },
 

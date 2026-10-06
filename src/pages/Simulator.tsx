@@ -237,6 +237,7 @@ export function Simulator() {
                   result={result}
                   comparison={bareShaft ? comparison : undefined}
                   handedness={setup.bow.handedness}
+                  advanced={advanced}
                 />
                 <div className="mt-5">
                   <TuningSuggestions
