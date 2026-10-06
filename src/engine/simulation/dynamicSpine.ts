@@ -1,6 +1,6 @@
 import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
-import type { Coefficients } from '../coefficients/heuristicV0.ts'
+import type { Coefficients } from '../coefficients/coefficients.ts'
 import { frontMass, tailMass } from './arrowModel.ts'
 
 /**

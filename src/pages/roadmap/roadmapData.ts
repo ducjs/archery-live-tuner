@@ -221,7 +221,9 @@ export const ROADMAP: RoadmapPhase[] = [
     groups: [
       {
         items: [
-          todo('Tách hệ số ra file riêng có số phiên bản'),
+          done(
+            'Tách hệ số ra file JSON riêng có số phiên bản; file thiếu hoặc sai số nào thì bị từ chối khi nạp',
+          ),
           done('Tính độ cứng thật của thân tên từ chỉ số spine'),
           done('Tính tần số dao động của mũi tên từ độ cứng, khối lượng và chiều dài'),
           todo('Tính khả năng chạm cung theo nhịp dao động lúc tên rời dây'),

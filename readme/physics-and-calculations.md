@@ -416,7 +416,6 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 - Tốc độ tắt của rung uốn (14 /s) và tần số lắc đuôi (6 Hz) là hằng số, không phụ thuộc setup.
 - Độ trôi ngang và dọc tuyến tính theo khoảng cách và không có đơn vị thật.
 - Không mô hình hóa người bắn: release, tay cầm cung, collapse (§7, §37).
-- Hệ số còn nằm trong code (`heuristicV0.ts`), chưa chuyển sang JSON có phiên bản (§34.7).
 - Chưa đối chiếu với bảng spine của nhà sản xuất (§25 Test 8).
 - Vài điểm còn lệch với tài liệu tuning (vị trí center shot trung tính, nocking point khởi đầu), ghi ở [tuning-references.md](tuning-references.md).
 
@@ -472,7 +471,8 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 
 | Nội dung | File |
 |---|---|
-| Mọi hệ số và ngưỡng | `src/engine/coefficients/heuristicV0.ts` |
+| Mọi hệ số và ngưỡng (con số) | `src/engine/coefficients/heuristic-0.1.json` |
+| Ý nghĩa từng hệ số, kiểm tra file khi nạp | `src/engine/coefficients/coefficients.ts` |
 | Khối lượng tên | `src/models/arrow.ts` |
 | `EI`, tần số uốn | `src/engine/simulation/arrowModel.ts` |
 | Năng lượng, vận tốc, quán tính cung | `src/engine/simulation/bowModel.ts` |

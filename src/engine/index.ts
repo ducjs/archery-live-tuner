@@ -1,4 +1,4 @@
-export { HEURISTIC_V0, type Coefficients } from './coefficients/heuristicV0.ts'
+export { HEURISTIC_V0, parseCoefficients, type Coefficients } from './coefficients/coefficients.ts'
 export {
   suggestTuning,
   suggestionGroup,

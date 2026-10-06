@@ -1,0 +1,97 @@
+{
+  "version": "heuristic-0.1",
+  "reference": {
+    "drawWeight": 169.03242137989898,
+    "drawLength": 711.1999999999999,
+    "braceHeight": 220,
+    "arrowLength": 685.8,
+    "spine": 700,
+    "frontMass": 8.55345612,
+    "tailMass": 0.90718474,
+    "stringMass": 6.80388555,
+    "strandCount": 16,
+    "plungerStiffness": 1,
+    "plungerPreload": 1,
+    "nockingPointHeight": 4,
+    "tiller": 4,
+    "shaftDiameter": 4.2,
+    "bowMass": 3000,
+    "stabilizerMass": 250,
+    "stabilizerPosition": 700
+  },
+  "requiredSpine": {
+    "drawWeight": 1,
+    "drawLength": 0.72,
+    "braceHeight": 0.3,
+    "arrowLength": 2.5,
+    "frontMass": 0.3,
+    "tailMass": -0.02,
+    "stringMass": -0.2,
+    "strandCount": -0.05
+  },
+  "behavior": {
+    "gain": 3,
+    "plungerShift": 0.08
+  },
+  "flex": {
+    "neutralAmplitude": 0.4,
+    "mismatchGain": 1.2,
+    "decay": 14,
+    "endMassFactor": 2
+  },
+  "oscillation": {
+    "base": 0.2,
+    "mismatch": 0.55,
+    "weakExtra": 0.15,
+    "perMmCenterShot": 0.05,
+    "perMmPreloadOffset": 0.05,
+    "bowInertia": 0.08,
+    "baseDecay": 12,
+    "decayPerGrainFletching": 2,
+    "fishtailFrequency": 6,
+    "settledLevel": 0.05
+  },
+  "lateral": {
+    "behavior": 0.9,
+    "perMmCenterShot": 0.25,
+    "perMmPreload": 0.15,
+    "maxYaw": 0.02,
+    "maxFishtail": 0.03,
+    "driftSlope": 0.008333333333333333
+  },
+  "vertical": {
+    "perMmNockingPoint": 0.25,
+    "perMmTiller": 0.08,
+    "maxPitch": 0.015,
+    "driftSlope": 0.005
+  },
+  "fletching": {
+    "maxCorrection": 0.6,
+    "correctionScale": 3.5
+  },
+  "clearance": {
+    "base": 0.15,
+    "mismatch": 0.5,
+    "perMmTowardRiser": 0.06,
+    "tightNock": 0.1,
+    "looseNock": -0.03,
+    "lowBrace": 0.6,
+    "vertical": 0.1,
+    "perMmDiameter": 0.03
+  },
+  "energy": {
+    "drawCurveFactor": 1.14,
+    "limbVirtualMass": 5.5,
+    "stringMassShare": 0.3333333333333333
+  },
+  "thresholds": {
+    "stiffnessNeutral": 0.2,
+    "lateralNeutral": 0.15,
+    "verticalNeutral": 0.15,
+    "bareShaftTogether": 0.05,
+    "oscillationMedium": 0.35,
+    "oscillationHigh": 0.65,
+    "clearanceMedium": 0.33,
+    "clearanceHigh": 0.66
+  }
+}

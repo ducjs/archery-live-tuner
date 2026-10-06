@@ -1412,6 +1412,8 @@ For the current setup, show which parameter moves the result the most (a tornado
 
 Keep all heuristic coefficients in a separate versioned JSON file, not in code. `SimulationResult.modelVersion` records which set produced a result. Calibration (section 18) then replaces a file, not the engine.
 
+As built: the numbers are in `src/engine/coefficients/heuristic-<version>.json`, in internal units, and `coefficients.ts` next to it says what each one means. `parseCoefficients` checks a set when it is loaded and refuses one with a missing, unknown or non-numeric entry. `createHeuristicModel` takes any set that passes.
+
 ## 34.8 Offline use
 
 Ship as a PWA so the simulator works at a range with no signal.

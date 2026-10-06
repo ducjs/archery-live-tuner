@@ -155,7 +155,7 @@ Goal: a user enters a setup, sees the arrow fly, changes a slider and sees the r
 
 Goal: replace the blind heuristic core with a cheap physical basis. UI changes are minimal.
 
-- [ ] Coefficients moved to versioned JSON, `modelVersion` in results (§34.7)
+- [x] Coefficients moved to versioned JSON, `modelVersion` in results (§34.7). The file is checked when it is loaded, so a calibrated set with a missing number is refused
 - [x] Bending stiffness `EI` from static spine (§34.1) (done early in M3, drives the animation frequency)
 - [x] First bending mode frequency from `EI`, mass and length (end-mass correction is still heuristic)
 - [ ] Clearance from oscillation phase vs time on string (§34.2)

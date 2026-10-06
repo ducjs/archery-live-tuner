@@ -1,5 +1,5 @@
 import type { BowSetup } from '../../models/bow.ts'
-import type { Coefficients } from '../coefficients/heuristicV0.ts'
+import type { Coefficients } from '../coefficients/coefficients.ts'
 
 /**
  * A stiffer plunger resists the arrow more, so the setup reads as stiffer.

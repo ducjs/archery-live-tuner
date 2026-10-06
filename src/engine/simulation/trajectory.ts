@@ -1,5 +1,5 @@
 import type { SimulationMetrics, TrajectoryPoint } from '../../models/simulation.ts'
-import type { Coefficients } from '../coefficients/heuristicV0.ts'
+import type { Coefficients } from '../coefficients/coefficients.ts'
 
 const GRAVITY = 9806.65 // mm/s²
 const MAX_POINTS = 5000

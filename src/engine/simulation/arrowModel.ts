@@ -1,5 +1,5 @@
 import { arrowShaftMass, type ArrowSetup } from '../../models/arrow.ts'
-import type { Coefficients } from '../coefficients/heuristicV0.ts'
+import type { Coefficients } from '../coefficients/coefficients.ts'
 
 // Static spine test: deflection in inches x 1000 of a shaft supported over 28 in
 // with a 1.94 lbf load at the center.

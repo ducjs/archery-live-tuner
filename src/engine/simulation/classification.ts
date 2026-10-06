@@ -1,5 +1,5 @@
 import type { SimulationMetrics, TuningClassification } from '../../models/simulation.ts'
-import type { Coefficients } from '../coefficients/heuristicV0.ts'
+import type { Coefficients } from '../coefficients/coefficients.ts'
 
 export function classify(
   metrics: SimulationMetrics,

@@ -1,6 +1,6 @@
 import { arrowTotalMass, type ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
-import type { Coefficients } from '../coefficients/heuristicV0.ts'
+import type { Coefficients } from '../coefficients/coefficients.ts'
 
 /** mm, distance over which the string accelerates the arrow */
 export function powerStroke(bow: BowSetup): number {

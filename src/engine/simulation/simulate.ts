@@ -5,7 +5,7 @@ import type {
   TuningClassification,
 } from '../../models/simulation.ts'
 import type { TuningSetup } from '../../models/setup.ts'
-import { HEURISTIC_V0, type Coefficients } from '../coefficients/heuristicV0.ts'
+import { HEURISTIC_V0, type Coefficients } from '../coefficients/coefficients.ts'
 import { clamp01 } from '../math/scalar.ts'
 import { bendingFrequency } from './arrowModel.ts'
 import { launchSpeed, powerStroke, relativeBowInertia, timeOnString } from './bowModel.ts'
