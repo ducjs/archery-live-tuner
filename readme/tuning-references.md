@@ -14,6 +14,9 @@ Bản gốc của các nguồn nằm trong thư mục `docs/` trên máy, không
 | Easton, cùng sách, bản in khác | Như trên | Trang 2–10 trên 32. Trùng nguồn trên |
 | *Basic Bow Tuning* (trang web, chưa rõ tác giả) | Vật liệu dây, brace height, nocking point | Khoảng 1,5 trên 15 trang |
 | Murray Elliot (biên tập), *Reference guide for recurve archers*, edition 5, 2002 | Thiết bị, dây, tên, tuning; có kèm "Tuning for Tens" của Rick Stonebraker | Đủ 68 trang nhưng chữ dính liền, chưa dùng được |
+| Jake Kaminski, video *Recurve Archery Draw Force Curves* (youtube.com/watch?v=teMO9oCl4YE) | Máy đo đường lực kéo tự chế; so ba mức limb rocker và hai mẫu limb | Ghi chú tóm tắt và transcript |
+| Jake Kaminski, video *Recurve Limbs Shootout: Wood vs Foam* | MXT-XP lõi foam và lõi gỗ, cùng 42 lb: vận tốc tên và đường lực kéo | Phụ đề của video |
+| Uukha, *Setup Your Bow* (uukha.com/en/setup-your-bow) | Tính lực kéo thật từ số ghi trên limb, draw length và vị trí limb bolt | Ghi chú về cách tính |
 
 Các bản đang có là trang nhúng Scribd lưu về, nên mất toàn bộ hình minh họa. Phần lớn nội dung bên dưới lấy từ sách Easton.
 
@@ -143,3 +146,46 @@ Brace height tốt nhất là chỗ cung êm và ít rung nhất. Từ 2026-10-0
 - Đều là hướng dẫn thực hành, không có số đo. Chúng xác nhận chiều và thứ tự, không xác nhận độ lớn của hệ số, trừ quy đổi brace height sang 20 gr point.
 - Sách Easton viết chung cho recurve và compound. Chỉ các phần ghi cho recurve finger release được dùng ở đây.
 - Sách xuất bản quanh năm 2000; thiết bị hiện nay có thể khác.
+
+## 8. Đường lực kéo (DFC)
+
+Thêm ngày 2026-10-06, lọc từ bộ ghi chú của một dự án cũ về thiết bị. Dự án đó có một bảng 65 mẫu limb với các cột mô tả đường lực kéo; bảng không được dùng ở đây, lý do ở mục 8.3. Thiết kế tính năng nằm ở spec §39.
+
+> **Nói đơn giản:** Đường lực kéo cho biết kéo tới đâu thì nặng bao nhiêu. Hai cây cung cùng số pound vẫn có thể khác nhau ở chỗ lực tăng nhanh hay chậm lúc gần clicker, và đó là thứ người bắn cảm thấy rõ nhất. Hình dạng đường này do hình học của cung quyết định, không do lõi foam hay gỗ.
+
+### 8.1 Điều dùng được
+
+| Điều | Dùng cho | Độ chắc |
+|---|---|---|
+| Năng lượng tích trong cung là diện tích dưới đường lực kéo | Vận tốc tên; thay cho hệ số cố định `drawCurveFactor` | Vật lý, chắc |
+| Người bắn cảm thấy độ dốc của lực ở cuối hành trình (lb mỗi inch), không phải số pound | Một chỉ số mới: lực tăng mỗi inch ở clicker | Chiều thì chắc; ngưỡng "dễ" hay "khó" chưa có nguồn |
+| Đường đầy ở giữa hành trình và đường dốc lên ở cuối là hai chuyện khác nhau. Loại đầu tích nhiều năng lượng mà vẫn dễ qua clicker; loại sau thì không | Hai số hình dạng tách rời nhau | Chắc |
+| Lực kéo thật đổi khoảng 5% mỗi inch draw length quanh 28 in (khoảng 2 lb mỗi inch với cung 40 lb) | Đổi số ghi trên limb ra lực trên ngón tay | Quy tắc quen dùng, chỉ là ước lượng |
+| Limb bolt đổi lực kéo khoảng ±5% quanh vị trí giữa | Như trên | Uukha ghi cho riser của họ; hãng khác thì là ước lượng |
+| Draw length AMO bằng khoảng cách từ nocking point tới pivot point của grip cộng 1,75 in | Hướng dẫn cách đo | Chuẩn AMO |
+| Chỉnh limb bolt làm đổi brace height và tiller | Lời nhắc trong gợi ý tuning | Hình học, chắc |
+| Dây giãn theo thời gian làm brace height trôi, kéo theo vị trí clicker trên đường lực kéo | Ghi chú nếu sau này có lựa chọn vật liệu dây | Chiều thì chắc |
+
+### 8.2 Số đo thật
+
+Chỉ có số đo của Jake Kaminski, vài mẫu, một người đo:
+
+- Đổi limb rocker trên Hoyt Xceed với limb Velos, giữ brace height và limb bolt: lệch khoảng 0,3 lb, đều trên cả đường cong. Hình dạng gần như không đổi.
+- Thay Velos bằng Uukha SX+: hình dạng khác rõ, SX+ có "bướu" ở giữa hành trình. Hai mẫu limb khác nhau về độ cong.
+- WIAWIS MXT-XP lõi foam và lõi gỗ, cùng mẫu, cùng 42 lb: 198,4 và 199 ft/s. Ông kết luận gần như không khác về số liệu; bản lõi gỗ hơi nặng tay hơn ở đầu hành trình.
+
+Rút ra: hình dạng đường lực kéo đi theo hình học của limb (độ cong, độ dài so với draw length), không đi theo vật liệu lõi. Vật liệu đổi khối lượng limb, độ chống xoắn, độ ổn định theo nhiệt độ và cảm giác rung.
+
+### 8.3 Điều không dùng
+
+- **Bảng limb theo mẫu.** Trong 65 dòng, các cột về đường lực kéo để trống ở 44 tới 46 dòng. Chỗ có điền là suy từ lời giới thiệu sản phẩm, không phải số đo. Đúng một dòng có vận tốc và năng lượng tích. Điểm tin cậy của bảng chấm theo số ô đã điền và tên miền của nguồn, nên một mẫu không có số đo nào vẫn được 9 trên 10.
+- **Đoán đường lực kéo từ lõi và vỏ.** Trái với số đo ở mục 8.2.
+- **"Brace height cao thì stack sớm hơn", "brace height thấp dễ tha lỗi clicker hơn".** Không có nguồn. Ý thứ hai ngược với điều thường được chấp nhận: brace height thấp thì tên nằm trên dây lâu hơn, nên lỗi của người bắn có thêm thời gian tác động.
+- **"Lực tụt nhanh sau clicker thì cần spine cứng hơn".** Suy đoán. Lực lớn nhất lên tên vẫn là lực ở full draw, thứ mô hình đã dùng cho spine cần thiết.
+- **Ngưỡng "stack index" 1,05 và 1,20, điểm "tính cách" của limb.** Tự đặt, không có số đo đứng sau.
+
+### 8.4 Còn mở
+
+- Hai nhận xét về brace height ở mục 8.3 bị loại theo lập luận, chưa đối chiếu với một nguồn nào.
+- Chưa có nguồn cho độ lớn của việc cung ngắn kéo dài thì dốc lên ở cuối. Cần số đo: của chủ dự án trên cung của mình (việc ghim trong ROADMAP), hoặc đường cong Kaminski công bố.
+- Mô hình tính power stroke bằng draw length trừ brace height. Nếu draw length nhập vào là AMO thì con số đó dài hơn thật 1,75 in. Chưa sửa; xem spec §39.7.
