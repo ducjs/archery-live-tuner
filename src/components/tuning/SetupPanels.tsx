@@ -188,7 +188,9 @@ function AssumedValues() {
   const m = useMessages()
   const [open, setOpen] = useState(false)
 
-  const hidden = PARAMETERS.filter((parameter) => parameter.tier === 'advanced')
+  const hidden = PARAMETERS.filter(
+    (parameter) => parameter.tier === 'advanced' && parameter.group !== 'curve',
+  )
   const shown = (parameter: Parameter) =>
     parameter.kind === 'enum'
       ? (parameterText(m, parameter).options?.[getValue(setup, parameter)] ??
@@ -286,6 +288,7 @@ export function SetupPanels() {
           </span>
         </p>
       </div>
+      {mode === 'advanced' && <ParameterPanel group="curve" title={m.panels.curve} />}
     </div>
   )
 }

@@ -4,7 +4,7 @@ import type { BowSetup } from './bow.ts'
 
 export type ParameterTier = 'simple' | 'advanced'
 /** `size` is the riser and the limbs: what the bow is, before anything on it is set. */
-export type ParameterGroup = 'size' | 'bow' | 'arrow'
+export type ParameterGroup = 'size' | 'bow' | 'arrow' | 'curve'
 
 type ParameterBase = {
   /** Path into the setup, e.g. `bow.string.strandCount`. Also the i18n key. */
@@ -66,15 +66,20 @@ const HINTS: Record<string, string> = {
   'bow.stabilizerPosition': 'How far in front of the riser the weight sits.',
   'bow.drawCurve':
     'An estimate of how the force builds up over the draw. Standard suits most recurve limbs.',
+  'bow.drawForceNear':
+    'Read from a bow scale, at the brace height of this setup. 0 means not measured.',
+  'bow.drawForceMid': 'A second reading, used only together with the first. 0 means not measured.',
   'arrow.length': 'Nock groove to the end of the shaft, without the point.',
   'arrow.spine': 'A lower number is a stiffer shaft.',
   'arrow.fletchingWeight': 'All vanes together.',
 }
 
 const SIZE_KEYS = ['bow.riserSize', 'bow.limbSize']
+const CURVE_KEYS = ['bow.drawForceNear', 'bow.drawForceMid']
 
 function groupOf(key: string): ParameterGroup {
   if (SIZE_KEYS.includes(key)) return 'size'
+  if (CURVE_KEYS.includes(key)) return 'curve'
   return key.startsWith('arrow.') ? 'arrow' : 'bow'
 }
 
@@ -242,6 +247,20 @@ export const PARAMETERS: readonly Parameter[] = [
     { STRAIGHT: 'Straight', STANDARD: 'Standard', FULL: 'Full in mid-draw' },
     'STANDARD',
   ),
+  num('bow.drawForceNear', 'advanced', 'Force 2 in before full draw', {
+    units: ['N', 'lbf'],
+    min: 0,
+    max: 80,
+    default: 0,
+    step: 0.5,
+  }),
+  num('bow.drawForceMid', 'advanced', 'Force 8 in before full draw', {
+    units: ['N', 'lbf'],
+    min: 0,
+    max: 80,
+    default: 0,
+    step: 0.5,
+  }),
 
   num('arrow.length', 'simple', 'Arrow length', {
     units: ['mm', 'in'],

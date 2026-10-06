@@ -137,6 +137,15 @@ lực tăng ở clicker = drawWeight / powerStroke · (1 − h + k)
 
 `k` (độ dốc cuối) không đổi năng lượng: số hạng của nó thêm bao nhiêu diện tích ở nửa đầu thì bớt bấy nhiêu ở nửa sau. Nó chỉ đổi lực tăng ở clicker. 0.39 làm setup tham chiếu tăng 5% lực kéo mỗi inch ở full draw; 0.10 mỗi inch là ước đoán về độ lớn, chưa có số đo. Chi tiết ở spec §39. `limbVirtualMass` là phần khối lượng của limb và dây cùng chuyển động với tên, nên ăn bớt năng lượng. Không có hệ số hiệu suất riêng.
 
+Khi người bắn nhập lực đo bằng cân cung, hai số `h` và `k` lấy từ số đo thay cho ước lượng. Với `L = F_đo / drawWeight − u` tại mỗi điểm:
+
+```text
+một điểm (trước full draw 2 in):   k = (L₁ − h·u₁(1−u₁)) / (u₁(1−u₁)(1−2u₁))      h giữ theo kiểu đường cong
+hai điểm (thêm trước full draw 8 in): giải hệ hai phương trình bậc nhất theo h và k
+```
+
+Số đo bị bỏ, và ước lượng được dùng lại, khi: điểm gần không nhỏ hơn lực kéo, điểm xa không nhỏ hơn điểm gần, `h` ra ngoài −0.3 … 0.9, hoặc đường cong không tăng suốt hành trình. Điểm xa nằm trước brace height thì không tính.
+
 ### 5.2 Quán tính của cung
 
 ```text

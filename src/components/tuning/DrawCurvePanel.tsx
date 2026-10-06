@@ -22,6 +22,11 @@ export function DrawCurvePanel({ setup, result, units }: Props) {
   // N per mm, shown as force per inch or per centimetre.
   const gain = convert(metrics.clickerGain, 'N', force) * convert(1, length, 'mm')
 
+  // Forces the archer entered. More of them than the curve used means some were refused.
+  const entered = [setup.bow.drawForceNear, setup.bow.drawForceMid].filter(
+    (newtons) => newtons > 0,
+  ).length
+
   return (
     <section aria-labelledby="draw-curve-heading" className="border-line mt-5 border-t pt-4">
       <h2 id="draw-curve-heading" className="font-display text-xl font-semibold">
@@ -46,7 +51,22 @@ export function DrawCurvePanel({ setup, result, units }: Props) {
         </div>
       </dl>
       <p className="mt-2 max-w-prose">{text.reading[gainReading(metrics, setup.bow.drawWeight)]}</p>
-      <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.estimated}</p>
+      {entered > metrics.curveMeasuredPoints && (
+        <p
+          role="status"
+          className="border-gold bg-gold/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2"
+        >
+          {text.notUsed}
+        </p>
+      )}
+      {metrics.curveMeasuredPoints === 0 ? (
+        <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.estimated}</p>
+      ) : (
+        <>
+          <p className="mt-1 max-w-prose text-sm">{text.measured(metrics.curveMeasuredPoints)}</p>
+          <p className="text-ink-muted max-w-prose text-sm">{text.measureAgain}</p>
+        </>
+      )}
     </section>
   )
 }

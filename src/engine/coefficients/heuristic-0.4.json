@@ -98,7 +98,11 @@
     "fitDrawLength": 711.2,
     "fitBowLength": 68,
     "usualGainPerInch": 0.05,
-    "usualGainBand": 0.01
+    "usualGainBand": 0.01,
+    "nearOffset": 50.8,
+    "midOffset": 203.2,
+    "fullnessMin": -0.3,
+    "fullnessMax": 0.9
   },
   "thresholds": {
     "stiffnessNeutral": 0.2,

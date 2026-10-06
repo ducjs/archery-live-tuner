@@ -54,6 +54,10 @@ export type BowSetup = {
   stabilizerPosition: number
   /** An estimate of the shape of the draw force curve */
   drawCurve: DrawCurveStyle
+  /** N, read from a bow scale 2 in before full draw. 0 when not measured */
+  drawForceNear: number
+  /** N, the same 8 in before full draw. 0 when not measured */
+  drawForceMid: number
   string: StringSetup
 }
 

@@ -61,6 +61,14 @@ describe('parseSetup', () => {
     expect(parseSetup(null).ok).toBe(false)
   })
 
+  it('opens a setup saved before measured forces existed', () => {
+    const current = createDefaultSetup()
+    const { drawForceNear: _near, drawForceMid: _mid, ...oldBow } = current.bow
+    const parsed = parseSetup({ ...current, bow: oldBow })
+    expect(parsed.ok && parsed.setup.bow.drawForceNear).toBe(0)
+    expect(parsed.ok && parsed.setup.bow.drawForceMid).toBe(0)
+  })
+
   it('drops unknown fields', () => {
     const result = parseSetup({ ...createDefaultSetup(), extra: 1 })
     expect(result.ok).toBe(true)

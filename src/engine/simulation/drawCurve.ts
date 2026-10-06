@@ -54,9 +54,54 @@ export function estimatedShape(bow: BowSetup, c: Coefficients): CurveShape {
   return { fullness, endRise, measuredPoints: 0 }
 }
 
-/** The curve the model uses for this bow. */
+/**
+ * The curve through the forces the archer read from a bow scale (spec §39.4):
+ * one point gives the end rise, two give the fullness as well. Null when
+ * nothing is measured, or when the points do not describe a bow.
+ */
+export function measuredShape(bow: BowSetup, c: Coefficients): CurveShape | null {
+  const d = c.drawCurve
+  const stroke = powerStroke(bow)
+  const near =
+    bow.drawForceNear > 0 ? { u: 1 - d.nearOffset / stroke, force: bow.drawForceNear } : null
+  if (!near || near.force >= bow.drawWeight) return null
+  // A second point that lies at or before brace height is not on the curve.
+  const midU = 1 - d.midOffset / stroke
+  const mid = bow.drawForceMid > 0 && midU > 0.05 ? { u: midU, force: bow.drawForceMid } : null
+  if (mid && mid.force >= near.force) return null
+
+  // What the point lies above the straight line, as a share of the draw weight.
+  const lift = (point: { u: number; force: number }) => point.force / bow.drawWeight - point.u
+  let shape: CurveShape
+  if (mid) {
+    // Two equations, linear in fullness and end rise.
+    const determinant = hump(near.u) * sway(mid.u) - hump(mid.u) * sway(near.u)
+    if (Math.abs(determinant) < 1e-9) return null
+    shape = {
+      fullness: (lift(near) * sway(mid.u) - lift(mid) * sway(near.u)) / determinant,
+      endRise: (hump(near.u) * lift(mid) - hump(mid.u) * lift(near)) / determinant,
+      measuredPoints: 2,
+    }
+  } else {
+    if (Math.abs(sway(near.u)) < 1e-9) return null
+    const { fullness } = estimatedShape(bow, c)
+    shape = {
+      fullness,
+      endRise: (lift(near) - fullness * hump(near.u)) / sway(near.u),
+      measuredPoints: 1,
+    }
+  }
+  const plausible =
+    Number.isFinite(shape.endRise) &&
+    shape.fullness >= d.fullnessMin &&
+    shape.fullness <= d.fullnessMax &&
+    rises(shape)
+  return plausible ? shape : null
+}
+
+/** The curve the model uses for this bow: the measured one where there is one. */
 export function drawCurve(bow: BowSetup, c: Coefficients): CurveShape {
-  return estimatedShape(bow, c)
+  return measuredShape(bow, c) ?? estimatedShape(bow, c)
 }
 
 /** N per mm, how fast the force on the fingers still rises at full draw. */

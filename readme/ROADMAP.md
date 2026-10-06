@@ -289,7 +289,7 @@ Why it matters: two bows of the same draw weight can store different energy and 
 - [x] A common curve from draw weight, draw length and brace height, with two shape numbers: fullness, which sets the stored energy, and end rise, which sets the force gain at the clicker (§39.2)
 - [x] Curve style in three steps (straight, standard, full in mid-draw), labelled as an estimate. It replaces the fixed `drawCurveFactor`; the standard style gives the same results as today
 - [x] End rise from how the bow length fits the draw length: a short bow drawn long climbs more steeply at the end (§39.3)
-- [ ] Own measurement: the force at one or two shorter draw lengths, read from a bow scale, replaces the estimate and is stored with the setup (§39.4)
+- [x] Own measurement: the force at one or two shorter draw lengths, read from a bow scale, replaces the estimate and is stored with the setup (§39.4)
 - [ ] The curve as a chart, with stored energy and the force gain per inch at the clicker; two curves in the comparison of setups
 - [ ] Helper from the draw weight marked on the limbs to the force on the fingers: 5% per inch from 28 in, limb bolts ±5%, shown as an estimate (§39.6)
 

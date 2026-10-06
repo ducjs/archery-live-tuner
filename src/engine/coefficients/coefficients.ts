@@ -190,6 +190,12 @@ export type Coefficients = {
     usualGainPerInch: number
     /** Half-width of what is still read as "about usual". */
     usualGainBand: number
+    /** mm before full draw at which the archer reads the bow scale: 2 in, and 8 in for the second point. */
+    nearOffset: number
+    midOffset: number
+    /** A measured fullness outside these is taken as a misreading, not as a bow. */
+    fullnessMin: number
+    fullnessMax: number
   }
 
   thresholds: {

@@ -55,6 +55,7 @@ export const en = {
     bowLength: (inches: number) => `${inches} in bow`,
     bow: 'Bow',
     arrow: 'Arrow',
+    curve: 'Draw force, measured',
     advancedChanged: (count: number) =>
       count === 1
         ? '1 advanced value is changed and still affects the result.'
@@ -152,6 +153,14 @@ export const en = {
     },
     estimated:
       'Estimated from the bow size and the curve style. This is not the curve of your limbs.',
+    measured: (points: number) =>
+      points === 1
+        ? 'Shaped by 1 force from your bow scale.'
+        : `Shaped by ${points} forces from your bow scale.`,
+    measureAgain:
+      'A measured force belongs to one draw weight, draw length and brace height. Measure again after changing any of them.',
+    notUsed:
+      'The forces entered do not fit a draw force curve, so the estimate is shown. The force 2 in before full draw must be below the draw weight, and the one 8 in before it lower still; the second is used only together with the first.',
   },
 
   bareShaft: {

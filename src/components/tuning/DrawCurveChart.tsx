@@ -1,4 +1,4 @@
-import { curvePoints } from '../../engine/index.ts'
+import { HEURISTIC_V0, curvePoints } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { BowSetup } from '../../models/bow.ts'
 import type { UnitSystem } from '../../models/parameters.ts'
@@ -89,6 +89,28 @@ export function DrawCurveChart({ curves, units }: Props) {
               strokeLinecap="round"
             />
             <circle cx={x(end.draw)} cy={y(end.force)} r={last ? 4 : 3} fill="currentColor" />
+            {last &&
+              curve.shape.measuredPoints > 0 &&
+              (
+                [
+                  [HEURISTIC_V0.drawCurve.nearOffset, curve.bow.drawForceNear],
+                  [HEURISTIC_V0.drawCurve.midOffset, curve.bow.drawForceMid],
+                ] as const
+              )
+                .slice(0, curve.shape.measuredPoints)
+                .map(([offset, newtons]) => (
+                  <circle
+                    key={offset}
+                    data-measured
+                    cx={x(curve.bow.drawLength - offset)}
+                    cy={y(newtons)}
+                    r="5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className="text-accent"
+                  />
+                ))}
           </g>
         )
       })}

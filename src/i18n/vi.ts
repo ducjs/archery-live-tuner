@@ -73,6 +73,14 @@ export const vi: Messages = {
       label: 'Độ khít nock',
       options: { LOOSE: 'Lỏng', NORMAL: 'Vừa', TIGHT: 'Chặt' },
     },
+    'bow.drawForceNear': {
+      label: 'Lực ở trước full draw 2 in',
+      hint: 'Đọc từ cân cung, ở đúng brace height của setup này. 0 nghĩa là chưa đo.',
+    },
+    'bow.drawForceMid': {
+      label: 'Lực ở trước full draw 8 in',
+      hint: 'Số đo thứ hai, chỉ dùng khi đã có số đo thứ nhất. 0 nghĩa là chưa đo.',
+    },
     'bow.drawCurve': {
       label: 'Đường lực kéo',
       hint: 'Ước lượng lực tăng thế nào trong lúc kéo. Mức chuẩn hợp với phần lớn limb recurve.',
@@ -99,6 +107,7 @@ export const vi: Messages = {
     bowLength: (inches) => `Cung dài ${inches} in`,
     bow: 'Cung',
     arrow: 'Tên',
+    curve: 'Lực kéo tự đo',
     advancedChanged: (count) => `${count} thông số nâng cao đã đổi và vẫn ảnh hưởng tới kết quả.`,
     showThem: 'Xem',
     resetThem: 'Đặt lại',
@@ -193,6 +202,11 @@ export const vi: Messages = {
     },
     estimated:
       'Ước lượng từ cỡ cung và kiểu đường cong. Đây không phải đường lực kéo của chính bộ limb của bạn.',
+    measured: (points: number) => `Dựng từ ${points} số đo trên cân cung của bạn.`,
+    measureAgain:
+      'Số đo chỉ đúng với một lực kéo, một draw length và một brace height. Đổi một trong ba thì phải đo lại.',
+    notUsed:
+      'Các số đo đã nhập không khớp với một đường lực kéo, nên đang hiện đường ước lượng. Lực ở trước full draw 2 in phải nhỏ hơn lực kéo, lực ở trước 8 in phải nhỏ hơn nữa; số đo thứ hai chỉ dùng khi đã có số đo thứ nhất.',
   },
 
   bareShaft: {

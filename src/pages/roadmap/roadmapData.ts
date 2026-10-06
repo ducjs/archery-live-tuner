@@ -457,7 +457,7 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Độ dốc cuối tính từ việc cung dài hay ngắn so với draw length: cung ngắn kéo dài thì cuối hành trình dốc hơn',
           ),
-          todo(
+          done(
             'Tự đo: nhập lực ở một hoặc hai chỗ kéo ngắn hơn, đọc từ cân cung. Số đo thay cho ước lượng và được lưu cùng setup',
           ),
           todo(

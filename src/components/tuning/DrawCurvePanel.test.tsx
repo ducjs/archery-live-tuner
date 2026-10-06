@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { heuristicModel } from '../../engine/index.ts'
+import { HEURISTIC_V0, heuristicModel } from '../../engine/index.ts'
 import { getParameter, setValue } from '../../models/parameters.ts'
 import { createDefaultSetup } from '../../models/setup.ts'
 import { DrawCurvePanel } from './DrawCurvePanel.tsx'
@@ -57,5 +57,43 @@ describe('draw force curve panel', () => {
     // A straight curve keeps climbing where a full one has flattened.
     const straight = setValue(reference, getParameter('bow.drawCurve'), 'STRAIGHT')
     expect(gainReading(heuristicModel.analyze(straight).metrics, weight)).toBe('STEEPER')
+  })
+})
+
+describe('with the archer’s own measurement', () => {
+  const c = HEURISTIC_V0.drawCurve
+  const stroke = reference.bow.drawLength - reference.bow.braceHeight
+  // Forces of a curve with fullness 0.3 and end rise 0.6, at the two places.
+  const force = (offset: number) => {
+    const u = 1 - offset / stroke
+    return reference.bow.drawWeight * (u + 0.3 * u * (1 - u) + 0.6 * u * (1 - u) * (1 - 2 * u))
+  }
+  const measured = (near: number, mid: number) => ({
+    ...reference,
+    bow: { ...reference.bow, drawForceNear: near, drawForceMid: mid },
+  })
+
+  it('says how many points shaped the curve, and marks them on the chart', () => {
+    show(measured(force(c.nearOffset), force(c.midOffset)))
+    expect(screen.getByText('Shaped by 2 forces from your bow scale.')).toBeTruthy()
+    expect(screen.queryByText(/Estimated from the bow size/)).toBeNull()
+    expect(screen.getByRole('img').querySelectorAll('circle[data-measured]')).toHaveLength(2)
+  })
+
+  it('reminds that a measurement belongs to one draw weight, draw length and brace height', () => {
+    show(measured(force(c.nearOffset), 0))
+    expect(screen.getByText('Shaped by 1 force from your bow scale.')).toBeTruthy()
+    expect(screen.getByText(/Measure again after changing/)).toBeTruthy()
+  })
+
+  it('says so when the forces entered are not used', () => {
+    show(measured(reference.bow.drawWeight + 5, 0))
+    expect(screen.getByRole('status').textContent).toMatch(/do not fit a draw force curve/)
+    expect(screen.getByText(/Estimated from the bow size/)).toBeTruthy()
+  })
+
+  it('says so when only the second force is entered', () => {
+    show(measured(0, force(c.midOffset)))
+    expect(screen.getByRole('status').textContent).toMatch(/do not fit a draw force curve/)
   })
 })

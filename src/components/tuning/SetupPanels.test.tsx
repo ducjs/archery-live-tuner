@@ -123,7 +123,9 @@ describe('SetupPanels', () => {
     expect(within(assumed).queryByText('Tiller')).toBeNull()
 
     await userEvent.click(within(assumed).getByRole('button', { name: 'See all of them' }))
-    for (const parameter of PARAMETERS.filter((parameter) => parameter.tier === 'advanced')) {
+    for (const parameter of PARAMETERS.filter(
+      (parameter) => parameter.tier === 'advanced' && parameter.group !== 'curve',
+    )) {
       expect(within(assumed).getByText(parameter.label), parameter.key).toBeTruthy()
     }
     expect(within(assumed).getByText('Normal')).toBeTruthy()

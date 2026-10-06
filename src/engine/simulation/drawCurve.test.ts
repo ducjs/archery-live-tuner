@@ -14,6 +14,7 @@ import {
   curveSlope,
   drawCurve,
   estimatedShape,
+  measuredShape,
   rises,
 } from './drawCurve.ts'
 
@@ -121,5 +122,75 @@ describe('estimate from the setup (§39.3)', () => {
         expect(storedEnergy(setup.bow, c)).toBeGreaterThan(0)
       }),
     )
+  })
+})
+
+describe('fit to measured forces (§39.4)', () => {
+  /** The reference bow with the forces a curve of this shape would give on a bow scale. */
+  function measuredOn(fullness: number, endRise: number, points: 1 | 2, bow = reference.bow) {
+    const stroke = powerStroke(bow)
+    const forceAt = (offset: number) =>
+      bow.drawWeight * curveForce(shape(fullness, endRise), 1 - offset / stroke)
+    return {
+      ...bow,
+      drawForceNear: forceAt(c.drawCurve.nearOffset),
+      drawForceMid: points === 2 ? forceAt(c.drawCurve.midOffset) : 0,
+    }
+  }
+
+  it('finds both numbers from two points', () => {
+    const curve = drawCurve(measuredOn(0.3, 0.6, 2), c)
+    expect(curve.measuredPoints).toBe(2)
+    expect(curve.fullness).toBeCloseTo(0.3, 9)
+    expect(curve.endRise).toBeCloseTo(0.6, 9)
+  })
+
+  it('finds the end rise from one point and keeps the fullness of the style', () => {
+    const curve = drawCurve(measuredOn(0.42, 0.7, 1), c)
+    expect(curve.measuredPoints).toBe(1)
+    expect(curve.fullness).toBe(0.42)
+    expect(curve.endRise).toBeCloseTo(0.7, 9)
+  })
+
+  it('moves the stored energy with a measured fullness', () => {
+    expect(storedEnergy(measuredOn(0.3, 0.6, 2), c)).toBeLessThan(storedEnergy(reference.bow, c))
+  })
+
+  it('has nothing to fit when nothing is measured', () => {
+    expect(measuredShape(reference.bow, c)).toBeNull()
+    expect(drawCurve(reference.bow, c).measuredPoints).toBe(0)
+  })
+
+  it('does not use a nearer point that is not below the draw weight', () => {
+    const bow = { ...reference.bow, drawForceNear: reference.bow.drawWeight }
+    expect(measuredShape(bow, c)).toBeNull()
+    expect(drawCurve(bow, c)).toEqual(estimatedShape(reference.bow, c))
+  })
+
+  it('does not use a farther point that is not below the nearer one', () => {
+    const good = measuredOn(0.3, 0.6, 2)
+    expect(measuredShape({ ...good, drawForceMid: good.drawForceNear }, c)).toBeNull()
+  })
+
+  it('does not use points that ask for a curve no bow has', () => {
+    const good = measuredOn(0.3, 0.6, 2)
+    // A farther point this light would need a curve far below a straight line.
+    expect(measuredShape({ ...good, drawForceMid: good.drawForceMid * 0.4 }, c)).toBeNull()
+    // And this heavy, a bulge beyond what limbs do.
+    expect(measuredShape({ ...good, drawForceMid: good.drawForceNear * 0.99 }, c)).toBeNull()
+  })
+
+  it('does not shape the curve from the farther point alone', () => {
+    const bow = { ...measuredOn(0.3, 0.6, 2), drawForceNear: 0 }
+    expect(measuredShape(bow, c)).toBeNull()
+  })
+
+  it('leaves out a farther point that lies before brace height', () => {
+    // 20 in of draw on a 30 cm brace height: a 208 mm power stroke.
+    const short = { ...reference.bow, drawLength: 508, braceHeight: 300 }
+    const curve = drawCurve(measuredOn(0.42, 0.39, 2, short), c)
+    expect(curve.measuredPoints).toBeLessThan(2)
+    expect(Number.isFinite(curve.fullness)).toBe(true)
+    expect(Number.isFinite(curve.endRise)).toBe(true)
   })
 })
