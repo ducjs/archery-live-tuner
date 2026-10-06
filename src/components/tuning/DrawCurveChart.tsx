@@ -121,7 +121,7 @@ export function DrawCurveChart({ curves, units }: Props) {
         fontSize="11"
         className="text-accent"
         fill="currentColor"
-        stroke="var(--color-surface)"
+        stroke="var(--color-paper)"
         strokeWidth="3"
         strokeLinejoin="round"
         paintOrder="stroke"

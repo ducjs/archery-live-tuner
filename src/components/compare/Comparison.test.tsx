@@ -160,6 +160,8 @@ describe('the draw force curves of the compared setups', () => {
     )
     const label = screen.getByText('Clicker')
     expect(label.getAttribute('paint-order')).toBe('stroke')
-    expect(label.getAttribute('stroke')).toBeTruthy()
+    // The chart sits on the page background, so the halo takes that color.
+    expect(label.getAttribute('stroke')).toBe('var(--color-paper)')
+    expect(label.getAttribute('stroke-width')).toBe('3')
   })
 })
