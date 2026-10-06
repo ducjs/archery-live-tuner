@@ -215,6 +215,7 @@ Status: built, in three rounds. Opened with "Show: Bow 3D" or `#3d` in the addre
 - [x] Parameters with nothing to show (draw weight, spine, shaft weight, plunger stiffness and others) are named in a note under the viewer, not faked
 - [x] Orbit, zoom, preset views: whole bow, from the target, from above, rest and plunger, and along the string, which is how limb alignment is checked
 - [x] Works on a phone, and falls back to the 2D views when WebGL is missing, with a line that says why
+- [x] Pressing a part of the bow goes to its value: the input scrolls into view, takes the focus and is marked for a moment. Advanced opens first if the value lives there (asked for by the owner on 2026-10-06)
 
 **Exit criteria:** the landscape renders without blocking slider interaction, a shared URL reproduces the exact same result on another device, and for every parameter in the 3D list a user can see which part moved and in which direction.
 

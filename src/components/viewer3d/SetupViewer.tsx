@@ -49,9 +49,11 @@ type BowViewerProps = {
   units: UnitSystem
   /** Shown in place of the 3D view where it cannot run: the flat drawings of the simulator. */
   fallback: ReactNode
+  /** Called with the key of the value that a pressed part of the bow stands for. */
+  onPick: (parameterKey: string) => void
 }
 
-export function BowViewer({ bow, arrow, viewer, units, fallback }: BowViewerProps) {
+export function BowViewer({ bow, arrow, viewer, units, fallback, onPick }: BowViewerProps) {
   const m = useMessages()
   const flat = (
     <div className="grid gap-2">
@@ -74,6 +76,7 @@ export function BowViewer({ bow, arrow, viewer, units, fallback }: BowViewerProp
             focus={viewer.focus}
             focusRequest={viewer.focusRequest}
             units={units}
+            onPick={onPick}
           />
         </Suspense>
       </SceneBoundary>

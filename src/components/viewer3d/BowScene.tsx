@@ -1,5 +1,5 @@
 import { Line, OrbitControls, RoundedBox } from '@react-three/drei'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import { CatmullRomCurve3, Quaternion, TubeGeometry, Vector3 } from 'three'
 import { useMessages } from '../../i18n/useMessages.ts'
@@ -28,6 +28,8 @@ type Props = {
   /** Changes whenever the camera should fly to `focus` again. */
   focusRequest: number
   units: UnitSystem
+  /** Called with the key of the value a pressed part stands for. */
+  onPick: (parameterKey: string) => void
 }
 
 type Palette = {
@@ -225,7 +227,30 @@ function LabelPins({ anchors }: { anchors: Anchor[] }) {
   return null
 }
 
-function Bow({ geometry, measured }: { geometry: BowGeometry; measured: Mark[] }) {
+type BowProps = {
+  geometry: BowGeometry
+  measured: Mark[]
+  /** Called with the key of the value a pressed part stands for. */
+  onPick: (parameterKey: string) => void
+}
+
+function Bow({ geometry, measured, onPick }: BowProps) {
+  // A part answers a press, not the end of a drag that turned the bow.
+  const pick = (parameterKey: string) => ({
+    onClick: (event: ThreeEvent<MouseEvent>) => {
+      if (event.delta > 4) return
+      // Only the part in front answers.
+      event.stopPropagation()
+      onPick(parameterKey)
+    },
+    onPointerOver: () => {
+      document.body.style.cursor = 'pointer'
+    },
+    onPointerOut: () => {
+      document.body.style.cursor = ''
+    },
+  })
+
   const palette = useMemo(() => readPalette(), [])
   const { side, stringX, stringZ, nock, point, atRest, shaftRadius, limbs, string } = geometry
   const { riser, pockets, longRod, sideRods, weightLength, plungerCollar } = geometry
@@ -248,132 +273,148 @@ function Bow({ geometry, measured }: { geometry: BowGeometry; measured: Mark[] }
 
   return (
     <group>
-      {/* Riser, with the grip on the archer's side and a pocket for each limb. */}
-      <RiserPart points={riser.lower} halfWidth={RISER_HALF_WIDTH} color={palette.muted} />
-      <RiserPart points={riser.upper} halfWidth={RISER_HALF_WIDTH} color={palette.muted} />
-      <RiserPart points={riser.bar} halfWidth={WINDOW_BAR_HALF_WIDTH} color={palette.muted} />
-      {/* The shelf under the arrow and the top of the window: where the bar meets the whole riser. */}
-      <RoundedBox
-        args={[riserDepth, 20, joinWidth]}
-        radius={6}
-        position={[shelf[0], shelf[1] - 8, joinZ]}
-      >
-        <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
-      </RoundedBox>
-      <RoundedBox
-        args={[riserDepth, 20, joinWidth]}
-        radius={6}
-        position={[lintel[0], lintel[1] + 8, joinZ]}
-      >
-        <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
-      </RoundedBox>
-      <group position={[-1, -74, 0]} rotation={[0, 0, 0.16]}>
-        <RoundedBox args={[30, 92, 31]} radius={12}>
-          <meshStandardMaterial color={palette.ink} roughness={0.85} />
+      <group {...pick('bow.riserSize')}>
+        {/* Riser, with the grip on the archer's side and a pocket for each limb. */}
+        <RiserPart points={riser.lower} halfWidth={RISER_HALF_WIDTH} color={palette.muted} />
+        <RiserPart points={riser.upper} halfWidth={RISER_HALF_WIDTH} color={palette.muted} />
+        <RiserPart points={riser.bar} halfWidth={WINDOW_BAR_HALF_WIDTH} color={palette.muted} />
+        {/* The shelf under the arrow and the top of the window: where the bar meets the whole riser. */}
+        <RoundedBox
+          args={[riserDepth, 20, joinWidth]}
+          radius={6}
+          position={[shelf[0], shelf[1] - 8, joinZ]}
+        >
+          <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
         </RoundedBox>
-      </group>
-      {pockets.map((pocket, index) => (
-        <group key={index} position={pocket} rotation={[0, 0, index === 0 ? -0.36 : 0.36]}>
-          <RoundedBox args={[30, 62, 42]} radius={6}>
-            <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
+        <RoundedBox
+          args={[riserDepth, 20, joinWidth]}
+          radius={6}
+          position={[lintel[0], lintel[1] + 8, joinZ]}
+        >
+          <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
+        </RoundedBox>
+        <group position={[-1, -74, 0]} rotation={[0, 0, 0.16]}>
+          <RoundedBox args={[30, 92, 31]} radius={12}>
+            <meshStandardMaterial color={palette.ink} roughness={0.85} />
           </RoundedBox>
-          {/* Limb bolt. */}
-          <mesh position={[17, index === 0 ? 10 : -10, 0]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[7, 7, 10, 16]} />
-            <meshStandardMaterial color={palette.gold} roughness={0.35} metalness={0.5} />
-          </mesh>
         </group>
-      ))}
-
-      <Limb points={upperLimb} color={palette.ink} />
-      <Limb points={lowerLimb} color={palette.ink} />
-      {/* The string, strand count and all, with the thicker center serving around the nock. */}
-      {string.slice(1).map((end, index) => (
+      </group>
+      <group {...pick('bow.tiller')}>
+        {pockets.map((pocket, index) => (
+          <group key={index} position={pocket} rotation={[0, 0, index === 0 ? -0.36 : 0.36]}>
+            <RoundedBox args={[30, 62, 42]} radius={6}>
+              <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
+            </RoundedBox>
+            {/* Limb bolt. */}
+            <mesh position={[17, index === 0 ? 10 : -10, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[7, 7, 10, 16]} />
+              <meshStandardMaterial color={palette.gold} roughness={0.35} metalness={0.5} />
+            </mesh>
+          </group>
+        ))}
+      </group>
+      <group {...pick('bow.limbSize')}>
+        <Limb points={upperLimb} color={palette.ink} />
+        <Limb points={lowerLimb} color={palette.ink} />
+      </group>
+      <group {...pick('bow.braceHeight')}>
+        {/* The string, strand count and all, with the thicker center serving around the nock. */}
+        {string.slice(1).map((end, index) => (
+          <Rod
+            key={index}
+            from={string[index]!}
+            to={end}
+            radius={geometry.stringRadius}
+            color={palette.ink}
+          />
+        ))}
         <Rod
-          key={index}
-          from={string[index]!}
-          to={end}
-          radius={geometry.stringRadius}
+          from={along(nock, string[1]!, 0.12)}
+          to={nock}
+          radius={geometry.stringRadius + 0.6}
+          color={palette.muted}
+        />
+        <Rod
+          from={nock}
+          to={along(nock, string[3]!, 0.12)}
+          radius={geometry.stringRadius + 0.6}
+          color={palette.muted}
+        />
+      </group>
+      <group {...pick('bow.stabilizerPosition')}>
+        {/* Long rod, with a damper and its weight at the far end. */}
+        <Rod from={longRod.from} to={longRod.to} radius={7} color={palette.ink} />
+        <Rod
+          from={longRod.to}
+          to={[longRod.to[0] + 14, longRod.to[1], 0]}
+          radius={10}
+          color={palette.accent}
+        />
+        <Rod
+          from={[longRod.to[0] + 14, longRod.to[1], 0]}
+          to={[longRod.to[0] + 14 + weightLength, longRod.to[1], 0]}
+          radius={13}
+          color={palette.muted}
+        />
+      </group>
+      <group {...pick('bow.stabilizerMass')}>
+        {/* V-bar on the long rod mount, and the two side rods with their weights. */}
+        <RoundedBox
+          args={[22, 20, 46]}
+          radius={5}
+          position={[longRod.from[0] + 8, longRod.from[1], 0]}
+        >
+          <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
+        </RoundedBox>
+        {sideRods.map((rod, index) => (
+          <group key={index}>
+            <Rod from={rod.from} to={rod.to} radius={6} color={palette.ink} />
+            <Rod
+              from={rod.to}
+              to={along(rod.from, rod.to, 1.12)}
+              radius={12}
+              color={palette.muted}
+            />
+          </group>
+        ))}
+      </group>
+      <group {...pick('bow.plungerStiffness')}>
+        {/* Plunger through the riser, touching the shaft. Rest wire under it. */}
+        <Rod
+          from={[plungerX, 0, outerZ + side * 8]}
+          to={[plungerX, 0, atRest[2] + side * radius]}
+          radius={3.2}
+          color={palette.gold}
+        />
+        {/* The barrel of the plunger, on the outside of the riser, and the collar that sets its preload. */}
+        <Rod
+          from={[plungerX, 0, outerZ]}
+          to={[plungerX, 0, outerZ + side * 34]}
+          radius={6}
+          color={palette.muted}
+        />
+        <Rod
+          from={[plungerX, 0, outerZ + side * plungerCollar]}
+          to={[plungerX, 0, outerZ + side * (6 + plungerCollar)]}
+          radius={8.5}
+          color={palette.gold}
+        />
+      </group>
+      <group {...pick('bow.centerShot')}>
+        {/* The rest: a wire out of the window wall, bent up under the shaft. */}
+        <Rod
+          from={[plungerX + 8, -radius - 1.2, windowZ]}
+          to={[plungerX + 8, -radius - 1.2, atRest[2] - side * 9]}
+          radius={1.1}
           color={palette.ink}
         />
-      ))}
-      <Rod
-        from={along(nock, string[1]!, 0.12)}
-        to={nock}
-        radius={geometry.stringRadius + 0.6}
-        color={palette.muted}
-      />
-      <Rod
-        from={nock}
-        to={along(nock, string[3]!, 0.12)}
-        radius={geometry.stringRadius + 0.6}
-        color={palette.muted}
-      />
-
-      {/* Long rod, with a damper and its weight at the far end. */}
-      <Rod from={longRod.from} to={longRod.to} radius={7} color={palette.ink} />
-      <Rod
-        from={longRod.to}
-        to={[longRod.to[0] + 14, longRod.to[1], 0]}
-        radius={10}
-        color={palette.accent}
-      />
-      <Rod
-        from={[longRod.to[0] + 14, longRod.to[1], 0]}
-        to={[longRod.to[0] + 14 + weightLength, longRod.to[1], 0]}
-        radius={13}
-        color={palette.muted}
-      />
-
-      {/* V-bar on the long rod mount, and the two side rods with their weights. */}
-      <RoundedBox
-        args={[22, 20, 46]}
-        radius={5}
-        position={[longRod.from[0] + 8, longRod.from[1], 0]}
-      >
-        <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
-      </RoundedBox>
-      {sideRods.map((rod, index) => (
-        <group key={index}>
-          <Rod from={rod.from} to={rod.to} radius={6} color={palette.ink} />
-          <Rod from={rod.to} to={along(rod.from, rod.to, 1.12)} radius={12} color={palette.muted} />
-        </group>
-      ))}
-
-      {/* Plunger through the riser, touching the shaft. Rest wire under it. */}
-      <Rod
-        from={[plungerX, 0, outerZ + side * 8]}
-        to={[plungerX, 0, atRest[2] + side * radius]}
-        radius={3.2}
-        color={palette.gold}
-      />
-      {/* The barrel of the plunger, on the outside of the riser, and the collar that sets its preload. */}
-      <Rod
-        from={[plungerX, 0, outerZ]}
-        to={[plungerX, 0, outerZ + side * 34]}
-        radius={6}
-        color={palette.muted}
-      />
-      <Rod
-        from={[plungerX, 0, outerZ + side * plungerCollar]}
-        to={[plungerX, 0, outerZ + side * (6 + plungerCollar)]}
-        radius={8.5}
-        color={palette.gold}
-      />
-      {/* The rest: a wire out of the window wall, bent up under the shaft. */}
-      <Rod
-        from={[plungerX + 8, -radius - 1.2, windowZ]}
-        to={[plungerX + 8, -radius - 1.2, atRest[2] - side * 9]}
-        radius={1.1}
-        color={palette.ink}
-      />
-      <Rod
-        from={[plungerX + 8, -radius - 1.2, atRest[2] - side * 9]}
-        to={[plungerX + 8, radius * 0.4, atRest[2] - side * 11]}
-        radius={1.1}
-        color={palette.ink}
-      />
-
+        <Rod
+          from={[plungerX + 8, -radius - 1.2, atRest[2] - side * 9]}
+          to={[plungerX + 8, radius * 0.4, atRest[2] - side * 11]}
+          radius={1.1}
+          color={palette.ink}
+        />
+      </group>
       {/* The reference: string line seen from above, square to the string seen from the side. */}
       <Line
         points={[
@@ -387,34 +428,41 @@ function Bow({ geometry, measured }: { geometry: BowGeometry; measured: Mark[] }
         gapSize={12}
       />
 
-      {/* Arrow: shaft, point, nock, three vanes. */}
-      <Rod from={nock} to={point} radius={radius} color={palette.ink} />
-      <Rod
-        from={point}
-        to={along(nock, point, 1 + geometry.pointLength / arrowLength)}
-        radius={radius * 1.3}
-        endRadius={0.2}
-        color={palette.muted}
-      />
-      <Rod from={along(nock, point, -0.015)} to={nock} radius={radius * 1.2} color={palette.weak} />
-      <Vanes
-        from={along(nock, point, 0.04)}
-        to={along(nock, point, 0.12)}
-        radius={radius}
-        color={palette.accent}
-      />
-
-      {/* Nocking point locators on the string. */}
-      {[-11, 5].map((offset) => (
+      <group {...pick('arrow.length')}>
+        {/* Arrow: shaft, point, nock, three vanes. */}
+        <Rod from={nock} to={point} radius={radius} color={palette.ink} />
         <Rod
-          key={offset}
-          from={[stringX, nock[1] + offset, stringZ]}
-          to={[stringX, nock[1] + offset + 6, stringZ]}
-          radius={2.2}
-          color={palette.gold}
+          from={point}
+          to={along(nock, point, 1 + geometry.pointLength / arrowLength)}
+          radius={radius * 1.3}
+          endRadius={0.2}
+          color={palette.muted}
         />
-      ))}
-
+        <Rod
+          from={along(nock, point, -0.015)}
+          to={nock}
+          radius={radius * 1.2}
+          color={palette.weak}
+        />
+        <Vanes
+          from={along(nock, point, 0.04)}
+          to={along(nock, point, 0.12)}
+          radius={radius}
+          color={palette.accent}
+        />
+      </group>
+      <group {...pick('bow.nockingPointHeight')}>
+        {/* Nocking point locators on the string. */}
+        {[-11, 5].map((offset) => (
+          <Rod
+            key={offset}
+            from={[stringX, nock[1] + offset, stringZ]}
+            to={[stringX, nock[1] + offset + 6, stringZ]}
+            radius={2.2}
+            color={palette.gold}
+          />
+        ))}
+      </group>
       {/* What this view measures, drawn where it is measured. */}
       {measured.map(
         (mark, index) =>
@@ -442,6 +490,7 @@ export default function BowScene({
   focus,
   focusRequest,
   units,
+  onPick,
 }: Props) {
   const m = useMessages()
   const geometry = useMemo(
@@ -494,7 +543,7 @@ export default function BowScene({
         <directionalLight position={[800, 1600, -1200 * side]} intensity={2.2} />
         <directionalLight position={[-900, -400, 900 * side]} intensity={0.7} />
         <directionalLight position={[-1600, 300, 0]} intensity={0.9} />
-        <Bow geometry={geometry} measured={measured} />
+        <Bow geometry={geometry} measured={measured} onPick={onPick} />
         <CameraRig focus={focus} focusRequest={focusRequest} geometry={geometry} />
         <LabelPins anchors={anchors} />
       </Canvas>

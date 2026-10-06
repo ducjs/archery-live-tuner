@@ -336,6 +336,9 @@ export const ROADMAP: RoadmapPhase[] = [
             'Xoay, zoom, năm góc nhìn có sẵn: cả cây cung, từ phía bia, từ trên xuống, rest và plunger, dọc theo dây (cách kiểm cánh có thẳng hàng không)',
           ),
           done('Chạy trên điện thoại; không có WebGL thì quay về hình 2D, có ghi rõ lý do'),
+          done(
+            'Bấm vào một bộ phận trên cung là tới thông số của nó: ô nhập cuộn vào tầm nhìn, nhận focus và được tô sáng một lúc',
+          ),
         ],
       },
     ],

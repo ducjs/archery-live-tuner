@@ -11,5 +11,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), offline()],
   test: {
     include: ['src/**/*.test.{ts,tsx}'],
+    // The tests that render the whole app take a second or two each, and more
+    // when every file runs at once; the default of five seconds was too close.
+    testTimeout: 20_000,
   },
 })

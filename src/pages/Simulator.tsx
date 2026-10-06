@@ -67,6 +67,7 @@ export function Simulator() {
   const mode = useTuningStore((state) => state.mode)
   const units = useTuningStore((state) => state.units)
   const setParameter = useTuningStore((state) => state.setParameter)
+  const pointTo = useTuningStore((state) => state.pointTo)
   const saved = useLibraryStore((state) => state.saved)
   const loadSaved = useLibraryStore((state) => state.load)
   const [bareShaft, setBareShaft] = useState(true)
@@ -184,6 +185,11 @@ export function Simulator() {
                 arrow={setup.arrow}
                 viewer={viewer}
                 units={units}
+                onPick={(key) => {
+                  // On a phone the inputs are a tab of their own.
+                  setSection('setup')
+                  pointTo(key)
+                }}
                 fallback={
                   <FlightView
                     view="both"

@@ -28,9 +28,16 @@ type TuningState = {
   setName: (name: string) => void
   /** Puts another setup on screen, replacing the current one. */
   openSetup: (setup: TuningSetup) => void
+  /** The input the page is pointing the user to. `request` goes up each time, even for the same one. */
+  highlighted: { key: string; request: number } | null
+  /** Points to the input of a value, showing Advanced first if that is where it lives. */
+  pointTo: (key: string) => void
+  clearHighlight: () => void
 }
 
 type Remembered = Pick<TuningState, 'setup' | 'mode' | 'language' | 'units'>
+
+let pointings = 0
 
 export const useTuningStore = create<TuningState>()(
   persist(
@@ -58,6 +65,16 @@ export const useTuningStore = create<TuningState>()(
         })),
       setName: (name) => set((state) => ({ setup: { ...state.setup, name } })),
       openSetup: (setup) => set({ setup }),
+      highlighted: null,
+      pointTo: (key) => {
+        // Counted outside the state, so the count goes on after a highlight is cleared.
+        pointings += 1
+        set((state) => ({
+          mode: getParameter(key).tier === 'advanced' ? 'advanced' : state.mode,
+          highlighted: { key, request: pointings },
+        }))
+      },
+      clearHighlight: () => set({ highlighted: null }),
     }),
     {
       name: 'tuner.ui',

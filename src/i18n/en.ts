@@ -281,7 +281,7 @@ export const en = {
     notDrawn:
       'Nothing to draw for draw weight, spine, shaft weight, plunger stiffness, string mass, nock fit, bow mass, or the weight of insert, nock and vanes: they change how the arrow flies, not where a part sits.',
     about:
-      'The bow follows the setup. Change a value and the camera goes to the part it moves, with the value written there. Drag to turn the bow, scroll or pinch to zoom. The dashed gold line is the string line from above and the line square to the string from the side. Offsets of a few millimetres are hard to see at true scale; the switch draws them larger. Labels always show real values. The bow is a simplified shape, not your equipment.',
+      'The bow follows the setup. Change a value and the camera goes to the part it moves, with the value written there. Press a part of the bow to go to its value. Drag to turn the bow, scroll or pinch to zoom. The dashed gold line is the string line from above and the line square to the string from the side. Offsets of a few millimetres are hard to see at true scale; the switch draws them larger. Labels always show real values. The bow is a simplified shape, not your equipment.',
     loading: 'Loading the 3D view.',
     failed:
       'The 3D view cannot run here: it needs WebGL, which this browser or device has turned off. These are the flat drawings instead.',

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, render, renderHook, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../../App.tsx'
 import { getParameter, setValue } from '../../models/parameters.ts'
 import { createDefaultSetup, type TuningSetup } from '../../models/setup.ts'
@@ -127,5 +127,62 @@ describe('the viewer in the page', () => {
     render(<App />)
     await userEvent.click(screen.getByRole('radio', { name: 'Bow 3D' }))
     expect(screen.getByText(/Nothing to draw for draw weight, spine/)).toBeTruthy()
+  })
+})
+
+describe('going from a part of the bow to its value', () => {
+  const pointTo = (key: string) => act(() => useTuningStore.getState().pointTo(key))
+  const marked = () =>
+    [...document.querySelectorAll('[data-highlighted]')].map(
+      (element) => element.querySelector('label, legend')?.textContent,
+    )
+
+  it('marks the input, gives it the focus and lets go of it after a moment', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    render(<App />)
+    pointTo('bow.braceHeight')
+    expect(marked()).toEqual(['Brace height'])
+    // The slider has the focus, so the arrow keys change the value at once.
+    expect(document.activeElement).toBe(screen.getByRole('slider', { name: 'Brace height slider' }))
+
+    act(() => vi.advanceTimersByTime(3000))
+    expect(marked()).toEqual([])
+    vi.useRealTimers()
+  })
+
+  it('shows Advanced first when the value lives there', () => {
+    render(<App />)
+    expect(screen.queryByRole('spinbutton', { name: 'Tiller' })).toBeNull()
+    pointTo('bow.tiller')
+    expect(useTuningStore.getState().mode).toBe('advanced')
+    expect(marked()).toEqual(['Tiller'])
+  })
+
+  it('leaves the mode alone for a value Simple shows', () => {
+    render(<App />)
+    pointTo('arrow.length')
+    expect(useTuningStore.getState().mode).toBe('simple')
+    expect(marked()).toEqual(['Arrow length'])
+  })
+
+  it('marks a choice as well as a slider', () => {
+    render(<App />)
+    pointTo('bow.riserSize')
+    expect(marked()).toEqual(['Riser'])
+    expect(document.activeElement).toBe(screen.getByRole('radio', { name: 'H25' }))
+  })
+
+  it('opens the group again if it was folded, every time', async () => {
+    render(<App />)
+    await userEvent.click(screen.getByRole('button', { name: 'Hide Arrow' }))
+    expect(screen.queryByRole('spinbutton', { name: 'Arrow length' })).toBeNull()
+
+    pointTo('arrow.length')
+    expect(screen.getByRole('spinbutton', { name: 'Arrow length' })).toBeTruthy()
+
+    act(() => useTuningStore.getState().clearHighlight())
+    await userEvent.click(screen.getByRole('button', { name: 'Hide Arrow' }))
+    pointTo('arrow.length')
+    expect(screen.getByRole('spinbutton', { name: 'Arrow length' })).toBeTruthy()
   })
 })

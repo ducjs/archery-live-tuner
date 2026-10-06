@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ParameterSlider } from '../common/ParameterSlider.tsx'
 import { SegmentedControl } from '../common/SegmentedControl.tsx'
 import { parameterText } from '../../i18n/index.ts'
@@ -21,6 +21,50 @@ import { convert } from '../../utils/units.ts'
 const linkButtonClass =
   'text-accent focus-visible:outline-accent min-h-11 cursor-pointer rounded-md px-1 font-medium underline underline-offset-4 focus-visible:outline-2'
 
+/** s, how long an input stays marked after the page has pointed to it */
+const HIGHLIGHT_SECONDS = 2.5
+
+/**
+ * Wraps the input of one value. When the page points to that value, as a press
+ * on a part of the 3D bow does, the input scrolls into view, takes the focus
+ * and is marked for a moment.
+ */
+function Highlightable({ parameterKey, children }: { parameterKey: string; children: ReactNode }) {
+  const highlighted = useTuningStore((state) => state.highlighted)
+  const clearHighlight = useTuningStore((state) => state.clearHighlight)
+  const element = useRef<HTMLDivElement>(null)
+  const active = highlighted?.key === parameterKey
+  const request = highlighted?.request
+
+  useEffect(() => {
+    if (!active) return
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    element.current?.scrollIntoView?.({
+      block: 'start',
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    })
+    // The slider, not the number field: on a phone that would open the keyboard.
+    const input =
+      element.current?.querySelector<HTMLElement>('input[type="range"]') ??
+      element.current?.querySelector<HTMLElement>('input:checked') ??
+      element.current?.querySelector<HTMLElement>('input')
+    input?.focus({ preventScroll: true })
+    const timer = setTimeout(clearHighlight, HIGHLIGHT_SECONDS * 1000)
+    return () => clearTimeout(timer)
+  }, [active, request, clearHighlight])
+
+  return (
+    <div
+      ref={element}
+      data-highlighted={active || undefined}
+      // Half the screen is left above it: on a phone the drawing stays there while scrolling.
+      className={`scroll-mt-[52vh] rounded-lg transition-[box-shadow,background-color] duration-300 motion-reduce:transition-none lg:scroll-mt-24 ${active ? 'bg-accent/10 ring-accent ring-2 ring-offset-4 ring-offset-transparent' : ''}`}
+    >
+      {children}
+    </div>
+  )
+}
+
 function ParameterPanel({ group, title }: { group: ParameterGroup; title: string }) {
   const setup = useTuningStore((state) => state.setup)
   const mode = useTuningStore((state) => state.mode)
@@ -30,6 +74,14 @@ function ParameterPanel({ group, title }: { group: ParameterGroup; title: string
   const [open, setOpen] = useState(true)
 
   const shown = visibleParameters(group, mode)
+
+  // A folded group opens when the page points to one of its values.
+  const highlighted = useTuningStore((state) => state.highlighted)
+  const [answered, setAnswered] = useState(highlighted?.request)
+  if (highlighted && highlighted.request !== answered) {
+    setAnswered(highlighted.request)
+    if (shown.some((parameter) => parameter.key === highlighted.key)) setOpen(true)
+  }
   const changed = modifiedParameters(setup).filter((parameter) => shown.includes(parameter)).length
 
   return (
@@ -69,28 +121,28 @@ function ParameterPanel({ group, title }: { group: ParameterGroup; title: string
         hidden={!open}
         className={`mt-2 grid gap-4 ${group === 'size' ? 'sm:grid-cols-2 lg:grid-cols-1' : ''}`}
       >
-        {shown.map((parameter) =>
-          parameter.kind === 'enum' ? (
-            <SegmentedControl
-              key={parameter.key}
-              label={parameterText(m, parameter).label}
-              options={parameter.options.map((option) => ({
-                value: option,
-                label: parameterText(m, parameter).options?.[option] ?? option,
-              }))}
-              value={getValue(setup, parameter)}
-              onChange={(value) => setParameter(parameter.key, value)}
-            />
-          ) : (
-            <ParameterSlider
-              key={parameter.key}
-              parameter={parameter}
-              value={getValue(setup, parameter)}
-              onChange={(value) => setParameter(parameter.key, value)}
-              onReset={() => resetParameter(parameter.key)}
-            />
-          ),
-        )}
+        {shown.map((parameter) => (
+          <Highlightable key={parameter.key} parameterKey={parameter.key}>
+            {parameter.kind === 'enum' ? (
+              <SegmentedControl
+                label={parameterText(m, parameter).label}
+                options={parameter.options.map((option) => ({
+                  value: option,
+                  label: parameterText(m, parameter).options?.[option] ?? option,
+                }))}
+                value={getValue(setup, parameter)}
+                onChange={(value) => setParameter(parameter.key, value)}
+              />
+            ) : (
+              <ParameterSlider
+                parameter={parameter}
+                value={getValue(setup, parameter)}
+                onChange={(value) => setParameter(parameter.key, value)}
+                onReset={() => resetParameter(parameter.key)}
+              />
+            )}
+          </Highlightable>
+        ))}
       </div>
     </section>
   )
