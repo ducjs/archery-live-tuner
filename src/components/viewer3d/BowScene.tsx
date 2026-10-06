@@ -7,7 +7,14 @@ import type { ArrowSetup } from '../../models/arrow.ts'
 import { bowLength, type BowSetup } from '../../models/bow.ts'
 import { formatValue, getParameter, getValue, type UnitSystem } from '../../models/parameters.ts'
 import { parameterText } from '../../i18n/index.ts'
-import { along, bowGeometry, type BowGeometry, type Vec3 } from './bowGeometry.ts'
+import {
+  RISER_HALF_WIDTH,
+  WINDOW_BAR_HALF_WIDTH,
+  along,
+  bowGeometry,
+  type BowGeometry,
+  type Vec3,
+} from './bowGeometry.ts'
 import { cameraShot, marks, type Focus, type Mark } from './cameraShots.ts'
 
 type Props = {
@@ -111,20 +118,29 @@ function Limb({ points, color }: { points: Vec3[]; color: string }) {
 /** Front to back, the riser is half again as deep as it is wide. */
 const RISER_DEPTH = 1.5
 
-function Riser({ points, color }: { points: Vec3[]; color: string }) {
+type RiserPartProps = {
+  points: Vec3[]
+  /** Half the width, side to side. */
+  halfWidth: number
+  color: string
+}
+
+/** A stretch of the riser: a tube along its centerline, deeper front to back than it is wide. */
+function RiserPart({ points, halfWidth, color }: RiserPartProps) {
+  const depth = (RISER_DEPTH * RISER_HALF_WIDTH) / halfWidth
   const geometry = useMemo(() => {
     // The tube is stretched front to back afterwards, so its path is narrowed first.
     const curve = new CatmullRomCurve3(
-      points.map(([x, y, z]) => new Vector3(x / RISER_DEPTH, y, z)),
+      points.map(([x, y, z]) => new Vector3(x / depth, y, z)),
       false,
       'catmullrom',
       0.35,
     )
-    return new TubeGeometry(curve, 96, 15, 14)
-  }, [points])
+    return new TubeGeometry(curve, 64, halfWidth, 14, false)
+  }, [points, halfWidth, depth])
   useEffect(() => () => geometry.dispose(), [geometry])
   return (
-    <mesh geometry={geometry} scale={[RISER_DEPTH, 1, 1]}>
+    <mesh geometry={geometry} scale={[depth, 1, 1]}>
       <meshStandardMaterial color={color} roughness={0.4} metalness={0.35} />
     </mesh>
   )
@@ -217,14 +233,40 @@ function Bow({ geometry, measured }: { geometry: BowGeometry; measured: Mark[] }
 
   // Drawn a little thicker than life, or the shaft vanishes at this size.
   const radius = shaftRadius * 1.4
+  // The plunger goes through the bar where the riser's centerline is, at the arrow's height.
+  const plungerX = riser.bar[1]![0]
   const arrowLength = Math.hypot(point[0] - nock[0], point[1] - nock[1], point[2] - nock[2])
-  // Z of the riser beside the arrow: the inner face of the sight window.
-  const windowZ = riser.find(([, y]) => y > 0)![2]
+  // The wall of the sight window, and the outer face of the bar that carries it.
+  const windowZ = riser.wall
+  const outerZ = riser.wall + side * 2 * WINDOW_BAR_HALF_WIDTH
+  // The window is closed below by the shelf and above where the riser is whole again.
+  const shelf = riser.lower.at(-1)!
+  const lintel = riser.upper[0]!
+  const joinWidth = RISER_HALF_WIDTH + Math.abs(outerZ)
+  const joinZ = (outerZ - side * RISER_HALF_WIDTH) / 2
+  const riserDepth = 2 * RISER_HALF_WIDTH * RISER_DEPTH
 
   return (
     <group>
       {/* Riser, with the grip on the archer's side and a pocket for each limb. */}
-      <Riser points={riser} color={palette.muted} />
+      <RiserPart points={riser.lower} halfWidth={RISER_HALF_WIDTH} color={palette.muted} />
+      <RiserPart points={riser.upper} halfWidth={RISER_HALF_WIDTH} color={palette.muted} />
+      <RiserPart points={riser.bar} halfWidth={WINDOW_BAR_HALF_WIDTH} color={palette.muted} />
+      {/* The shelf under the arrow and the top of the window: where the bar meets the whole riser. */}
+      <RoundedBox
+        args={[riserDepth, 20, joinWidth]}
+        radius={6}
+        position={[shelf[0], shelf[1] - 8, joinZ]}
+      >
+        <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
+      </RoundedBox>
+      <RoundedBox
+        args={[riserDepth, 20, joinWidth]}
+        radius={6}
+        position={[lintel[0], lintel[1] + 8, joinZ]}
+      >
+        <meshStandardMaterial color={palette.muted} roughness={0.4} metalness={0.35} />
+      </RoundedBox>
       <group position={[-1, -74, 0]} rotation={[0, 0, 0.16]}>
         <RoundedBox args={[30, 92, 31]} radius={12}>
           <meshStandardMaterial color={palette.ink} roughness={0.85} />
@@ -300,28 +342,35 @@ function Bow({ geometry, measured }: { geometry: BowGeometry; measured: Mark[] }
 
       {/* Plunger through the riser, touching the shaft. Rest wire under it. */}
       <Rod
-        from={[0, 0, windowZ + side * 30]}
-        to={[0, 0, atRest[2] + side * radius]}
+        from={[plungerX, 0, outerZ + side * 8]}
+        to={[plungerX, 0, atRest[2] + side * radius]}
         radius={3.2}
         color={palette.gold}
       />
       {/* The barrel of the plunger, on the outside of the riser, and the collar that sets its preload. */}
       <Rod
-        from={[0, 0, windowZ + side * 14]}
-        to={[0, 0, windowZ + side * 44]}
+        from={[plungerX, 0, outerZ]}
+        to={[plungerX, 0, outerZ + side * 34]}
         radius={6}
         color={palette.muted}
       />
       <Rod
-        from={[0, 0, windowZ + side * (14 + plungerCollar)]}
-        to={[0, 0, windowZ + side * (20 + plungerCollar)]}
+        from={[plungerX, 0, outerZ + side * plungerCollar]}
+        to={[plungerX, 0, outerZ + side * (6 + plungerCollar)]}
         radius={8.5}
         color={palette.gold}
       />
+      {/* The rest: a wire out of the window wall, bent up under the shaft. */}
       <Rod
-        from={[6, -radius - 1, windowZ]}
-        to={[6, -radius - 1, atRest[2] - side * 10]}
-        radius={1}
+        from={[plungerX + 8, -radius - 1.2, windowZ]}
+        to={[plungerX + 8, -radius - 1.2, atRest[2] - side * 9]}
+        radius={1.1}
+        color={palette.ink}
+      />
+      <Rod
+        from={[plungerX + 8, -radius - 1.2, atRest[2] - side * 9]}
+        to={[plungerX + 8, radius * 0.4, atRest[2] - side * 11]}
+        radius={1.1}
         color={palette.ink}
       />
 

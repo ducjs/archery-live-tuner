@@ -29,10 +29,18 @@ const RISER_PROFILE: [number, number][] = [
   [-6, 245],
   [-26, 300],
 ]
-/** mm, the part of the riser that is cut away so the arrow can pass: the sight window */
-const WINDOW = { from: -5, to: 150 }
-/** mm, how far the sight window is set to the side of the string plane */
-const WINDOW_OFFSET = 19
+/**
+ * mm, the sight window: the stretch where the riser is cut away so the arrow
+ * can lie on the string line. It runs from the shelf just under the arrow to
+ * well above it.
+ */
+const WINDOW = { from: -24, to: 170 }
+/** mm, half the width of the riser where it is whole */
+export const RISER_HALF_WIDTH = 15
+/** mm, half the width of what is left of the riser beside the window */
+export const WINDOW_BAR_HALF_WIDTH = 7
+/** mm from the string plane to the middle of that bar */
+const WINDOW_BAR_OFFSET = 26
 /** mm below the arrow, where the stabilizers are mounted */
 export const STABILIZER_HEIGHT = -130
 /** mm in front of the riser centerline, where the long rod starts */
@@ -68,8 +76,21 @@ export type BowGeometry = {
   string: Vec3[]
   /** mm, thickness of the string. More strands make a thicker string. */
   stringRadius: number
-  /** Centerline of the riser, from the lower pocket to the upper one. It steps aside at the sight window. */
-  riser: Vec3[]
+  /**
+   * The riser, in three stretches. Below and above the sight window it is
+   * whole and stands in the string plane. At the window only a bar is left of
+   * it, to the bow hand's side, and the arrow passes through the gap.
+   */
+  riser: {
+    /** Centerline from the lower pocket up to the shelf under the arrow. */
+    lower: Vec3[]
+    /** Centerline of the bar beside the window. */
+    bar: Vec3[]
+    /** Centerline from the top of the window to the upper pocket. */
+    upper: Vec3[]
+    /** Z of the face of the bar that the arrow passes: the wall of the window. */
+    wall: number
+  }
   /** Where the limbs sit on the riser: the lower pocket, then the upper one. */
   pockets: [Vec3, Vec3]
   /** Where tiller is measured: from each limb just outside the riser, square to the string. Upper first. */
@@ -106,15 +127,32 @@ export function bowGeometry(
 
   // Riser. A longer riser is the same shape, stretched along its length.
   const stretch = riserLength(bow) / 25
-  // It stands in the string plane, except at the sight window, which is set to
-  // the bow hand's side so the arrow can lie on the string line.
-  const riser: Vec3[] = RISER_PROFILE.map(([x, y]) => [
-    x,
-    y * stretch,
-    y > WINDOW.from && y < WINDOW.to ? side * WINDOW_OFFSET : 0,
-  ])
-  const lowerPocket = riser[0]!
-  const upperPocket = riser.at(-1)!
+  const profile = RISER_PROFILE.map(([x, y]): [number, number] => [x, y * stretch])
+  /** X of the riser's centerline at a height. */
+  const profileX = (y: number) => {
+    const next = profile.findIndex(([, height]) => height >= y)
+    const [x0, y0] = profile[Math.max(0, next - 1)]!
+    const [x1, y1] = profile[next]!
+    return y1 === y0 ? x0 : x0 + ((x1 - x0) * (y - y0)) / (y1 - y0)
+  }
+  const whole = (from: number, to: number): Vec3[] => [
+    [profileX(from), from, 0],
+    ...profile.filter(([, y]) => y > from && y < to).map(([x, y]): Vec3 => [x, y, 0]),
+    [profileX(to), to, 0],
+  ]
+  const bottom = profile[0]![1]
+  const top = profile.at(-1)![1]
+  // The bar reaches a little into the whole riser at both ends, where it is joined to it.
+  const barZ = side * WINDOW_BAR_OFFSET
+  const barHeights = [WINDOW.from - 14, 20, 70, 120, WINDOW.to + 14]
+  const riser = {
+    lower: whole(bottom, WINDOW.from),
+    bar: barHeights.map((y): Vec3 => [profileX(y), y, barZ]),
+    upper: whole(WINDOW.to, top),
+    wall: barZ - side * WINDOW_BAR_HALF_WIDTH,
+  }
+  const lowerPocket = riser.lower[0]!
+  const upperPocket = riser.upper.at(-1)!
 
   // Limbs. The tips are half the bow length from the middle, less what the
   // curve of the bow takes up; they come back and in as the string is drawn.

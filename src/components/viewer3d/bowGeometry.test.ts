@@ -73,23 +73,40 @@ describe('parts of the bow', () => {
   const left = bowGeometry(withValue('bow.handedness', 'LH'), 1)
 
   it('runs the riser from one limb pocket to the other, in the string plane', () => {
-    expect(right.riser[0]).toEqual(right.pockets[0])
-    expect(right.riser.at(-1)).toEqual(right.pockets[1])
+    expect(right.riser.lower[0]).toEqual(right.pockets[0])
+    expect(right.riser.upper.at(-1)).toEqual(right.pockets[1])
+    for (const [, , z] of [...right.riser.lower, ...right.riser.upper]) expect(z).toBe(0)
     expect(right.pockets[0][1]).toBe(-RISER_HALF_LENGTH)
     expect(right.pockets[1][1]).toBe(RISER_HALF_LENGTH)
     expect(right.pockets.map((pocket) => pocket[2])).toEqual([0, 0])
   })
 
   it('sets the sight window to the bow hand side, clear of the arrow', () => {
-    const windowOf = (geometry: typeof right) =>
-      geometry.riser.filter((point) => point[2] !== 0).map((point) => point[2])
-    expect(windowOf(right).length).toBeGreaterThan(1)
-    expect(windowOf(right).every((z) => z > 0)).toBe(true)
-    expect(windowOf(left).every((z) => z < 0)).toBe(true)
+    expect(right.riser.bar.every(([, , z]) => z > 0)).toBe(true)
+    expect(left.riser.bar.every(([, , z]) => z < 0)).toBe(true)
+    expect(left.riser.wall).toBe(-right.riser.wall)
 
-    // The arrow lies on the string line; the riser beside it has to leave it room.
-    const beside = right.riser.find(([, y]) => y > 0)!
-    expect(beside[2] - 15).toBeGreaterThan(right.shaftRadius * 1.4)
+    // The riser is whole only below the arrow and well above it.
+    expect(right.riser.lower.at(-1)![1]).toBeLessThan(-right.shaftRadius * 3)
+    expect(right.riser.upper[0]![1]).toBeGreaterThan(120)
+    // The bar reaches into the whole riser at both ends, so there is no gap between them.
+    expect(right.riser.bar[0]![1]).toBeLessThan(right.riser.lower.at(-1)![1])
+    expect(right.riser.bar.at(-1)![1]).toBeGreaterThan(right.riser.upper[0]![1])
+  })
+
+  it('leaves the arrow room in the window, whatever the center shot', () => {
+    // The largest center shot toward the riser, drawn six times larger, is the worst case.
+    for (const [hand, toRiser] of [
+      ['RH', 5],
+      ['LH', -5],
+    ] as const) {
+      const geometry = bowGeometry(
+        setValue(withValue('bow.handedness', hand), getParameter('bow.centerShot'), toRiser),
+        6,
+      )
+      const gap = Math.abs(geometry.riser.wall) - Math.abs(geometry.atRest[2])
+      expect(gap, hand).toBeGreaterThan(geometry.shaftRadius * 1.4 + 2)
+    }
   })
 
   it('starts each limb in its pocket', () => {

@@ -208,7 +208,7 @@ Status: built, in three rounds. Opened with "Show: Bow 3D" or `#3d` in the addre
 
 - [x] React Three Fiber scene, loaded only when the viewer is opened
 - [x] Bow built from code, not from a model file, so every part can move with its parameter
-- [x] Parts: riser with its sight window, grip and limb pockets, limbs, string with center serving and nocking points, plunger, rest, arrow, long rod with damper and weight, V-bar and side rods
+- [x] Parts: riser with a sight window cut out of it (shelf, wall and the bar that is left), grip and limb pockets, limbs, string with center serving and nocking points, plunger, rest, arrow, long rod with damper and weight, V-bar and side rods
 - [x] Parameters with a visible effect: handedness, riser and limb size, center shot, limb alignment, brace height, tiller, nocking point height, plunger preload, draw length (an "at full draw" pose), arrow length, point weight, stabilizer mass and position, strand count
 - [x] Focus on change: moving a slider flies the camera to that part and shows a dimension line there with the value. Opening another setup does not move the camera
 - [x] Amplified offsets with a "not to scale" note, because real changes are a few millimetres on a 1.7 m bow: nocking point, center shot, tiller and limb alignment are drawn six times larger, and the switch for it says so
