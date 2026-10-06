@@ -176,6 +176,25 @@ export const vi: Messages = {
     },
   },
 
+  curve: {
+    heading: 'Đường lực kéo',
+    chart: (weight: string, length: string) =>
+      `Lực trên ngón tay trong lúc kéo, đạt ${weight} ở ${length}.`,
+    drawAxis: (unit: string) => `Draw length, ${unit}`,
+    forceAxis: (unit: string) => `Lực, ${unit}`,
+    clicker: 'Clicker',
+    storedEnergy: 'Năng lượng tích trong cung',
+    gain: 'Lực tăng ở clicker',
+    perLength: (value: string, force: string, length: string) => `${value} ${force} mỗi ${length}`,
+    reading: {
+      USUAL: 'Ngang mức thường gặp ở recurve gần full draw: 5% lực kéo mỗi inch.',
+      GENTLER: 'Nhẹ hơn mức 5% mỗi inch thường gặp ở recurve gần full draw.',
+      STEEPER: 'Dốc hơn mức 5% mỗi inch thường gặp ở recurve gần full draw.',
+    },
+    estimated:
+      'Ước lượng từ cỡ cung và kiểu đường cong. Đây không phải đường lực kéo của chính bộ limb của bạn.',
+  },
+
   bareShaft: {
     together: 'Bareshaft cắm chung cụm với tên có cánh.',
     matched: 'Đó là dấu hiệu của một setup đã cân.',

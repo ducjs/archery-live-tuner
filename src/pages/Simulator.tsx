@@ -26,6 +26,7 @@ import {
   clipSeconds,
 } from '../components/simulation/timing.ts'
 import { usePlayback } from '../components/simulation/usePlayback.ts'
+import { DrawCurvePanel } from '../components/tuning/DrawCurvePanel.tsx'
 import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
 import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
 import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
@@ -343,6 +344,7 @@ export function Simulator() {
                     braceHeight={setup.bow.braceHeight}
                     centerShot={setup.bow.centerShot}
                   />
+                  {advanced && <DrawCurvePanel setup={setup} result={result} units={units} />}
                 </div>
                 <div className={`lg:mt-5 lg:block ${shownSection === 'advice' ? '' : 'hidden'}`}>
                   <TuningSuggestions

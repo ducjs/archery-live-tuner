@@ -135,6 +135,25 @@ export const en = {
     },
   },
 
+  curve: {
+    heading: 'Draw force curve',
+    chart: (weight: string, length: string) =>
+      `Force on the fingers over the draw, reaching ${weight} at ${length}.`,
+    drawAxis: (unit: string) => `Draw length, ${unit}`,
+    forceAxis: (unit: string) => `Force, ${unit}`,
+    clicker: 'Clicker',
+    storedEnergy: 'Stored in the bow',
+    gain: 'Force gain at the clicker',
+    perLength: (value: string, force: string, length: string) => `${value} ${force} per ${length}`,
+    reading: {
+      USUAL: 'About what a recurve usually gains near full draw: 5% of the draw weight per inch.',
+      GENTLER: 'Gentler than the 5% per inch a recurve usually gains near full draw.',
+      STEEPER: 'Steeper than the 5% per inch a recurve usually gains near full draw.',
+    },
+    estimated:
+      'Estimated from the bow size and the curve style. This is not the curve of your limbs.',
+  },
+
   bareShaft: {
     together: 'The bare shaft lands with the fletched arrows.',
     matched: 'That reads as a matched setup.',
