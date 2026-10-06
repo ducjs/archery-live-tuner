@@ -3,7 +3,8 @@ import { useMessages } from '../../i18n/useMessages.ts'
 import type { BowSetup } from '../../models/bow.ts'
 import type { UnitSystem } from '../../models/parameters.ts'
 import type { CurveShape } from '../../models/simulation.ts'
-import { convert, unitLabel, type Unit } from '../../utils/units.ts'
+import { convert, unitLabel } from '../../utils/units.ts'
+import { curveUnits } from './drawCurveReading.ts'
 
 export type ChartCurve = { name: string; bow: BowSetup; shape: CurveShape }
 
@@ -13,11 +14,6 @@ const LEFT = 36
 const RIGHT = 14
 const TOP = 12
 const BOTTOM = 34
-
-/** Units the chart is read in. */
-export function curveUnits(units: UnitSystem): { length: Unit; force: Unit } {
-  return units === 'metric' ? { length: 'cm', force: 'N' } : { length: 'in', force: 'lbf' }
-}
 
 type Props = {
   /** The last one is the setup on screen and is drawn strongest. */

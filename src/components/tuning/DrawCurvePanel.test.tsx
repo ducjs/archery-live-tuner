@@ -4,7 +4,8 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { heuristicModel } from '../../engine/index.ts'
 import { getParameter, setValue } from '../../models/parameters.ts'
 import { createDefaultSetup } from '../../models/setup.ts'
-import { DrawCurvePanel, gainReading } from './DrawCurvePanel.tsx'
+import { DrawCurvePanel } from './DrawCurvePanel.tsx'
+import { gainReading } from './drawCurveReading.ts'
 
 afterEach(cleanup)
 

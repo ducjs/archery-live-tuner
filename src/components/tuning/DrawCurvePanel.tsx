@@ -1,22 +1,11 @@
-import { HEURISTIC_V0, shapeOf } from '../../engine/index.ts'
+import { shapeOf } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { UnitSystem } from '../../models/parameters.ts'
 import type { TuningSetup } from '../../models/setup.ts'
-import type { SimulationMetrics, SimulationResult } from '../../models/simulation.ts'
+import type { SimulationResult } from '../../models/simulation.ts'
 import { convert, unitLabel } from '../../utils/units.ts'
-import { DrawCurveChart, curveUnits } from './DrawCurveChart.tsx'
-
-/** The gain at the clicker against what a common recurve gains. A comparison, not a verdict. */
-export function gainReading(
-  metrics: Pick<SimulationMetrics, 'clickerGain'>,
-  drawWeight: number,
-): 'USUAL' | 'GENTLER' | 'STEEPER' {
-  const { usualGainPerInch, usualGainBand } = HEURISTIC_V0.drawCurve
-  const sharePerInch = (metrics.clickerGain * 25.4) / drawWeight
-  if (sharePerInch < usualGainPerInch - usualGainBand) return 'GENTLER'
-  if (sharePerInch > usualGainPerInch + usualGainBand) return 'STEEPER'
-  return 'USUAL'
-}
+import { DrawCurveChart } from './DrawCurveChart.tsx'
+import { curveUnits, gainReading } from './drawCurveReading.ts'
 
 type Props = {
   setup: TuningSetup
