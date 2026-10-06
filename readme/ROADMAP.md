@@ -15,6 +15,8 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 - [ ] Quyết định điểm cân của nocking point: giữ 4 mm hay nâng lên. *Các nguồn ghi từ 3 tới 13 mm; 4 mm nằm ở đầu thấp. Chi tiết ở tuning-references.md mục 4.3.*
 - [ ] Tìm bảng chọn spine của Easton (PDF) và đặt vào docs/. *Cần cho bài test đối chiếu vùng cân với bảng của nhà sản xuất, là điều kiện để xong V0.2.*
 - [ ] Tải bản PDF gốc sách Easton "Arrow Tuning and Maintenance Guide" (đủ 32 trang, có hình) và bản sạch sách của Murray Elliot, đặt vào docs/. *Bản lưu từ Scribd mất hết hình và thiếu trang; thiếu hình thì không làm được phần xé giấy.*
+- [ ] Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo. *Để kiểm hình dạng mặc định của đường lực kéo trước khi code; hiện hai hệ số của nó mới là ước lượng. Chi tiết ở spec §39 và tuning-references.md mục 8.4.*
+- [ ] Duyệt thiết kế đường lực kéo ở spec §39. *Chưa code gì cho tới khi bạn đồng ý.*
 - [ ] Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có. *Để các commit mới gắn với tài khoản ducjs.*
 
 ## How to use this file
@@ -265,7 +267,7 @@ Why it matters: every archer needs marks for distances they have not shot yet, a
 
 ## V0.5 — Advanced parameters and recommendations
 
-> **Nói đơn giản:** Thêm chi tiết cho người tune sâu (từng thanh stabilizer, cách thả dây, barebow), và ứng dụng bắt đầu gợi ý nên thử đổi gì tiếp theo.
+> **Nói đơn giản:** Thêm chi tiết cho người tune sâu (từng thanh stabilizer, cách thả dây, barebow, đường lực kéo của cung), và ứng dụng bắt đầu gợi ý nên thử đổi gì tiếp theo.
 
 Goal: cover more equipment detail and suggest what to try next.
 
@@ -277,6 +279,19 @@ Goal: cover more equipment detail and suggest what to try next.
 - [ ] Extra arrow detail: point length, fletching position (§6)
 - [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button, shown in two groups: "Adjust directly" on the bow, and "Equipment")
 - [ ] Recommendations that plan a sequence of changes, not only the next single step
+
+### Draw force curve
+
+> **Nói đơn giản:** Vẽ đường lực kéo của cây cung: kéo tới đâu thì nặng bao nhiêu, cung tích được bao nhiêu năng lượng, và lúc gần clicker lực còn tăng nhanh hay chậm. Hãng không công bố đường này, nên ứng dụng dựng một đường chung từ cỡ cung và draw length, rồi sửa lại cho đúng cây cung của bạn nếu bạn tự đo vài điểm bằng cân cung. Không đoán theo lõi foam hay gỗ, vì số đo cho thấy lõi không quyết định hình dạng đường này.
+
+Why it matters: two bows of the same draw weight can store different energy and feel different at the clicker, and the model so far treats them as one. Details and limits are in §39; the sources are in tuning-references.md section 8.
+
+- [ ] A common curve from draw weight, draw length and brace height, with two shape numbers: fullness, which sets the stored energy, and end rise, which sets the force gain at the clicker (§39.2)
+- [ ] Curve style in three steps (straight, standard, full in mid-draw), labelled as an estimate. It replaces the fixed `drawCurveFactor`; the standard style gives the same results as today
+- [ ] End rise from how the bow length fits the draw length: a short bow drawn long climbs more steeply at the end (§39.3)
+- [ ] Own measurement: the force at one or two shorter draw lengths, read from a bow scale, replaces the estimate and is stored with the setup (§39.4)
+- [ ] The curve as a chart, with stored energy and the force gain per inch at the clicker; two curves in the comparison of setups
+- [ ] Helper from the draw weight marked on the limbs to the force on the fingers: 5% per inch from 28 in, limb bolts ±5%, shown as an estimate (§39.6)
 
 ### Execution errors (idea, not scheduled)
 

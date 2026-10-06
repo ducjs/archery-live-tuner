@@ -74,6 +74,16 @@ export const PINNED: PinnedTask[] = [
     done: false,
   },
   {
+    text: 'Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo',
+    why: 'Để kiểm hình dạng mặc định của đường lực kéo trước khi code; hiện hai hệ số của nó mới là ước lượng. Chi tiết ở spec §39 và tuning-references.md mục 8.4.',
+    done: false,
+  },
+  {
+    text: 'Duyệt thiết kế đường lực kéo ở spec §39',
+    why: 'Chưa code gì cho tới khi bạn đồng ý.',
+    done: false,
+  },
+  {
     text: 'Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có',
     why: 'Để các commit mới gắn với tài khoản ducjs.',
     done: false,
@@ -411,7 +421,7 @@ export const ROADMAP: RoadmapPhase[] = [
     version: 'V0.5',
     title: 'Thông số nâng cao và gợi ý',
     summary:
-      'Thêm chi tiết cho người tune sâu (từng thanh stabilizer, cách thả dây, barebow), và ứng dụng gợi ý nên thử đổi gì tiếp theo.',
+      'Thêm chi tiết cho người tune sâu (từng thanh stabilizer, cách thả dây, barebow, đường lực kéo của cung), và ứng dụng gợi ý nên thử đổi gì tiếp theo.',
     groups: [
       {
         title: 'Thiết bị chi tiết và gợi ý',
@@ -430,6 +440,32 @@ export const ROADMAP: RoadmapPhase[] = [
             'Gợi ý tune có thứ tự ưu tiên, kèm nút thử ngay, chia hai nhóm: chỉnh trực tiếp và thiết bị',
           ),
           todo('Gợi ý cả một chuỗi bước, không chỉ bước kế tiếp'),
+        ],
+      },
+      {
+        title: 'Đường lực kéo (DFC)',
+        summary:
+          'Vẽ đường lực kéo của cây cung: kéo tới đâu thì nặng bao nhiêu, cung tích được bao nhiêu năng lượng, và lúc gần clicker lực còn tăng nhanh hay chậm. Ứng dụng dựng một đường chung từ cỡ cung và draw length, rồi sửa lại cho đúng cây cung của bạn nếu bạn tự đo vài điểm bằng cân cung.',
+        note: 'Vì sao cần: hai cây cung cùng số pound vẫn có thể tích năng lượng khác nhau và cho cảm giác khác nhau ở clicker, mà mô hình hiện coi là một. Hãng không công bố đường này, và không đoán được nó từ lõi foam hay gỗ: số đo cho thấy lõi không quyết định hình dạng.',
+        items: [
+          todo(
+            'Đường lực kéo chung từ lực kéo, draw length và brace height, với hai số hình dạng: độ đầy quyết định năng lượng tích, độ dốc cuối quyết định lực tăng ở clicker',
+          ),
+          todo(
+            'Chọn kiểu đường cong ba mức (thẳng, chuẩn, đầy giữa hành trình), ghi rõ là ước lượng. Mức chuẩn cho kết quả y như hiện nay',
+          ),
+          todo(
+            'Độ dốc cuối tính từ việc cung dài hay ngắn so với draw length: cung ngắn kéo dài thì cuối hành trình dốc hơn',
+          ),
+          todo(
+            'Tự đo: nhập lực ở một hoặc hai chỗ kéo ngắn hơn, đọc từ cân cung. Số đo thay cho ước lượng và được lưu cùng setup',
+          ),
+          todo(
+            'Đồ thị đường lực kéo, kèm năng lượng tích và lực tăng mỗi inch ở clicker; khi so sánh hai setup thì vẽ hai đường',
+          ),
+          todo(
+            'Đổi số pound ghi trên limb ra lực trên ngón tay: 5% mỗi inch tính từ 28 inch, limb bolt ±5%, ghi rõ là ước lượng',
+          ),
         ],
       },
       {

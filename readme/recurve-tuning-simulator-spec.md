@@ -1279,7 +1279,7 @@ Comparison + tuning landscape.
 Real-world calibration. Possibly sight mark prediction (section 38).
 
 ### V0.5
-Advanced bow/arrow parameters. Possibly execution errors (section 37).
+Advanced bow/arrow parameters. Draw force curve (section 39). Possibly execution errors (section 37).
 
 ### V0.6
 Backend: store the parameters of each setup per user (section 35).
@@ -1627,4 +1627,106 @@ Needs, beyond the marks: the length of the sight extension, where zero on the sc
 - Sight scales differ: some count up as the pin goes down, some the other way, and the units are not always millimetres. The fit must take the scale as the archer reads it.
 - The known marks must come from the same setup. A change of arrows, draw weight, anchor or sight extension makes old marks useless.
 - Wind, temperature and altitude are ignored.
+- Section 2.1 applies: this is a model result, labelled as such.
+
+---
+
+# 39. Draw force curve (V0.5)
+
+Status: designed, not built. The sources and what was taken from them are in tuning-references.md section 8.
+
+Goal: show how the force on the fingers grows over the draw, what that stores in the bow, and how steeply the force is still rising at the clicker.
+
+```text
+In:   draw weight, draw length, brace height, bow length     (already entered)
+      curve style, or one or two forces measured with a bow scale
+Out:  the curve      stored energy      force gain per inch at the clicker
+```
+
+## 39.1 Why not from the limb model
+
+Makers do not publish draw force curves, and a curve cannot be guessed from the core and the facing. The same limb in foam and in wood measured the same within a foot per second (tuning-references.md section 8.2). The shape follows the geometry: how much the limb is recurved, and how long the bow is for the draw. So the curve here comes from the geometry the archer has already entered, and from the archer's own bow scale where there is one. There is no limb database.
+
+## 39.2 The curve
+
+The curve runs from brace height, where the force is zero, to full draw, where it is the draw weight entered. With `u` the share of the power stroke drawn so far, from 0 to 1:
+
+```text
+F(u) = drawWeight · f(u)
+f(u) = u + h · u(1 − u) + k · u(1 − u)(1 − 2u)
+```
+
+| Number | Meaning | Changes |
+|---|---|---|
+| `h`, fullness | How far the curve bulges above the straight line in mid-draw | The stored energy |
+| `k`, end rise | How much steeper the two ends are than the middle | The force gain at the clicker |
+
+The two are independent by construction. The `k` term adds as much area before mid-draw as it takes away after it, so:
+
+```text
+stored energy         = ½ · drawWeight · powerStroke · (1 + h / 3)
+force gain at clicker = drawWeight / powerStroke · (1 − h + k)
+```
+
+`1 + h / 3` takes the place of the fixed `drawCurveFactor`. The standard style has `h = 0.42`, which gives the 1.14 used so far, so no result moves until the archer changes the style or enters a measurement.
+
+A curve must rise all the way. A pair of `h` and `k` for which `f` falls anywhere between 0 and 1 is refused.
+
+## 39.3 The estimate from geometry
+
+Without a measurement, both numbers are estimates and are labelled as such.
+
+Fullness comes from a choice of curve style:
+
+| Style | `h` | Energy against a straight line |
+|---|---|---|
+| Straight | 0.15 | 1.05 |
+| Standard | 0.42 | 1.14 |
+| Full in mid-draw | 0.60 | 1.20 |
+
+End rise comes from how the bow length fits the draw length. A 68 in bow is taken to fit a 28 in draw, and each inch of bow length fits one more inch of draw:
+
+```text
+fitDraw = 28 in + (bowLength − 68 in)
+k       = 0.39 + 0.10 · (drawLength − fitDraw)        drawLength and fitDraw in inches
+k is kept between 0 and 0.8
+```
+
+0.39 is what makes the reference setup gain 5% of its draw weight per inch at full draw, the usual rule for a recurve near 28 in. The 0.10 per inch is a guess at the size of a known direction: a short bow drawn long climbs more steeply at the end. Both sit in the coefficient set and are marked heuristic.
+
+## 39.4 The measurement
+
+An archer with a bow scale can replace the estimate. They enter the force at one or two draw lengths shorter than full draw, at the brace height of the setup:
+
+- one point, taken about 2 in before full draw: `h` stays with the style, `k` is solved from the point
+- two points, the second about 8 in before full draw: `h` and `k` are both solved. The two equations are linear in `h` and `k`
+
+A fit that does not rise all the way is not used, and the archer is told the points do not agree with each other. The points are stored with the setup. The result says which of the two it shows: "estimated from bow size" or "from your measurement".
+
+## 39.5 What is shown
+
+- The curve as a chart: draw length across, force up, with the clicker at full draw. In the comparison of two setups, both curves on one chart.
+- Stored energy, in joules.
+- Force gain per inch at the clicker, in the unit the draw weight is shown in.
+- A plain reading of the gain against the 5% per inch of a common recurve: about usual, gentler, or steeper. No verdict on the archer, and no "too much".
+
+## 39.6 Marked draw weight
+
+Draw weight in this app is the force on the fingers at full draw. An archer who knows only what is marked on the limbs gets a helper that estimates it:
+
+```text
+onFingers = marked · (1 + 0.05 · (drawLength − 28 in)) · (1 + bolt)       bolt from −5% to +5%
+```
+
+The marking is taken as 28 in AMO on a 25 in riser with the limb bolts in the middle. The helper fills the draw weight field; a value read from a bow scale is always better and the helper says so. The page explains how AMO draw length is measured: from the nocking point to the pivot point of the grip, plus 1.75 in.
+
+## 39.7 Limits
+
+- The estimated curve is a shape that is plausible for a recurve, not the curve of the archer's limbs. Only a measurement makes it theirs.
+- Two shape numbers cannot draw every curve. A limb with a sharp hump is drawn with a soft one.
+- The curve is static. What the arrow gets is less, by the mass of the limbs and the string that move with it, which the engine already takes off (`limbVirtualMass`, `stringMassShare`).
+- The required spine is unchanged: it follows the draw weight at full draw, as before. The curve moves the arrow speed, and through it the timing of clearance.
+- Limb material is not an input. It does not set the shape.
+- The force gain at the clicker is shown, not judged. How it feels depends on the archer.
+- The engine takes the power stroke as draw length minus brace height. If the draw length entered is AMO, that is 1.75 in longer than the real one. This section keeps the engine's power stroke so that results do not move; correcting it is a separate decision.
 - Section 2.1 applies: this is a model result, labelled as such.
