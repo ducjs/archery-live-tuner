@@ -333,6 +333,39 @@ export const en = {
       `The marks imply ${implied} m/s; the model estimates ${model} m/s.`,
   },
 
+  calibration: {
+    heading: 'Fit the model to you',
+    intro:
+      'Finds where "matched" and "neutral" lie for you and your bow, from the observations you have kept. Only those points move; how strongly each value acts stays as in the base model.',
+    fit: 'Fit to my observations',
+    fitAgain: 'Fit again',
+    have: (count: number) => `${count} observations in this browser.`,
+    tooFew: (least: number) =>
+      `This takes at least ${least} observations that note how the arrow behaves or where the bare shaft lands.`,
+    fitted: 'Fitted, and switched on.',
+    noBetter:
+      'No shift agrees with more of what you saw than the base model does, so the base model stays.',
+    fittedAt: (when: string, used: number) => `Fitted on ${when}, from ${used} observations.`,
+    nothingMoved: 'Nothing moved: the base model already reads your setups as you saw them.',
+    weaker: (steps: string) =>
+      `Your arrows shoot weaker than the base model expects, by about ${steps} steps of 50 in spine.`,
+    stiffer: (steps: string) =>
+      `Your arrows shoot stiffer than the base model expects, by about ${steps} steps of 50 in spine.`,
+    nockHigher: (mm: string) => `Your nocking point reads neutral ${mm} mm higher.`,
+    nockLower: (mm: string) => `Your nocking point reads neutral ${mm} mm lower.`,
+    centerRight: (mm: string) => `Your center shot reads neutral ${mm} mm to the right.`,
+    centerLeft: (mm: string) => `Your center shot reads neutral ${mm} mm to the left.`,
+    agreement: (before: number, after: number, total: number) =>
+      `Of ${total} things you noted, the base model agrees with ${before} and the fitted model with ${after}.`,
+    use: 'Use the fitted model',
+    forget: 'Forget the fit',
+    usingPersonal: 'Results on this page come from the model fitted to you.',
+    usingBase: 'Results on this page come from the base model.',
+    limits:
+      'A fit is only as good as the observations behind it. It cannot tell a weak arrow from a center shot that is off unless you also noted how the arrow behaves, or shot several setups.',
+    active: 'Fitted to your observations, not the base model.',
+  },
+
   paperTear: {
     heading: 'Paper tear test',
     clean: 'The point and the fletching go through one hole.',

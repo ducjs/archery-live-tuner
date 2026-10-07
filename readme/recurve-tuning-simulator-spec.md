@@ -889,7 +889,21 @@ As built (observations): under "Show: Target", below the reading of the target. 
 
 Kept observations are listed for the setup on screen, newest first. Each sets "You saw" beside "The model says", computed for the values of that observation, marks every row as the same or different, and counts the matches. Nothing is adjusted by this: the two stay apart, as §26 asks. All observations in the browser can be written to one JSON file.
 
-Not built (fitting): decided on 2026-10-07 to fit a few offsets only, which a handful of observations can pin down: the archer's own shift toward weak or stiff, and the neutral points of nocking point and center shot. The sensitivities (the exponents of the spine law) stay as they are; a few dozen observations of one archer cannot separate them. The base set must always be one switch away.
+As built (fitting): "Fit the model to you", below the observations. It fits three shifts and nothing else, which a handful of observations can pin down:
+
+```text
+behavior shift           added to the stiffness mismatch: this archer's arrows shoot weaker or stiffer than the base model expects
+nocking point neutral    mm added to the nocking point height the model reads as neutral
+center shot neutral      mm, the center shot the model reads as neutral
+```
+
+The sensitivities (the exponents of the spine law, the gains) stay as in the base model; a few dozen observations of one archer cannot separate them.
+
+The fit uses every observation in the browser that notes how the arrow behaves, where the bare shaft lands, or where the fletched arrows tend to land, over all setups, and needs at least three. For each thing noted it asks how far the model's own number lies outside the band that was seen (weak, matched or stiff; left, with the group or right; and so on), and searches each shift along its line for the least total, with a small pull toward zero so that nothing moves without a reason. A shift too small for any observation to show is read as none. No machine learning, and no regression in the strict sense: what was seen is a category, not a number.
+
+The result is reported in words, with a count: of everything noted, how much the base model agrees with and how much the fitted one does. The fitted model is switched on only when it agrees with more, and one checkbox switches back to the base model at any time; "Forget the fit" removes it. While it is on, the result panel says so, and results carry the model version with `+personal` appended. The landscape and the sensitivity chart use the same model as the rest of the page.
+
+Limits. Weak or stiff and the center shot both move a bare shaft sideways; they can be told apart only when the arrow's behavior was noted too, or when the observations cover several setups. Otherwise the pull toward zero splits the shift between them. The fit has been tested on made-up observations, generated from a model shifted by a known amount; whether it helps on real ones is the exit criterion of V0.4 and is still open.
 
 ---
 

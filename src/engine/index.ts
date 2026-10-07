@@ -34,6 +34,7 @@ export {
   type SightInputs,
   type SightPrediction,
 } from './ballistics/sightMarks.ts'
+export { MIN_OBSERVATIONS, fitPersonal, type Calibration } from './calibration/fit.ts'
 export { HEURISTIC_V0, parseCoefficients, type Coefficients } from './coefficients/coefficients.ts'
 export {
   suggestTuning,

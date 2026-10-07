@@ -38,7 +38,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | In progress (8 of 12 done; walk-back needs a better source; the spine chart test waits for the Easton chart; the tail wobble needs measurements) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
-| V0.4 | Real-world calibration | In progress (14 of 17 done: the target plot, observations and their export, sight marks. Open: fitting and the personal coefficient set, which wait for real observations, and the sight drawn on the bow) |
+| V0.4 | Real-world calibration | In progress (16 of 17 done. Open: the sight drawn on the bow. The exit criterion still waits for real observations: the fit has only been tested on made-up ones) |
 | V0.5 | Advanced parameters and recommendations | In progress (the draw force curve and the items done ahead of the phase are built) |
 | V0.6 | Backend: setup storage | Not started |
 | V1.0 | Stable public release | Not started |
@@ -237,8 +237,8 @@ Goal: users record what really happened, and the model adjusts to it.
 
 - [x] Observation form attached to a setup: oscillation, impact tendency, clearance, bareshaft result (§18). Under "Show: Target"; each observation keeps the values the setup had when it was shot
 - [x] MODEL RESULT vs REAL-WORLD OBSERVATION shown side by side (§26): each kept observation lists what was seen beside what the model says, and counts where they agree
-- [ ] Coefficient fitting by simple regression, no machine learning. Decided on 2026-10-07: fit a few offsets only (the archer's own weak or stiff shift, and the neutral points of nocking point and center shot), not the sensitivities
-- [ ] Personal calibrated coefficient set, switchable with the base set
+- [x] Coefficient fitting by a simple search, no machine learning. Three shifts only: the archer's own weak or stiff shift, and the neutral points of nocking point and center shot; the sensitivities stay as in the base model. Tested on made-up observations only, not yet on real ones
+- [x] Personal calibrated coefficient set, switchable with the base set: switched on by itself only when it agrees with more of the observations, and always one switch from the base model. Results made with it carry the version `heuristic-…+personal`
 - [x] Export observations: one file with every observation in the browser
 
 ### Target plot diagnosis

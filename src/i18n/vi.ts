@@ -367,6 +367,38 @@ export const vi: Messages = {
     keptSpeed: (implied, model) => `Vạch cho ra ${implied} m/s; mô hình ước lượng ${model} m/s.`,
   },
 
+  calibration: {
+    heading: 'Chỉnh mô hình theo bạn',
+    intro:
+      'Tìm xem với bạn và cây cung của bạn thì "hợp" và "cân" nằm ở đâu, từ các quan sát bạn đã lưu. Chỉ các điểm đó dịch chuyển; mỗi giá trị tác động mạnh yếu ra sao thì giữ như mô hình gốc.',
+    fit: 'Dò từ quan sát của tôi',
+    fitAgain: 'Dò lại',
+    have: (count) => `${count} quan sát trong trình duyệt này.`,
+    tooFew: (least) =>
+      `Cần ít nhất ${least} quan sát có ghi tên phản ứng thế nào hoặc bareshaft rơi ở đâu.`,
+    fitted: 'Đã dò xong và đã bật.',
+    noBetter:
+      'Không có dịch chuyển nào khớp với điều bạn thấy nhiều hơn mô hình gốc, nên vẫn dùng mô hình gốc.',
+    fittedAt: (when, used) => `Dò lúc ${when}, từ ${used} quan sát.`,
+    nothingMoved:
+      'Không có gì dịch chuyển: mô hình gốc đã đọc các setup của bạn đúng như bạn thấy.',
+    weaker: (steps) => `Tên của bạn bắn yếu hơn mô hình gốc nghĩ, khoảng ${steps} bước spine 50.`,
+    stiffer: (steps) => `Tên của bạn bắn cứng hơn mô hình gốc nghĩ, khoảng ${steps} bước spine 50.`,
+    nockHigher: (mm) => `Nocking point của bạn cân ở mức cao hơn ${mm} mm.`,
+    nockLower: (mm) => `Nocking point của bạn cân ở mức thấp hơn ${mm} mm.`,
+    centerRight: (mm) => `Center shot của bạn cân ở ${mm} mm về bên phải.`,
+    centerLeft: (mm) => `Center shot của bạn cân ở ${mm} mm về bên trái.`,
+    agreement: (before, after, total) =>
+      `Trong ${total} điều bạn đã ghi, mô hình gốc khớp ${before}, mô hình đã chỉnh khớp ${after}.`,
+    use: 'Dùng mô hình đã chỉnh',
+    forget: 'Bỏ kết quả dò',
+    usingPersonal: 'Kết quả trên trang này đang tính bằng mô hình đã chỉnh theo bạn.',
+    usingBase: 'Kết quả trên trang này đang tính bằng mô hình gốc.',
+    limits:
+      'Kết quả dò chỉ tốt bằng các quan sát đứng sau nó. Nó không phân biệt được tên yếu với center shot lệch, trừ khi bạn ghi cả việc tên phản ứng thế nào, hoặc đã bắn vài setup khác nhau.',
+    active: 'Đã chỉnh theo quan sát của bạn, không phải mô hình gốc.',
+  },
+
   paperTear: {
     heading: 'Bài thử xé giấy',
     clean: 'Point và cánh đi qua cùng một lỗ.',

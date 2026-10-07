@@ -392,10 +392,12 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Đặt cạnh nhau: mô hình đoán gì, thực tế ra sao. Mỗi quan sát ghi "Bạn thấy" cạnh "Mô hình nói" và đếm số điều khớp',
           ),
-          todo(
-            'Chỉnh hệ số bằng hồi quy đơn giản, không dùng machine learning. Đã chốt: chỉ dò vài số dịch chuyển (lệch weak/stiff riêng của người bắn, điểm trung tính của nocking point và center shot)',
+          done(
+            'Chỉnh hệ số bằng phép dò đơn giản, không dùng machine learning. Chỉ dò ba số dịch chuyển: lệch weak/stiff riêng của người bắn, điểm cân của nocking point và của center shot. Mới kiểm bằng quan sát dựng sẵn, chưa có quan sát thật',
           ),
-          todo('Bộ hệ số riêng của từng người, bật tắt được'),
+          done(
+            'Bộ hệ số riêng của từng người, bật tắt được: chỉ tự bật khi khớp quan sát hơn mô hình gốc, và luôn tắt được bằng một nút',
+          ),
           done('Xuất dữ liệu quan sát: một file chứa mọi quan sát trong trình duyệt'),
         ],
       },

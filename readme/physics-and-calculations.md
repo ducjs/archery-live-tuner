@@ -210,6 +210,36 @@ dynamicBehavior = tanh(gain · mismatch)          gain = 3
 
 Ví dụ, từ setup tham chiếu tăng point 20 gr: `m_trước` từ 132 lên 152 gr, `mismatch = −0.3 · ln(152/132) = −0.042`, `dynamicBehavior = tanh(−0.127) = −0.126`. Vẫn xếp NEUTRAL (ngưỡng 0.2) nhưng bare shaft đã lệch phải.
 
+### 6.3 Chỉnh theo từng người
+
+Mô hình nhận thêm ba số dịch chuyển, mặc định bằng 0 (`src/models/calibration.ts`):
+
+```text
+mismatch         = … + behaviorShift
+centerShot       = (centerShot_hiệu_dụng − centerShotNeutral) · side
+verticalTendency = tanh(0.25 · (nockingPointHeight − 4 − nockingPointNeutral) − …)
+```
+
+Chúng không đổi độ nhạy nào, chỉ dời chỗ mô hình coi là "hợp" và "cân". Khi có số nào khác 0, tên phiên bản của mô hình thêm đuôi `+personal`.
+
+Ba số này được dò từ quan sát thật (`src/engine/calibration/fit.ts`, spec §18). Mỗi điều đã ghi là một dải: yếu, hợp hay cứng; trái, chung cụm hay phải. Với mỗi điều, phép dò tính con số của mô hình nằm ngoài dải đó bao xa, chia cho ngưỡng của dải rồi bình phương:
+
+```text
+sai_lệch = Σ (khoảng nằm ngoài dải / ngưỡng)²  +  0.02 · (dịch_chuyển / đơn_vị)²
+
+đơn_vị:  behaviorShift 0.07 (khoảng một bước spine 50 ở spine 700),  hai số còn lại 1 mm
+giới hạn: behaviorShift ±0.35,  nockingPointNeutral −6 … +8 mm,  centerShotNeutral ±3 mm
+```
+
+- Dải được thu vào 25 % ở mỗi mép, để kết quả rơi hẳn vào trong dải chứ không nằm sát mép.
+- Số hạng thứ hai kéo mỗi dịch chuyển về 0, nên không gì dịch nếu không có lý do. Hệ số 0.02 đủ nhỏ để một quan sát rõ ràng thắng nó.
+- Mỗi số được tìm dọc theo trục của nó: đi 28 bước qua cả khoảng, rồi thu hẹp quanh bước tốt nhất. Chiều dọc tìm một lần; hai số chiều ngang tựa vào nhau nên tìm hai vòng.
+- Dịch chuyển nhỏ hơn một phần bảy đơn vị thì coi là 0.
+- Cần ít nhất 3 quan sát có ghi tên phản ứng thế nào, bareshaft rơi đâu, hoặc cụm tên lệch đâu.
+- Kết quả chỉ được bật khi mô hình đã chỉnh khớp nhiều điều đã ghi hơn mô hình gốc.
+
+Mọi hệ số ở đây (0.02, 25 %, các giới hạn) là ước chừng. Phép dò mới được thử trên quan sát dựng sẵn từ một mô hình bị dời đi một lượng biết trước; chưa thử trên quan sát thật.
+
 ## 7. Các chỉ số còn lại
 
 `clamp01` cắt giá trị vào 0..1. `preload_lệch = plungerPreload − 1 mm`. `centerShot` ở đây đã nhân `side`.
@@ -616,6 +646,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 | Đường bay | `src/engine/simulation/trajectory.ts` |
 | Gợi ý | `src/engine/recommendation/suggest.ts` |
 | Đọc bia thật và chẩn đoán | `src/engine/diagnosis/targetPlot.ts` |
+| Dịch chuyển riêng của từng người, phép dò | `src/models/calibration.ts`, `src/engine/calibration/fit.ts` |
 | Đường bay có lực cản, vạch thước ngắm | `src/engine/ballistics/flight.ts`, `src/engine/ballistics/sightMarks.ts` |
 | Quan sát thực tế: kiểu dữ liệu, kiểm tra, lưu | `src/models/observation.ts`, `src/utils/observations.ts`, `src/storage/observationRepository.ts` |
 | Đường lực kéo: hình dạng, ước lượng, dựng từ số đo | `src/engine/simulation/drawCurve.ts` |

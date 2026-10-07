@@ -6,6 +6,7 @@ import type {
 } from '../../models/simulation.ts'
 import { arrowTotalMass } from '../../models/arrow.ts'
 import { BRACE_PER_INCH, bowLength, braceHeightRange } from '../../models/bow.ts'
+import { NO_PERSONAL, isPersonal, type Personal } from '../../models/calibration.ts'
 import type { TuningSetup } from '../../models/setup.ts'
 import { HEURISTIC_V0, type Coefficients } from '../coefficients/coefficients.ts'
 import { clamp01 } from '../math/scalar.ts'
@@ -63,7 +64,12 @@ type Internals = Analysis & {
 
 const GRAMS_PER_GRAIN = 0.06479891
 
-function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Internals {
+function evaluate(
+  setup: SetupInput,
+  c: Coefficients,
+  personal: Personal,
+  bareShaft = false,
+): Internals {
   const { bow, arrow } = setup
   const { reference } = c
 
@@ -77,11 +83,13 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
   // shot error, larger than the limb error by arrow length over brace height.
   const stringShift = (bow.limbAlignmentTop + bow.limbAlignmentBottom) / 2
   const effectiveCenterShot = bow.centerShot - stringShift * (arrow.length / bow.braceHeight)
-  const centerShot = effectiveCenterShot * side
+  // An archer whose bow reads neutral at another center shot has that taken off first.
+  const centerShot = (effectiveCenterShot - personal.centerShotNeutral) * side
   // When the tips sit apart, the string plane is twisted against the riser.
   const limbTwist = Math.abs(bow.limbAlignmentTop - bow.limbAlignmentBottom)
 
-  const mismatch = stiffnessMismatch(bow, arrow, c) + plungerBehaviorShift(bow, c)
+  const mismatch =
+    stiffnessMismatch(bow, arrow, c) + plungerBehaviorShift(bow, c) + personal.behaviorShift
   const dynamicBehavior = Math.tanh(c.behavior.gain * mismatch)
 
   const flexAmplitude = clamp01(c.flex.neutralAmplitude * Math.exp(-c.flex.mismatchGain * mismatch))
@@ -113,7 +121,8 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     )
 
   const verticalTendency = Math.tanh(
-    c.vertical.perMmNockingPoint * (bow.nockingPointHeight - reference.nockingPointHeight) -
+    c.vertical.perMmNockingPoint *
+      (bow.nockingPointHeight - reference.nockingPointHeight - personal.nockingPointNeutral) -
       c.vertical.perMmTiller * (bow.tiller - reference.tiller),
   )
 
@@ -197,12 +206,25 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
   }
 }
 
-export function createHeuristicModel(coefficients: Coefficients = HEURISTIC_V0): SimulationModel {
+/**
+ * The heuristic model. `personal` shifts it to one archer's observations; the
+ * version then says so, as a result must always tell which model made it.
+ */
+export function createHeuristicModel(
+  coefficients: Coefficients = HEURISTIC_V0,
+  personal: Personal = NO_PERSONAL,
+): SimulationModel {
+  const version = isPersonal(personal) ? `${coefficients.version}+personal` : coefficients.version
   return {
-    version: coefficients.version,
+    version,
 
     analyze(setup, options) {
-      const { metrics, classification } = evaluate(setup, coefficients, options?.bareShaft)
+      const { metrics, classification } = evaluate(
+        setup,
+        coefficients,
+        personal,
+        options?.bareShaft,
+      )
       return { metrics, classification }
     },
 
@@ -236,13 +258,14 @@ export function createHeuristicModel(coefficients: Coefficients = HEURISTIC_V0):
     const { metrics, classification, verticalTendency, driftFactor, flexDirection } = evaluate(
       setup,
       coefficients,
+      personal,
       options?.bareShaft,
     )
     const { bow, arrow } = setup
     const distance = (options?.trajectory ?? DEFAULT_TRAJECTORY_OPTIONS).distance
     return {
       setupId: setup.id,
-      modelVersion: coefficients.version,
+      modelVersion: version,
       launch: {
         powerStroke: powerStroke(bow),
         timeOnString: timeOnString(bow, arrow, coefficients),

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { compareObservation, heuristicModel } from '../../engine/index.ts'
+import { compareObservation } from '../../engine/index.ts'
+import { useModel } from '../../state/calibrationStore.ts'
 import type { Messages } from '../../i18n/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import { SEEN_KEYS, type Observation, type Seen } from '../../models/observation.ts'
@@ -110,17 +111,19 @@ function ObservationCard({ observation }: { observation: Observation }) {
   const text = m.observation
   const language = useTuningStore((state) => state.language)
   const remove = useObservationStore((state) => state.remove)
+  // The model the page computes with: the base one, or the one fitted to the archer.
+  const model = useModel()
   const { rows, matches } = useMemo(
-    () => compareObservation(observation, heuristicModel),
-    [observation],
+    () => compareObservation(observation, model),
+    [observation, model],
   )
   // What the model estimates for the values this observation was made with.
   const modelSpeed = useMemo(
     () =>
       observation.sight?.impliedSpeed === undefined
         ? 0
-        : heuristicModel.analyze(observedSetup(observation)).metrics.launchSpeed,
-    [observation],
+        : model.analyze(observedSetup(observation)).metrics.launchSpeed,
+    [observation, model],
   )
   const { sight } = observation
   const when = new Date(observation.createdAt).toLocaleString(language, {

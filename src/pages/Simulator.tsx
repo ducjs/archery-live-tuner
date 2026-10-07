@@ -30,6 +30,7 @@ import { DrawCurvePanel } from '../components/tuning/DrawCurvePanel.tsx'
 import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
 import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
 import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
+import { CalibrationPanel } from '../components/target/CalibrationPanel.tsx'
 import { ObservationPanel } from '../components/target/ObservationPanel.tsx'
 import { SightMarksPanel } from '../components/target/SightMarksPanel.tsx'
 import { TargetControls } from '../components/target/TargetControls.tsx'
@@ -38,12 +39,12 @@ import { TargetReading } from '../components/target/TargetReading.tsx'
 import {
   DEFAULT_TRAJECTORY_OPTIONS,
   diagnosePlot,
-  heuristicModel,
   readPlot,
   suggestTuning,
 } from '../engine/index.ts'
 import { useMessages } from '../i18n/useMessages.ts'
 import { useLibraryStore } from '../state/libraryStore.ts'
+import { useCalibrationStore, useModel } from '../state/calibrationStore.ts'
 import { useObservationStore } from '../state/observationStore.ts'
 import { usePlotStore } from '../state/plotStore.ts'
 import { useTuningStore } from '../state/tuningStore.ts'
@@ -86,6 +87,9 @@ export function Simulator() {
   const saved = useLibraryStore((state) => state.saved)
   const loadSaved = useLibraryStore((state) => state.load)
   const [bareShaft, setBareShaft] = useState(true)
+  // The base model, or the one fitted to the archer when that is switched on.
+  const model = useModel()
+  const fitted = useCalibrationStore((state) => state.enabled)
 
   useEffect(() => {
     void loadSaved()
@@ -102,15 +106,15 @@ export function Simulator() {
     [view.distance],
   )
   const comparison = useMemo(
-    () => heuristicModel.compareBareShaft(setup, { trajectory }),
-    [setup, trajectory],
+    () => model.compareBareShaft(setup, { trajectory }),
+    [model, setup, trajectory],
   )
   const result = comparison.fletched
   // Simple mode only gets suggestions about values it can see. All of them are
   // asked for: the panel sorts them into its two groups and trims each.
   const advice = useMemo(
-    () => suggestTuning(heuristicModel, setup, { tier: mode, limit: Infinity }),
-    [setup, mode],
+    () => suggestTuning(model, setup, { tier: mode, limit: Infinity }),
+    [model, setup, mode],
   )
 
   const [stage, setStage] = useState<Stage>(() =>
@@ -128,8 +132,8 @@ export function Simulator() {
   const handedness = setup.bow.handedness
   const plotReading = useMemo(() => readPlot(plot, handedness), [plot, handedness])
   const diagnosis = useMemo(
-    () => diagnosePlot(plotReading, setup, heuristicModel),
-    [plotReading, setup],
+    () => diagnosePlot(plotReading, setup, model),
+    [plotReading, setup, model],
   )
   // The plot that was last saved, to say so until it changes.
   const [savedPlot, setSavedPlot] = useState<typeof plot | null>(null)
@@ -161,9 +165,9 @@ export function Simulator() {
     () =>
       others.map((other) => ({
         setup: other,
-        result: heuristicModel.simulate(other, { trajectory }),
+        result: model.simulate(other, { trajectory }),
       })),
-    [others, trajectory],
+    [model, others, trajectory],
   )
   const compared = stage === 'compare' &&
     otherResults.length > 0 && { saved: otherResults, now: { setup, result } }
@@ -400,12 +404,18 @@ export function Simulator() {
                 />
                 <SightMarksPanel setup={setup} result={result} />
                 <ObservationPanel setup={setup} />
+                <CalibrationPanel />
               </div>
             ) : compared ? (
               <ComparisonTable {...compared} units={units} />
             ) : (
               <>
                 <div className={`lg:block ${shownSection === 'result' ? '' : 'hidden'}`}>
+                  {fitted && (
+                    <p className="border-accent bg-accent/10 mb-3 max-w-prose rounded-md border-l-4 px-3 py-2">
+                      {m.calibration.active}
+                    </p>
+                  )}
                   <ResultPanel
                     result={result}
                     comparison={bareShaft ? comparison : undefined}

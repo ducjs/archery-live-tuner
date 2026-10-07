@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { explore, heuristicModel, type Exploration } from '../../engine/index.ts'
+import { explore, type Exploration } from '../../engine/index.ts'
+import { useModel, usePersonal } from '../../state/calibrationStore.ts'
 import type { TuningSetup } from '../../models/setup.ts'
 import type { ExploreAnswer, ExploreRequest } from '../../workers/explore.worker.ts'
 
@@ -28,17 +29,20 @@ function exploreWorker(): Worker | null {
 export function useExplore(setup: TuningSetup): Exploration {
   const { bow, arrow, id } = setup
   const background = exploreWorker()
+  // The base model, or the one fitted to the archer; the worker is told which.
+  const model = useModel()
+  const personal = usePersonal()
   // Without a worker the views are computed here, as part of the render.
   const local = useMemo(
-    () => (background ? null : explore(heuristicModel, { id, bow, arrow })),
-    [background, bow, arrow, id],
+    () => (background ? null : explore(model, { id, bow, arrow })),
+    [background, model, bow, arrow, id],
   )
   // With one, the first are computed in place too, so there is never an empty chart.
-  const [answer, setAnswer] = useState(() => local ?? explore(heuristicModel, { id, bow, arrow }))
+  const [answer, setAnswer] = useState(() => local ?? explore(model, { id, bow, arrow }))
 
   useEffect(() => {
     if (!background) return
-    const request: ExploreRequest = { id: ++lastRequest, setup: { id, bow, arrow } }
+    const request: ExploreRequest = { id: ++lastRequest, setup: { id, bow, arrow }, personal }
     const receive = (event: MessageEvent<ExploreAnswer>) => {
       // Only the answer to this request counts; an older one is out of date.
       if (event.data.id === request.id) setAnswer(event.data.result)
@@ -46,7 +50,7 @@ export function useExplore(setup: TuningSetup): Exploration {
     background.addEventListener('message', receive)
     background.postMessage(request)
     return () => background.removeEventListener('message', receive)
-  }, [background, bow, arrow, id])
+  }, [background, personal, bow, arrow, id])
 
   return local ?? answer
 }
