@@ -529,19 +529,21 @@ Các công thức dưới đây chỉ chạy trong demo (`src/pages/demos/logic/
 
 - Landscape và sensitivity đã chuyển vào engine (`src/engine/explore/explore.ts`) và hiện ở trang Simulator, mục "Hiển thị: Toàn cảnh". Landscape: `dynamicBehavior` trên lưới spine 400..1000 (bước 50) × point 80..140 gr (bước 10), các giá trị khác giữ nguyên. Sensitivity: tăng từng thông số thêm 1/10 khoảng giới hạn của nó (giảm nếu hết chỗ tăng), ghi độ đổi của `dynamicBehavior`, bỏ mức dưới 0.005, xếp theo độ lớn. Cả hai tính trong Web Worker (`src/workers/explore.worker.ts`).
 - Tuning plan: áp gợi ý đứng đầu lặp lại, tối đa 5 bước.
-- Đọc bia (target plot), tọa độ tính bằng cm:
+- Đọc bia (target plot) đã chuyển vào engine (`src/engine/diagnosis/targetPlot.ts`) và hiện ở trang Simulator, mục "Hiển thị: Bia". Đây là phần đọc dữ liệu thật, không phải kết quả của mô hình. Tọa độ tính bằng mm, cự ly do người bắn chọn:
 
 ```text
 tâm_cụm = trung bình vị trí tên có cánh              cần ít nhất 3 tên có cánh và 1 bare shaft
 độ_tản  = trung bình khoảng cách từ từng tên tới tâm_cụm
 offset  = tâm bare shaft − tâm_cụm
-đủ_kết_luận = |offset| > max(1.5 cm, 0.75 · độ_tản)
+đủ_kết_luận = |offset| > max(15 mm · cự_ly / 18 m, 0.75 · độ_tản)
 một chiều chỉ được tính khi thành phần của nó > 0.4 · |offset|
 tầm_plunger   = 7,6 cm · cự_ly / 30 m          lệch ngang trong tầm này: chỉ gợi ý plunger
 giới_hạn_thân = 15 cm · cự_ly / 18 m           lệch ngang quá mức này: gợi ý thêm đổi thân tên
 ```
 
-Giữa hai mức thì gợi ý plunger, rồi point, rồi lực kéo. 7,6 cm ở 30 m lấy từ *Total Archery*, 15 cm ở 18 m từ sách Easton; chia tỉ lệ theo cự ly là giả định của mô hình, hai sách chỉ cho mỗi con số ở một cự ly. Demo bắn ở 18 m nên hai mức là 4,6 cm và 15 cm. Trước 2026-10-07 mức đổi thân tên là 6 cm hoặc 2,5 lần độ tản, không có nguồn.
+Giữa hai mức thì gợi ý plunger, rồi point, rồi lực kéo. 7,6 cm ở 30 m lấy từ *Total Archery*, 15 cm ở 18 m từ sách Easton; chia tỉ lệ theo cự ly là giả định của mô hình, hai sách chỉ cho mỗi con số ở một cự ly. Ở 18 m hai mức là 4,6 cm và 15 cm. Mức 15 mm cho "bareshaft tự lệch" là ước chừng, và việc nó lớn dần theo cự ly cũng vậy.
+
+Chẩn đoán dùng setup đã nhập để chọn nguyên nhân: center shot đã bị dời về phía khiến bareshaft đi đúng như trên bia thì đứng đầu; plunger đã ở trong 10 % cuối của tầm chỉnh về phía cần vặn thì bỏ qua, và point cùng lực kéo được gợi ý ngay. Chẩn đoán còn báo mô hình có đọc setup đó giống bia hay không (so `horizontal` và `vertical` của bài thử bareshaft trong mô hình với bia).
 
 ## 15. Hiển thị
 
@@ -580,6 +582,8 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 | Ngưỡng phân loại | `src/engine/simulation/classification.ts` |
 | Đường bay | `src/engine/simulation/trajectory.ts` |
 | Gợi ý | `src/engine/recommendation/suggest.ts` |
+| Đọc bia thật và chẩn đoán | `src/engine/diagnosis/targetPlot.ts` |
+| Quan sát thực tế: kiểu dữ liệu, kiểm tra, lưu | `src/models/observation.ts`, `src/utils/observations.ts`, `src/storage/observationRepository.ts` |
 | Đường lực kéo: hình dạng, ước lượng, dựng từ số đo | `src/engine/simulation/drawCurve.ts` |
 | Số ghi trên limb ra lực trên ngón tay | `src/utils/markedDrawWeight.ts` |
 | Đổi đơn vị | `src/utils/units.ts` |

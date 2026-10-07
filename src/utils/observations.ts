@@ -65,6 +65,12 @@ const plotSchema = z.object({
     .max(2000),
 })
 
+/** Validates a target plot read back from storage. */
+export function parsePlot(input: unknown): TargetPlot | null {
+  const result = plotSchema.safeParse(input)
+  return result.success ? result.data : null
+}
+
 const observationSchema = z.object({
   id: z.string().min(1),
   schemaVersion: z.literal(OBSERVATION_SCHEMA_VERSION),

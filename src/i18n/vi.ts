@@ -20,6 +20,7 @@ export const vi: Messages = {
     compare: 'So sánh',
     explore: 'Toàn cảnh',
     bow: 'Cung 3D',
+    target: 'Bia',
     sections: 'Phần của trang',
     section: { setup: 'Setup', result: 'Kết quả', advice: 'Gợi ý' },
     disclaimer:
@@ -237,6 +238,53 @@ export const vi: Messages = {
     nockHigh: 'nocking point quá cao',
     nockLow: 'nocking point quá thấp',
     meaning: (conclusions) => `Đó là dấu hiệu của ${conclusions.join(' và ')}.`,
+  },
+
+  target: {
+    heading: 'Đọc bia',
+    realWorld: 'Từ mũi tên thật của bạn trên bia. Không phải kết quả của mô hình.',
+    faceLabel: (cm, fletched, bare) =>
+      `Mặt bia ${cm} cm, đã chấm ${fletched} tên có cánh và ${bare} bareshaft. Bấm vào chỗ mũi tên cắm để chấm.`,
+    how: 'Bắn tên có cánh và bareshaft vào cùng một điểm ngắm, rồi bấm vào chỗ từng mũi cắm.',
+    kind: 'Mũi sắp chấm',
+    fletched: 'Có cánh',
+    bare: 'Bareshaft',
+    distance: 'Cự ly',
+    face: 'Mặt bia',
+    end: (end, arrows) => `Lượt ${end}: đã chấm ${arrows} mũi`,
+    nextEnd: 'Lượt kế',
+    removeLast: 'Bỏ mũi vừa chấm',
+    clear: 'Xoá hết',
+    need: (fletched, bare, haveFletched, haveBare) =>
+      `Cần ít nhất ${fletched} tên có cánh và ${bare} bareshaft mới đọc được. Đã chấm: ${haveFletched} có cánh, ${haveBare} bareshaft.`,
+    inconclusive: 'Chưa kết luận được.',
+    inconclusiveWhy:
+      'Bareshaft lệch khỏi cụm tên có cánh chưa nhiều hơn độ tản của chính cụm đó, hoặc chưa nhiều hơn mức một bareshaft tự lệch ở cự ly này. Bắn thêm vài lượt, hoặc bắn gần hơn.',
+    offset: 'Bareshaft lệch khỏi cụm có cánh',
+    offsetValue: (cm, clock) => `${cm} cm, hướng ${clock} giờ`,
+    spread: 'Độ tản của cụm có cánh',
+    counted: 'Số mũi đã tính',
+    countedValue: (fletched, bare) => `${fletched} có cánh, ${bare} bareshaft`,
+    modelAgrees: 'Mô hình cũng đọc setup bạn nhập như vậy.',
+    modelDiffers:
+      'Mô hình không đọc setup bạn nhập như vậy. Khác biệt có thể đến từ cách thả dây, hoặc từ một giá trị trên cung không đúng như đã nhập. Hãy chỉnh trên cung trước khi nghĩ tới đổi tên.',
+    stepsHeading: 'Nên thử, theo thứ tự này',
+    why: {
+      centerShot:
+        'Đầu tên đang đặt lệch về phía khiến bareshaft đi đúng như trên bia. Đặt lại trước khi chỉnh bất cứ thứ gì khác.',
+      nockingPoint: 'Lên xuống làm trước: nó làm đổi cách đọc trái phải.',
+      plunger: 'Plunger là thứ chỉnh đầu tiên cho trái phải. Mỗi lần vặn một phần tám vòng.',
+      point: (cm, meters) =>
+        `Lệch ngang quá khoảng ${cm} cm ở ${meters} m thì plunger thường không kéo về nổi.`,
+      drawWeight:
+        'Khi point chưa kéo được bareshaft về. Vặn hai limb bolt bằng nhau, từ nửa vòng tới một vòng.',
+      shaft: (cm, meters) =>
+        `Nếu đã làm hết các bước trên mà bareshaft vẫn lệch ngang quá ${cm} cm ở ${meters} m, sách Easton coi là thân tên không hợp với cung.`,
+    },
+    save: 'Lưu thành quan sát',
+    saveHint: 'Giữ lại bia này cùng các giá trị của setup đang mở.',
+    saved: 'Đã lưu cùng setup đang mở.',
+    nowLive: 'Trong trang Simulator: chọn "Bia" ở mục Hiển thị.',
   },
 
   paperTear: {

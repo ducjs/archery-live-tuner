@@ -37,7 +37,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | In progress (8 of 11 done; walk-back needs a better source; the spine chart test waits for the Easton chart) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
-| V0.4 | Real-world calibration | Not started |
+| V0.4 | Real-world calibration | In progress (the target plot diagnosis is built) |
 | V0.5 | Advanced parameters and recommendations | In progress (the draw force curve and the items done ahead of the phase are built) |
 | V0.6 | Backend: setup storage | Not started |
 | V1.0 | Stable public release | Not started |
@@ -245,12 +245,12 @@ Goal: users record what really happened, and the model adjusts to it.
 
 Why it matters: a setup can look tuned in the simulator and still shoot differently, because release, form and body differ from one archer to the next. The model cannot see that. The arrows in the target can, so advice has to be able to start from them.
 
-- [ ] Target face to tap arrow positions, with distance and face size
-- [ ] Mark each arrow as fletched or bare shaft; several ends can be added up
-- [ ] Group centers and spread; bare shaft offset from the fletched group, in cm and in clock direction
-- [ ] Reading that separates tuning from the archer: a bare shaft offset that is small against the group spread is reported as "not conclusive"
-- [ ] Diagnosis that starts from the observed offset, uses the entered setup to choose between causes (spine, plunger, center shot, nocking point), and ranks the changes
-- [ ] Observed offset stored as a real-world observation, so it also feeds calibration
+- [x] Target face to tap arrow positions, with distance and face size. In the simulator, under "Show: Target"
+- [x] Mark each arrow as fletched or bare shaft; several ends can be added up. The target being marked is kept when the page is closed
+- [x] Group centers and spread; bare shaft offset from the fletched group, in cm and in clock direction
+- [x] Reading that separates tuning from the archer: a bare shaft offset that is small against the group spread, or against what a bare shaft does on its own at that distance, is reported as "not conclusive"
+- [x] Diagnosis that starts from the observed offset, uses the entered setup to choose between causes (spine, plunger, center shot, nocking point), and ranks the changes in the order of the tuning guides. It says when the model reads the setup differently from the target
+- [x] Target stored as a real-world observation, with the values of the setup as it was shot, so it also feeds calibration
 
 ### Sight marks (idea, not scheduled)
 

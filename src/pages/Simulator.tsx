@@ -30,12 +30,24 @@ import { DrawCurvePanel } from '../components/tuning/DrawCurvePanel.tsx'
 import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
 import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
 import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
-import { DEFAULT_TRAJECTORY_OPTIONS, heuristicModel, suggestTuning } from '../engine/index.ts'
+import { TargetControls } from '../components/target/TargetControls.tsx'
+import { TargetFace } from '../components/target/TargetFace.tsx'
+import { TargetReading } from '../components/target/TargetReading.tsx'
+import {
+  DEFAULT_TRAJECTORY_OPTIONS,
+  diagnosePlot,
+  heuristicModel,
+  readPlot,
+  suggestTuning,
+} from '../engine/index.ts'
 import { useMessages } from '../i18n/useMessages.ts'
 import { useLibraryStore } from '../state/libraryStore.ts'
+import { useObservationStore } from '../state/observationStore.ts'
+import { usePlotStore } from '../state/plotStore.ts'
 import { useTuningStore } from '../state/tuningStore.ts'
+import { createObservation } from '../utils/observations.ts'
 
-type Stage = 'flight' | 'compare' | 'explore' | 'bow'
+type Stage = 'flight' | 'compare' | 'explore' | 'bow' | 'target'
 /** The part of the page a phone shows under the animation. A wide screen shows all of them. */
 type Section = 'setup' | 'result' | 'advice'
 
@@ -100,8 +112,36 @@ export function Simulator() {
   )
 
   const [stage, setStage] = useState<Stage>(() =>
-    window.location.hash === '#3d' ? 'bow' : 'flight',
+    window.location.hash === '#3d'
+      ? 'bow'
+      : window.location.hash === '#target'
+        ? 'target'
+        : 'flight',
   )
+
+  // The target: real arrows, read against the setup on screen.
+  const plot = usePlotStore((state) => state.plot)
+  const addMark = usePlotStore((state) => state.addMark)
+  const saveObservation = useObservationStore((state) => state.save)
+  const handedness = setup.bow.handedness
+  const plotReading = useMemo(() => readPlot(plot, handedness), [plot, handedness])
+  const diagnosis = useMemo(
+    () => diagnosePlot(plotReading, setup, heuristicModel),
+    [plotReading, setup],
+  )
+  // The plot that was last saved, to say so until it changes.
+  const [savedPlot, setSavedPlot] = useState<typeof plot | null>(null)
+  const saveTarget = () => {
+    const seen = plotReading.conclusive
+      ? {
+          bareHorizontal: plotReading.bareHorizontal,
+          bareVertical: plotReading.bareVertical,
+          ...(plotReading.horizontal !== 'OK' && { stiffness: plotReading.horizontal }),
+        }
+      : {}
+    void saveObservation(createObservation(setup, seen, { plot }))
+    setSavedPlot(plot)
+  }
   const viewer = useBowViewer(setup)
   const [section, setSection] = useState<Section>('setup')
   // The top and side views can be put away, to leave a small screen to the values.
@@ -139,7 +179,8 @@ export function Simulator() {
   const playback = usePlayback(duration, HOLD_SECONDS, view.speed)
 
   // A comparison has no suggestions of its own.
-  const sections: Section[] = compared ? ['setup', 'result'] : ['setup', 'result', 'advice']
+  const sections: Section[] =
+    compared || stage === 'target' ? ['setup', 'result'] : ['setup', 'result', 'advice']
   const shownSection = sections.includes(section) ? section : 'result'
 
   /** Goes to the input of a value: from a part of the 3D bow, or from the button of a piece of equipment. */
@@ -167,6 +208,7 @@ export function Simulator() {
             { value: 'compare', label: m.simulator.compare },
             { value: 'explore', label: m.simulator.explore },
             { value: 'bow', label: m.simulator.bow },
+            { value: 'target', label: m.simulator.target },
           ]}
           value={stage}
           onChange={(next) => setStage(next as Stage)}
@@ -185,7 +227,7 @@ export function Simulator() {
             drawings would cover half the screen, so a comparison scrolls away.
           */}
           <div
-            className={`bg-paper order-1 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0 ${stage === 'compare' || stage === 'explore' ? '' : 'sticky top-0 z-10'}`}
+            className={`bg-paper order-1 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0 ${stage === 'compare' || stage === 'explore' || stage === 'target' ? '' : 'sticky top-0 z-10'}`}
           >
             {stage === 'bow' ? (
               <BowViewer
@@ -204,6 +246,20 @@ export function Simulator() {
                   />
                 }
               />
+            ) : stage === 'target' ? (
+              <>
+                <p className="text-ink-muted max-w-prose">{m.target.how}</p>
+                <TargetFace
+                  plot={plot}
+                  reading={plotReading}
+                  label={m.target.faceLabel(
+                    plot.faceDiameter / 10,
+                    plotReading.fletchedCount,
+                    plotReading.bareCount,
+                  )}
+                  onMark={addMark}
+                />
+              </>
             ) : stage === 'explore' ? (
               <ExploreStage />
             ) : stage === 'compare' && !compared ? (
@@ -239,7 +295,7 @@ export function Simulator() {
                 />
               </>
             )}
-            {stage !== 'compare' && (
+            {stage !== 'compare' && stage !== 'target' && (
               <div className="lg:hidden">
                 <ResultSummary result={result} />
               </div>
@@ -247,6 +303,7 @@ export function Simulator() {
           </div>
           <div className="order-2 grid min-w-0 gap-3 lg:mt-3">
             {stage === 'bow' && <BowViewerControls viewer={viewer} onPick={pickValue} />}
+            {stage === 'target' && <TargetControls />}
             {compared && (
               <fieldset>
                 <legend className="font-medium">
@@ -331,7 +388,14 @@ export function Simulator() {
             id="section-result"
             className={`order-4 min-w-0 lg:mt-6 lg:block 2xl:col-start-2 2xl:row-span-2 2xl:row-start-1 2xl:mt-0 ${shownSection === 'setup' ? 'hidden' : ''}`}
           >
-            {compared ? (
+            {stage === 'target' ? (
+              <TargetReading
+                reading={plotReading}
+                diagnosis={diagnosis}
+                onSave={saveTarget}
+                saved={savedPlot === plot}
+              />
+            ) : compared ? (
               <ComparisonTable {...compared} units={units} />
             ) : (
               <>

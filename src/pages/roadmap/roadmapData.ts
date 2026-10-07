@@ -393,14 +393,22 @@ export const ROADMAP: RoadmapPhase[] = [
           'Giống app ghi điểm: chấm vị trí từng mũi tên trên bia, đánh dấu mũi nào là bareshaft, mũi nào có cánh. Ứng dụng so hai cụm, kết hợp với setup đã nhập, rồi đoán nguyên nhân và gợi ý nên chỉnh gì trước.',
         note: 'Vì sao cần: setup nhìn "đẹp" trong mô phỏng vẫn có thể bắn khác đi, do cách thả dây và cơ thể mỗi người. Mô hình không thấy điều đó, mũi tên trên bia thì có.',
         items: [
-          todo('Mặt bia để chấm vị trí tên, kèm cự ly và cỡ bia'),
-          todo('Đánh dấu từng mũi là có cánh hay bareshaft; cộng dồn nhiều lượt bắn'),
-          todo('Tâm cụm và độ tản; bareshaft lệch bao nhiêu cm, hướng mấy giờ'),
-          todo('Lệch nhỏ hơn độ tản của cụm thì báo "chưa kết luận được"'),
-          todo(
-            'Chẩn đoán từ độ lệch thật, dùng setup để chọn giữa các nguyên nhân, xếp thứ tự việc cần chỉnh',
+          done(
+            'Mặt bia để chấm vị trí tên, kèm cự ly và cỡ bia. Nằm ở trang Simulator, mục "Hiển thị: Bia"',
           ),
-          todo('Lưu độ lệch quan sát để dùng cho hiệu chỉnh'),
+          done(
+            'Đánh dấu từng mũi là có cánh hay bareshaft; cộng dồn nhiều lượt bắn. Bia đang chấm được giữ lại khi đóng trang',
+          ),
+          done('Tâm cụm và độ tản; bareshaft lệch bao nhiêu cm, hướng mấy giờ'),
+          done(
+            'Lệch nhỏ hơn độ tản của cụm, hoặc nhỏ hơn mức bareshaft tự lệch ở cự ly đó, thì báo "chưa kết luận được"',
+          ),
+          done(
+            'Chẩn đoán từ độ lệch thật, dùng setup để chọn giữa các nguyên nhân, xếp thứ tự việc cần chỉnh theo sách tuning. Nói rõ khi mô hình đọc setup khác với bia',
+          ),
+          done(
+            'Lưu bia thành quan sát thực tế, kèm giá trị của setup lúc bắn, để dùng cho hiệu chỉnh',
+          ),
         ],
       },
       {

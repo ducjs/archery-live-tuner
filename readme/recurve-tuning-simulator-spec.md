@@ -829,6 +829,22 @@ A group with nothing useful says so. Inside the equipment group a change of poin
 
 The user marks where fletched arrows and bare shafts landed on a target face, as in a scoring app. Together with the entered setup, treated as approximate, the app reads the bare shaft offset from the fletched group and suggests what to adjust first. Here the evidence is the real target, and the model only helps choose between possible causes. A bare shaft offset that is small compared with the group spread must be reported as not conclusive.
 
+As built: "Show: Target" in the simulator. The archer picks the distance and the face, taps where each arrow landed, and switches between fletched arrow and bare shaft; ends are added up and the last arrow can be taken back. The target is kept in the browser while it is being marked.
+
+The reading needs 3 fletched arrows and 1 bare shaft. It gives the offset of the bare shafts from the fletched group in cm and as a clock direction, and the spread of the group. It concludes nothing when the offset is under three quarters of the spread, or under what a bare shaft strays on its own (15 mm at 18 m, growing with the distance).
+
+The diagnosis lists what to try in the order of the tuning guides, and uses the setup as entered to choose between causes:
+
+```text
+center shot    only when it was moved to the side that sends a bare shaft where it landed; then first
+nocking point  when the bare shafts are high or low
+plunger        the first adjustment sideways; left out when it has no travel left that way
+point, then draw weight   past the reach of the plunger (7.6 cm at 30 m), or when the plunger is spent
+shaft          past 15 cm at 18 m
+```
+
+Both limits scale with the distance, which is an assumption. The panel also says whether the model reads the entered setup the way the target shows it; when it does not, it points to the release or a value that is not as entered. Everything in this panel is labelled as coming from the archer's arrows, not from the model. The target can be saved as a real-world observation (§18).
+
 ---
 
 # 18. Real-world calibration

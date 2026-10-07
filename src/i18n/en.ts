@@ -37,6 +37,7 @@ export const en = {
     compare: 'Compare',
     explore: 'Explore',
     bow: 'Bow 3D',
+    target: 'Target',
     sections: 'Part of the page',
     section: { setup: 'Setup', result: 'Result', advice: 'Suggestions' },
     disclaimer:
@@ -192,6 +193,54 @@ export const en = {
     nockHigh: 'a nocking point that is too high',
     nockLow: 'a nocking point that is too low',
     meaning: (conclusions: string[]) => `That reads as ${conclusions.join(' and ')}.`,
+  },
+
+  target: {
+    heading: 'Reading the target',
+    realWorld: 'From your own arrows in the target. Not a model result.',
+    faceLabel: (cm: number, fletched: number, bare: number) =>
+      `Target face of ${cm} cm, with ${fletched} fletched arrows and ${bare} bare shafts marked. Tap where an arrow landed to mark it.`,
+    how: 'Shoot fletched arrows and bare shafts at the same spot, then tap where each one landed.',
+    kind: 'Next arrow',
+    fletched: 'Fletched',
+    bare: 'Bare shaft',
+    distance: 'Distance',
+    face: 'Target face',
+    end: (end: number, arrows: number) => `End ${end}: ${arrows} marked`,
+    nextEnd: 'Next end',
+    removeLast: 'Take back the last arrow',
+    clear: 'Clear the target',
+    need: (fletched: number, bare: number, haveFletched: number, haveBare: number) =>
+      `A reading takes at least ${fletched} fletched arrows and ${bare} bare shaft. Marked so far: ${haveFletched} fletched, ${haveBare} bare.`,
+    inconclusive: 'Nothing to conclude yet.',
+    inconclusiveWhy:
+      'The bare shafts are no further from the fletched group than the group is wide, or than a bare shaft strays on its own at this distance. Shoot more ends, or shoot from closer.',
+    offset: 'Bare shafts from the fletched group',
+    offsetValue: (cm: string, clock: number) => `${cm} cm, at ${clock} o'clock`,
+    spread: 'Spread of the fletched group',
+    counted: 'Arrows counted',
+    countedValue: (fletched: number, bare: number) => `${fletched} fletched, ${bare} bare`,
+    modelAgrees: 'The model reads the setup you entered the same way.',
+    modelDiffers:
+      'The model does not read the setup you entered this way. The difference can come from the release, or from a value on the bow that is not as entered. Adjust on the bow before thinking of other arrows.',
+    stepsHeading: 'What to try, in this order',
+    why: {
+      centerShot:
+        'The point is set to the side of the string line that sends a bare shaft where yours landed. Put it back before tuning anything else.',
+      nockingPoint: 'Up and down comes first: it changes how left and right read.',
+      plunger:
+        'The plunger is the first adjustment for left and right. Go an eighth of a turn at a time.',
+      point: (cm: string, meters: string) =>
+        `More than about ${cm} cm to the side at ${meters} m is usually beyond what the plunger brings back.`,
+      drawWeight:
+        'If the point does not bring the bare shaft back. Turn both limb bolts by the same amount, half a turn to one turn.',
+      shaft: (cm: string, meters: string) =>
+        `If the bare shaft still lands more than ${cm} cm to the side at ${meters} m after all of the above, the Easton guide takes the shaft to be the wrong one for the bow.`,
+    },
+    save: 'Save as an observation',
+    saveHint: 'Keeps this target with the values of the setup on screen.',
+    saved: 'Saved with the setup on screen.',
+    nowLive: 'In the simulator: choose "Target" under Show.',
   },
 
   paperTear: {

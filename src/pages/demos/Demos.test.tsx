@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createDefaultSetup } from '../../models/setup.ts'
@@ -41,27 +41,10 @@ describe('demo tabs', () => {
 })
 
 describe('demos that do something', () => {
-  it('reads the example target and changes its advice with the example', async () => {
+  it('points to the target reading in the simulator, now that it is built', () => {
     render(<Demos hash="#demo-v0-4" />)
-    expect(screen.getByText(/Đọc bia: tên đang yếu\./)).toBeTruthy()
-
-    await userEvent.click(screen.getByRole('button', { name: 'Ví dụ: nock cao' }))
-    expect(screen.getByText(/Đọc bia: nocking point cao\./)).toBeTruthy()
-    expect(screen.getByText('Hạ nocking point xuống khoảng 1 mm')).toBeTruthy()
-
-    await userEvent.click(screen.getByRole('button', { name: 'Ví dụ: chưa rõ' }))
-    expect(screen.getByText('Chưa kết luận được.')).toBeTruthy()
-
-    await userEvent.click(screen.getByRole('button', { name: 'Xoá hết' }))
-    expect(screen.getByText(/Cần ít nhất 3 tên có cánh và 1 bareshaft/)).toBeTruthy()
-  })
-
-  it('adds a mark where the target is tapped', () => {
-    render(<Demos hash="#demo-v0-4" />)
-    const face = screen.getByRole('img', { name: /Mặt bia 40 cm/ })
-    const before = face.querySelectorAll('circle[r="0.8"]').length
-    fireEvent.click(face, { clientX: 10, clientY: 10 })
-    expect(face.querySelectorAll('circle[r="0.8"]').length).toBe(before + 1)
+    const link = screen.getByRole('link', { name: 'Mở phần đọc bia' })
+    expect(link.getAttribute('href')).toBe('#target')
   })
 
   it('lays out a tuning plan for the sample setup and none for a tuned one', async () => {
