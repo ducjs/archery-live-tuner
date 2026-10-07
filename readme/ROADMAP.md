@@ -247,7 +247,7 @@ Goal: users record what really happened, and the model adjusts to it.
 
 Why it matters: a setup can look tuned in the simulator and still shoot differently, because release, form and body differ from one archer to the next. The model cannot see that. The arrows in the target can, so advice has to be able to start from them.
 
-- [x] Target face to tap arrow positions, with distance and face size. In the simulator, under "Show: Target"
+- [x] Target face to tap arrow positions, with distance and face size. In the simulator, under "Show: Target". Arrows can also be marked with the keyboard: the arrow keys move a cursor over the face, Enter marks under it
 - [x] Mark each arrow as fletched or bare shaft; several ends can be added up. The target being marked is kept when the page is closed
 - [x] Group centers and spread; bare shaft offset from the fletched group, in cm and in clock direction
 - [x] Reading that separates tuning from the archer: a bare shaft offset that is small against the group spread, or against what a bare shaft does on its own at that distance, is reported as "not conclusive"

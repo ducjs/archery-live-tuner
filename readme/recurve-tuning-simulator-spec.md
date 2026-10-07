@@ -831,7 +831,7 @@ A group with nothing useful says so. Inside the equipment group a change of poin
 
 The user marks where fletched arrows and bare shafts landed on a target face, as in a scoring app. Together with the entered setup, treated as approximate, the app reads the bare shaft offset from the fletched group and suggests what to adjust first. Here the evidence is the real target, and the model only helps choose between possible causes. A bare shaft offset that is small compared with the group spread must be reported as not conclusive.
 
-As built: "Show: Target" in the simulator. The archer picks the distance and the face, taps where each arrow landed, and switches between fletched arrow and bare shaft; ends are added up and the last arrow can be taken back. The target is kept in the browser while it is being marked.
+As built: "Show: Target" in the simulator. The archer picks the distance and the face, taps where each arrow landed, and switches between fletched arrow and bare shaft; ends are added up and the last arrow can be taken back. The target is kept in the browser while it is being marked. Without a pointer, the face takes the keyboard focus: the arrow keys move a cursor over it, a fortieth of the face at a time or a fifth of that with Shift, Enter or Space marks an arrow under it, and where the cursor is gets read out.
 
 The reading needs 3 fletched arrows and 1 bare shaft. It gives the offset of the bare shafts from the fletched group in cm and as a clock direction, and the spread of the group. It concludes nothing when the offset is under three quarters of the spread, or under what a bare shaft strays on its own (15 mm at 18 m, growing with the distance).
 

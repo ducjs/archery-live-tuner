@@ -106,11 +106,56 @@ describe('plot store', () => {
   })
 })
 
+/** The face as the page shows it, with the texts of the keyboard cursor. */
+function Face({ plot, onMark }: { plot: TargetPlot; onMark: (x: number, y: number) => void }) {
+  return (
+    <TargetFace
+      plot={plot}
+      reading={readPlot(plot, 'RH')}
+      label="face"
+      onMark={onMark}
+      keyboardLabel="Target face, keys"
+      describeCursor={(x, y) => `cursor ${x} ${y}`}
+    />
+  )
+}
+
 describe('TargetFace', () => {
+  it('marks an arrow with the keyboard: arrow keys move a cursor, Enter marks under it', async () => {
+    const user = userEvent.setup()
+    const onMark = vi.fn()
+    render(<Face plot={plotWith()} onMark={onMark} />)
+    const face = screen.getByRole('application', { name: 'Target face, keys' })
+    expect(face.querySelector('[data-cursor]')).toBeNull()
+
+    await user.tab()
+    expect(document.activeElement).toBe(face)
+    expect(face.querySelector('[data-cursor]')).toBeTruthy()
+    // A step is a fortieth of the 400 mm face; with Shift, a fifth of that.
+    await user.keyboard('{ArrowRight}{ArrowRight}{ArrowUp}')
+    expect(screen.getByText('cursor 20 10')).toBeTruthy()
+    await user.keyboard('{Shift>}{ArrowLeft}{/Shift}')
+    expect(screen.getByText('cursor 18 10')).toBeTruthy()
+
+    await user.keyboard('{Enter}')
+    expect(onMark).toHaveBeenLastCalledWith(18, 10)
+    await user.keyboard('{ArrowDown} ')
+    expect(onMark).toHaveBeenLastCalledWith(18, 0)
+  })
+
+  it('keeps the cursor on the sheet', async () => {
+    const user = userEvent.setup()
+    render(<Face plot={plotWith()} onMark={vi.fn()} />)
+    await user.tab()
+    await user.keyboard('{ArrowLeft>40/}')
+    // The sheet reaches 224 mm from the middle of a 400 mm face.
+    expect(screen.getByText('cursor -224 0')).toBeTruthy()
+  })
+
   it('marks the arrow where the face is tapped, in mm from the middle', () => {
     const onMark = vi.fn()
     const plot = plotWith()
-    render(<TargetFace plot={plot} reading={readPlot(plot, 'RH')} label="face" onMark={onMark} />)
+    render(<Face plot={plot} onMark={onMark} />)
     const face = screen.getByRole('img', { name: 'face' })
     // The drawing shows the 400 mm face with a margin: 448 mm across.
     face.getBoundingClientRect = () => ({ left: 0, top: 0, width: 448, height: 448 }) as DOMRect
@@ -124,7 +169,7 @@ describe('TargetFace', () => {
 
   it('draws fletched arrows as dots and bare shafts as squares', () => {
     const plot = plotWith([40, 0], [50, 5])
-    render(<TargetFace plot={plot} reading={readPlot(plot, 'RH')} label="face" onMark={vi.fn()} />)
+    render(<Face plot={plot} onMark={vi.fn()} />)
     const face = screen.getByRole('img', { name: 'face' })
     expect(face.querySelectorAll('rect')).toHaveLength(2)
     // Ten rings, and one dot for each fletched arrow.

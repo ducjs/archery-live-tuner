@@ -257,6 +257,10 @@ export const vi: Messages = {
     faceLabel: (cm, fletched, bare) =>
       `Mặt bia ${cm} cm, đã chấm ${fletched} tên có cánh và ${bare} bareshaft. Bấm vào chỗ mũi tên cắm để chấm.`,
     how: 'Bắn tên có cánh và bareshaft vào cùng một điểm ngắm, rồi bấm vào chỗ từng mũi cắm.',
+    keyboardLabel:
+      'Mặt bia. Phím mũi tên dời con trỏ, giữ Shift để dời từng chút, Enter để chấm một mũi tên.',
+    cursor: (x, y) =>
+      `Con trỏ cách tâm ${(Math.abs(x) / 10).toFixed(1)} cm về bên ${x < 0 ? 'trái' : 'phải'}, ${(Math.abs(y) / 10).toFixed(1)} cm ${y < 0 ? 'phía dưới' : 'phía trên'}.`,
     kind: 'Mũi sắp chấm',
     fletched: 'Có cánh',
     bare: 'Bareshaft',

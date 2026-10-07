@@ -203,6 +203,10 @@ export const en = {
     faceLabel: (cm: number, fletched: number, bare: number) =>
       `Target face of ${cm} cm, with ${fletched} fletched arrows and ${bare} bare shafts marked. Tap where an arrow landed to mark it.`,
     how: 'Shoot fletched arrows and bare shafts at the same spot, then tap where each one landed.',
+    keyboardLabel:
+      'Target face. Arrow keys move the cursor, Shift with them moves it finely, Enter marks an arrow.',
+    cursor: (x: number, y: number) =>
+      `Cursor ${(Math.abs(x) / 10).toFixed(1)} cm ${x < 0 ? 'left' : 'right'}, ${(Math.abs(y) / 10).toFixed(1)} cm ${y < 0 ? 'below' : 'above'} the middle.`,
     kind: 'Next arrow',
     fletched: 'Fletched',
     bare: 'Bare shaft',

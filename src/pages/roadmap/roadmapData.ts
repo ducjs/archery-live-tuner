@@ -408,7 +408,7 @@ export const ROADMAP: RoadmapPhase[] = [
         note: 'Vì sao cần: setup nhìn "đẹp" trong mô phỏng vẫn có thể bắn khác đi, do cách thả dây và cơ thể mỗi người. Mô hình không thấy điều đó, mũi tên trên bia thì có.',
         items: [
           done(
-            'Mặt bia để chấm vị trí tên, kèm cự ly và cỡ bia. Nằm ở trang Simulator, mục "Hiển thị: Bia"',
+            'Mặt bia để chấm vị trí tên, kèm cự ly và cỡ bia. Nằm ở trang Simulator, mục "Hiển thị: Bia". Chấm được cả bằng bàn phím: phím mũi tên dời con trỏ, Enter để chấm',
           ),
           done(
             'Đánh dấu từng mũi là có cánh hay bareshaft; cộng dồn nhiều lượt bắn. Bia đang chấm được giữ lại khi đóng trang',

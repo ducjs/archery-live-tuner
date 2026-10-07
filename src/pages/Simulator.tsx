@@ -282,6 +282,8 @@ export function Simulator() {
                     plotReading.bareCount,
                   )}
                   onMark={addMark}
+                  keyboardLabel={m.target.keyboardLabel}
+                  describeCursor={m.target.cursor}
                 />
               </>
             ) : stage === 'explore' ? (
