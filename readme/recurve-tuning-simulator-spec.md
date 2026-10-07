@@ -885,6 +885,12 @@ Improved model
 
 Do NOT implement machine learning initially. Simple regression/coefficient fitting is enough.
 
+As built (observations): under "Show: Target", below the reading of the target. An observation is any of six things, each optional: how the arrow behaves (weak, matched, stiff), where the bare shaft lands sideways and in height, where the fletched arrows tend to land, wobble in flight, and signs of the arrow touching the bow, with free notes. It can be noted by hand or saved from a marked target, which then travels with it. It keeps its own copy of the bow and arrow values, so it still means the same after the setup is changed or deleted.
+
+Kept observations are listed for the setup on screen, newest first. Each sets "You saw" beside "The model says", computed for the values of that observation, marks every row as the same or different, and counts the matches. Nothing is adjusted by this: the two stay apart, as §26 asks. All observations in the browser can be written to one JSON file.
+
+Not built (fitting): decided on 2026-10-07 to fit a few offsets only, which a handful of observations can pin down: the archer's own shift toward weak or stiff, and the neutral points of nocking point and center shot. The sensitivities (the exponents of the spine law) stay as they are; a few dozen observations of one archer cannot separate them. The base set must always be one switch away.
+
 ---
 
 # 19. Development reference setup

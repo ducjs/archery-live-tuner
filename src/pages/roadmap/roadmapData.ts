@@ -378,13 +378,17 @@ export const ROADMAP: RoadmapPhase[] = [
       {
         title: 'Ghi nhận và hiệu chỉnh',
         items: [
-          todo(
-            'Mẫu ghi quan sát gắn với setup: dao động, hướng lệch, chạm cung, kết quả bareshaft',
+          done(
+            'Mẫu ghi quan sát gắn với setup: dao động, hướng lệch, chạm cung, kết quả bareshaft. Nằm ở mục "Hiển thị: Bia"; mỗi lần ghi giữ lại giá trị của setup lúc bắn',
           ),
-          todo('Đặt cạnh nhau: mô hình đoán gì, thực tế ra sao'),
-          todo('Chỉnh hệ số bằng hồi quy đơn giản, không dùng machine learning'),
+          done(
+            'Đặt cạnh nhau: mô hình đoán gì, thực tế ra sao. Mỗi quan sát ghi "Bạn thấy" cạnh "Mô hình nói" và đếm số điều khớp',
+          ),
+          todo(
+            'Chỉnh hệ số bằng hồi quy đơn giản, không dùng machine learning. Đã chốt: chỉ dò vài số dịch chuyển (lệch weak/stiff riêng của người bắn, điểm trung tính của nocking point và center shot)',
+          ),
           todo('Bộ hệ số riêng của từng người, bật tắt được'),
-          todo('Xuất dữ liệu quan sát'),
+          done('Xuất dữ liệu quan sát: một file chứa mọi quan sát trong trình duyệt'),
         ],
       },
       {

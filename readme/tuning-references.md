@@ -360,6 +360,7 @@ Bốn dòng đầu đã thành test trong `src/engine/simulation/simulate.test.t
 ### 10.5 Cho các phase sau
 
 - **Execution errors (ý tưởng ở V0.5).** Vặn cung 1° lệch 16 tới 22 cm ở 30 m là mốc độ lớn đầu tiên cho lỗi của người bắn.
+- **Hiệu chỉnh theo từng người (V0.4).** Đã có chỗ ghi quan sát thật và bia thật. Bước dò hệ số sẽ chỉ dò vài số dịch chuyển: lệch weak/stiff riêng của người bắn, điểm trung tính của nocking point và center shot. Cách này cũng trả lời các quyết định về điểm trung tính ở mục 10.2 cho từng người, thay vì chọn một con số chung.
 - **Hiệu suất theo khối lượng tên.** Thay `limbVirtualMass` cố định bằng một hàm của khối lượng tên, khi có số đo vận tốc thật để chỉnh (V0.4).
 - **Lời khuyên ngoài mô hình.** Dây chạm mặt hoặc ngực; kiểm lại tune mỗi tháng; chọn tên thi đấu bằng cách bắn bare shaft cả bộ ở 30 m.
 

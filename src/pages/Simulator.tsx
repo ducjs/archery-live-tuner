@@ -30,6 +30,7 @@ import { DrawCurvePanel } from '../components/tuning/DrawCurvePanel.tsx'
 import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
 import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
 import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
+import { ObservationPanel } from '../components/target/ObservationPanel.tsx'
 import { TargetControls } from '../components/target/TargetControls.tsx'
 import { TargetFace } from '../components/target/TargetFace.tsx'
 import { TargetReading } from '../components/target/TargetReading.tsx'
@@ -389,12 +390,15 @@ export function Simulator() {
             className={`order-4 min-w-0 lg:mt-6 lg:block 2xl:col-start-2 2xl:row-span-2 2xl:row-start-1 2xl:mt-0 ${shownSection === 'setup' ? 'hidden' : ''}`}
           >
             {stage === 'target' ? (
-              <TargetReading
-                reading={plotReading}
-                diagnosis={diagnosis}
-                onSave={saveTarget}
-                saved={savedPlot === plot}
-              />
+              <div className="grid gap-6">
+                <TargetReading
+                  reading={plotReading}
+                  diagnosis={diagnosis}
+                  onSave={saveTarget}
+                  saved={savedPlot === plot}
+                />
+                <ObservationPanel setup={setup} />
+              </div>
             ) : compared ? (
               <ComparisonTable {...compared} units={units} />
             ) : (
@@ -442,7 +446,7 @@ export function Simulator() {
 
       <footer className="border-line text-ink-muted mt-10 grid max-w-prose gap-1 border-t pt-4 text-sm">
         <p>{m.simulator.disclaimer}</p>
-        <p>{m.simulator.modelOnly}</p>
+        {stage !== 'target' && <p>{m.simulator.modelOnly}</p>}
       </footer>
     </main>
   )

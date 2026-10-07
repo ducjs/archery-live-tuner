@@ -20,6 +20,11 @@ export {
   type DiagnosisStep,
   type PlotReading,
 } from './diagnosis/targetPlot.ts'
+export {
+  compareObservation,
+  type ObservationComparison,
+  type ObservationRow,
+} from './diagnosis/observation.ts'
 export { HEURISTIC_V0, parseCoefficients, type Coefficients } from './coefficients/coefficients.ts'
 export {
   suggestTuning,
