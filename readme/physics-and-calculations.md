@@ -550,7 +550,13 @@ Danh sách xếp theo bước trước, `rank` sau. Bước là thứ tự sách
 
 Center shot chỉ được gợi ý quay về giá trị mặc định, không bao giờ ra xa nó: với recurve, sách đặt vị trí trong ngoài một lần lúc lắp cung rồi tune bằng lực plunger. Người bắn đã dời center shot thì được gợi ý đặt lại, và việc đó đứng đầu danh sách.
 
-Mỗi gợi ý là một thay đổi đơn lẻ từ setup hiện tại, không phải một chuỗi. Ở chế độ Simple chỉ gợi ý thông số Simple.
+Mỗi gợi ý là một thay đổi đơn lẻ từ setup hiện tại. Ở chế độ Simple chỉ gợi ý thông số Simple.
+
+### 11.3 Cả buổi tune
+
+`planTuning` (`src/engine/recommendation/plan.ts`) xếp các gợi ý thành một chuỗi: lấy gợi ý đứng đầu, áp vào setup, rồi lại lấy gợi ý đứng đầu của setup vừa có, tối đa 7 bước, dừng khi setup đã cân hoặc không còn gợi ý nào. Mỗi thông số chỉ được đổi một lần trong chuỗi. Không có luật đó thì chuỗi sẽ vặn plunger mãi để bù cho thân tên sai; có nó thì mỗi cách chỉnh đi hết mức một gợi ý cho phép (`maxMove`), rồi nhường cho cách kế tiếp theo thứ tự ở mục 11.2. Chuỗi chỉ hiện khi có từ hai bước trở lên.
+
+Ví dụ, setup tham chiếu với spine 800: plunger 1.0 lên 1.6, preload 1 lên 2,5 mm, point 120 xuống 100 gr, lực kéo 38 xuống 37 lb, và mô hình đọc là đã cân. Với spine 1000 thì sau sáu bước, kể cả đổi sang spine 850, vẫn chưa cân: chuỗi nói rõ điều đó.
 
 ## 12. Setup tham chiếu và các con số của nó
 

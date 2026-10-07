@@ -430,6 +430,18 @@ export const vi: Messages = {
     active: 'Đã chỉnh theo quan sát của bạn, không phải mô hình gốc.',
   },
 
+  plan: {
+    heading: 'Cả buổi tune',
+    intro:
+      'Các gợi ý làm nối tiếp nhau: mỗi bước bắt đầu từ kết quả của bước trước. Mỗi giá trị chỉ đổi một lần, rồi tới lượt cách chỉnh kế tiếp.',
+    tuned: (steps) => `Sau ${steps} bước này, mô hình đọc setup là đã cân.`,
+    notTuned: (steps) =>
+      `Sau ${steps} bước này, mô hình vẫn chưa đọc setup là đã cân. Cần thay đổi lớn hơn mức gợi ý đưa ra mỗi lần, nhiều khả năng là đổi thân tên.`,
+    apply: 'Thử tất cả',
+    applyHint: 'Đặt mọi giá trị của chuỗi này lên setup đang mở.',
+    nowLive: 'Trong trang Simulator, dưới phần gợi ý tune.',
+  },
+
   paperTear: {
     heading: 'Bài thử xé giấy',
     clean: 'Point và cánh đi qua cùng một lỗ.',

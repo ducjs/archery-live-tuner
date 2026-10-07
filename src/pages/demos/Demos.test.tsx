@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createDefaultSetup } from '../../models/setup.ts'
@@ -47,13 +47,9 @@ describe('demos that do something', () => {
     expect(link.getAttribute('href')).toBe('#target')
   })
 
-  it('lays out a tuning plan for the sample setup and none for a tuned one', async () => {
+  it('points to the tuning plan in the simulator, now that it is built', () => {
     render(<Demos hash="#demo-v0-5" />)
-    const plan = screen.getAllByRole('list')[0]!
-    expect(within(plan).getAllByRole('listitem').length).toBeGreaterThan(1)
-
-    await userEvent.click(screen.getByRole('button', { name: 'Setup đang mở' }))
-    expect(screen.getByText(/Không có bước nào cần làm/)).toBeTruthy()
+    expect(screen.getByText(/mục "Cả buổi tune" liệt kê cả chuỗi/)).toBeTruthy()
   })
 
   it('switches the units demo between systems', async () => {

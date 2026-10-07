@@ -29,6 +29,7 @@ import { usePlayback } from '../components/simulation/usePlayback.ts'
 import { DrawCurvePanel } from '../components/tuning/DrawCurvePanel.tsx'
 import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
 import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
+import { TuningPlanPanel } from '../components/tuning/TuningPlanPanel.tsx'
 import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
 import { CalibrationPanel } from '../components/target/CalibrationPanel.tsx'
 import { ObservationPanel } from '../components/target/ObservationPanel.tsx'
@@ -40,6 +41,7 @@ import { TargetReading } from '../components/target/TargetReading.tsx'
 import {
   DEFAULT_TRAJECTORY_OPTIONS,
   diagnosePlot,
+  planTuning,
   readPlot,
   suggestTuning,
 } from '../engine/index.ts'
@@ -117,6 +119,8 @@ export function Simulator() {
     () => suggestTuning(model, setup, { tier: mode, limit: Infinity }),
     [model, setup, mode],
   )
+  // The same suggestions, taken one after the other as a whole session.
+  const plan = useMemo(() => planTuning(model, setup, { tier: mode }), [model, setup, mode])
 
   // The sight on the bow, with its pin where the distance being shot puts it.
   const sight = useSight(setup, result)
@@ -450,6 +454,13 @@ export function Simulator() {
                       vertical: comparison.vertical,
                     }}
                     onTry={setParameter}
+                  />
+                  <TuningPlanPanel
+                    plan={plan}
+                    onApply={(changes) => {
+                      for (const { parameterKey, value } of changes)
+                        setParameter(parameterKey, value)
+                    }}
                   />
                 </div>
               </>

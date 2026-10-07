@@ -480,7 +480,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Gợi ý xếp theo thứ tự sách tuning vẫn làm: lắp đặt, lên xuống, plunger, point, lực kéo, brace height, rồi mới tới thân tên. Center shot chỉ được gợi ý đưa về chỗ đã đặt. Bareshaft hơi thấp hoặc hơi cứng vẫn tính là đã cân',
           ),
-          todo('Gợi ý cả một chuỗi bước, không chỉ bước kế tiếp'),
+          done(
+            'Gợi ý cả một chuỗi bước, không chỉ bước kế tiếp: mục "Cả buổi tune" dưới phần gợi ý, mỗi giá trị đổi một lần theo thứ tự sách, kèm nút thử tất cả',
+          ),
         ],
       },
       {

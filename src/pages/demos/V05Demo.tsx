@@ -1,102 +1,19 @@
-import { useMemo, useState } from 'react'
-import { describeSuggestion } from '../../components/tuning/suggestionText.ts'
-import { heuristicModel } from '../../engine/index.ts'
-import { vi } from '../../i18n/vi.ts'
-import {
-  fromDisplay,
-  getParameter,
-  setValue,
-  type NumberParameter,
-} from '../../models/parameters.ts'
-import { createDefaultSetup, type TuningSetup } from '../../models/setup.ts'
-import { useTuningStore } from '../../state/tuningStore.ts'
+import { useState } from 'react'
 import { DemoCard, Fact } from './demoParts.tsx'
-import { buttonClass } from './demoText.ts'
-import { tunePlan } from './logic/explore.ts'
 
-// A made-up setup that is off in three ways, so the plan has several steps.
-const DETUNED: TuningSetup = Object.entries({
-  'arrow.spine': 800,
-  'bow.nockingPointHeight': 8,
-  'bow.centerShot': 1.5,
-}).reduce((setup, [key, value]) => {
-  const parameter = getParameter(key) as NumberParameter
-  return setValue(setup, parameter, fromDisplay(parameter, value))
-}, createDefaultSetup('Setup lệch mẫu'))
-
-function PlanDemo() {
-  const current = useTuningStore((state) => state.setup)
-  const [useCurrent, setUseCurrent] = useState(false)
-  const start = useCurrent ? current : DETUNED
-  const plan = useMemo(() => tunePlan(heuristicModel, start), [start])
-
-  // Each step is described against the setup as it was just before that step.
-  const texts = useMemo(
-    () =>
-      plan.steps.map((step, index) => {
-        const before = heuristicModel.compareBareShaft(
-          index === 0 ? start : plan.steps[index - 1]!.setup,
-        )
-        return describeSuggestion(
-          step.suggestion,
-          {
-            classification: before.fletched.classification,
-            horizontal: before.horizontal,
-            vertical: before.vertical,
-          },
-          vi,
-        )
-      }),
-    [plan, start],
-  )
-
+/** For a preview that has since been built: says where the real thing is. */
+function NowLive() {
   return (
-    <div className="grid gap-3">
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Bắt đầu từ">
-        <button
-          type="button"
-          className={buttonClass}
-          aria-pressed={!useCurrent}
-          onClick={() => setUseCurrent(false)}
-        >
-          Setup lệch mẫu
-        </button>
-        <button
-          type="button"
-          className={buttonClass}
-          aria-pressed={useCurrent}
-          onClick={() => setUseCurrent(true)}
-        >
-          Setup đang mở
-        </button>
-      </div>
-
-      {plan.steps.length === 0 ? (
-        <p>Mô hình đọc setup này là đã cân. Không có bước nào cần làm.</p>
-      ) : (
-        <ol className="grid gap-2">
-          {texts.map((text, index) => (
-            <li
-              key={index}
-              className="border-line grid grid-cols-[auto_1fr] gap-x-3 rounded-lg border p-3"
-            >
-              <span className="font-display text-ink-muted text-xl font-semibold">{index + 1}</span>
-              <div>
-                <p className="font-semibold">{text.action}</p>
-                <p>{text.value}</p>
-                <p className="text-ink-muted text-sm">{text.effects.join(' ')}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
-      <p className="text-ink-muted max-w-prose text-sm">
-        {plan.tuned
-          ? `Sau ${plan.steps.length} bước, mô hình đọc setup là đã cân.`
-          : 'Sau các bước này vẫn chưa cân hẳn; cần đổi lớn hơn một bước mỗi lần.'}{' '}
-        Mỗi bước tính lại từ kết quả của bước trước.
-      </p>
-    </div>
+    <p className="max-w-prose">
+      Phần này đã làm xong và nằm trong trang Simulator, dưới phần gợi ý tune: khi setup cần từ hai
+      bước trở lên, mục "Cả buổi tune" liệt kê cả chuỗi.{' '}
+      <a
+        href="#"
+        className="text-accent focus-visible:outline-accent rounded-sm font-medium underline underline-offset-4 focus-visible:outline-2"
+      >
+        Mở trang Simulator
+      </a>
+    </p>
   )
 }
 
@@ -212,7 +129,7 @@ export function V05Demo() {
         kind="model"
         intro="Mục gợi ý hiện nay chỉ nói bước kế tiếp. Bản này xếp cả một chuỗi: làm gì trước, làm gì sau, tới khi cân."
       >
-        <PlanDemo />
+        <NowLive />
       </DemoCard>
       <DemoCard
         title="Bộ stabilizer chi tiết"

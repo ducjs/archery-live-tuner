@@ -814,6 +814,8 @@ Each suggestion is one change to one parameter. The engine tries each parameter 
 
 Center shot is not a tuning adjustment on a recurve: the guides set it once and tune with the plunger tension. It is suggested only when it has been moved, and only back.
 
+"The whole session", under the suggestions, lays the same suggestions out as one sequence: the first suggestion, then the first suggestion for the setup that leaves, and so on, until the model reads the setup as tuned or has nothing left to offer, seven steps at most. Each value is changed once. Without that rule the plan would keep turning the plunger to make up for a wrong shaft; with it, an adjustment is taken as far as one suggestion goes and the next one in the order above takes over. Each step shows what the model reports differently after it, counted from the step before. The plan says whether the setup ends up tuned, and when it does not, that a larger change is needed, most likely another shaft. "Try all of them" sets every value of the plan at once. A plan of a single step is not shown, as the suggestions already say it.
+
 A setup counts as tuned when all five ratings are neutral or low and the bare shaft lands with the fletched arrows, or a little low, or a little to the stiff side. The Easton guide describes that as common on a well tuned bow. The same distance to the weak side or above the group does not count.
 
 The panel shows two separate groups, each ranked on its own and counting from 1, with up to three items:

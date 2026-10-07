@@ -388,6 +388,18 @@ export const en = {
     active: 'Fitted to your observations, not the base model.',
   },
 
+  plan: {
+    heading: 'The whole session',
+    intro:
+      'The suggestions taken one after the other: each step starts from what the step before leaves. A value is changed once, then the next adjustment takes over.',
+    tuned: (steps: number) => `After these ${steps} steps the model reads the setup as tuned.`,
+    notTuned: (steps: number) =>
+      `After these ${steps} steps the model still does not read the setup as tuned. It takes a larger change than the suggestions make in one go, most likely another shaft.`,
+    apply: 'Try all of them',
+    applyHint: 'Sets every value of the plan on the setup on screen.',
+    nowLive: 'In the simulator, under the tuning suggestions.',
+  },
+
   paperTear: {
     heading: 'Paper tear test',
     clean: 'The point and the fletching go through one hole.',

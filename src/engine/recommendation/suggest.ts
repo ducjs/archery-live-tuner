@@ -99,6 +99,8 @@ export type SuggestOptions = {
   /** `simple` leaves out parameters that Simple mode does not show. */
   tier?: ParameterTier
   limit?: number
+  /** Parameter keys to leave alone: values that were already changed, in a plan. */
+  exclude?: readonly string[]
 }
 
 /**
@@ -170,7 +172,7 @@ export function suggestTuning<T extends SetupInput>(
   setup: T,
   options: SuggestOptions = {},
 ): TuningAdvice {
-  const { tier = 'advanced', limit = 4 } = options
+  const { tier = 'advanced', limit = 4, exclude = [] } = options
   const comparison = model.compareBareShaft(setup)
   const tuned = readTuned(comparison, setup)
   if (tuned.tuned) return { ...tuned, suggestions: [] }
@@ -186,6 +188,7 @@ export function suggestTuning<T extends SetupInput>(
   for (const candidate of CANDIDATES) {
     const parameter = getParameter(candidate.key) as NumberParameter
     if (tier === 'simple' && parameter.tier !== 'simple') continue
+    if (exclude.includes(candidate.key)) continue
 
     const from = getValue(setup, parameter)
     const current = toDisplay(parameter, from)

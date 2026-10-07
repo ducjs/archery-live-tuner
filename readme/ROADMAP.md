@@ -50,7 +50,7 @@ Every phase has a demo on the "Xem trước" page of the app (`#demo-v0-1` to `#
 Done ahead of their phase:
 - V0.2: everything except the walk-back test and the spine chart test. Walk-back has only one low-trust source so far (tuning-references.md section 9.7). The spine chart test waits for the Easton chart in the pinned list
 - V0.3: all of it
-- V0.5: ranked tuning suggestions, bow size, limb alignment, the draw force curve
+- V0.5: ranked tuning suggestions and the plan of a whole session, bow size, limb alignment, the draw force curve, the extra arrow detail
 
 ---
 
@@ -285,7 +285,7 @@ Goal: cover more equipment detail and suggest what to try next.
 - [x] Extra arrow detail: how far the point sticks out past the shaft, how high the vanes stand and how far they sit from the nock (§6). The front of center is computed from those places, with a note in Advanced when it lies outside the 7 to 16 % of the Easton guide. The vane height also sets the room under the sight pin
 - [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button, shown in two groups: "Adjust directly" on the bow, and "Equipment")
 - [x] Suggestions in the order the tuning guides work in: set-up, up and down, plunger, point, draw weight, brace height, new shaft. Center shot is only suggested back to where it was set. A bare shaft a little low or a little stiff counts as tuned (§17.1)
-- [ ] Recommendations that plan a sequence of changes, not only the next single step
+- [x] Recommendations that plan a sequence of changes, not only the next single step: "The whole session" under the suggestions, each value changed once in the order of the tuning guides, with a button to try all of it
 
 ### Draw force curve
 
