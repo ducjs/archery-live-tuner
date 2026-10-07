@@ -137,6 +137,16 @@ export const en = {
   },
 
   curve: {
+    marked: {
+      open: 'I only know what is marked on the limbs',
+      weight: 'Marked on the limbs, lb',
+      bolts: 'Limb bolts',
+      bolt: { OUT: 'All the way out', MIDDLE: 'Middle', IN: 'All the way in' },
+      estimate: (weight: string, length: string) =>
+        `About ${weight} on the fingers at your draw length of ${length}.`,
+      use: 'Use as draw weight',
+      note: 'An estimate: 5% per inch from 28 in, and 5% either way for the limb bolts. A bow scale at full draw is better. Draw length here is AMO: from the nocking point to the pivot point of the grip, plus 1.75 in.',
+    },
     compared: 'The solid line is the setup on screen; dashed lines are the saved ones.',
     heading: 'Draw force curve',
     chart: (weight: string, length: string) =>

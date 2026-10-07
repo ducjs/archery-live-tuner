@@ -1633,7 +1633,7 @@ Needs, beyond the marks: the length of the sight extension, where zero on the sc
 
 # 39. Draw force curve (V0.5)
 
-Status: designed, not built. The sources and what was taken from them are in tuning-references.md section 8.
+Status: built as designed (2026-10-07). The coefficients of §39.3 are still estimates; the owner's own measurement is pinned in the roadmap. The sources and what was taken from them are in tuning-references.md section 8.
 
 Goal: show how the force on the fingers grows over the draw, what that stores in the bow, and how steeply the force is still rising at the clicker.
 

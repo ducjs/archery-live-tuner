@@ -5,6 +5,7 @@ import type { TuningSetup } from '../../models/setup.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { convert, unitLabel } from '../../utils/units.ts'
 import { DrawCurveChart } from './DrawCurveChart.tsx'
+import { MarkedWeightHelper } from './MarkedWeightHelper.tsx'
 import { curveUnits, gainReading } from './drawCurveReading.ts'
 
 type Props = {
@@ -67,6 +68,7 @@ export function DrawCurvePanel({ setup, result, units }: Props) {
           <p className="text-ink-muted max-w-prose text-sm">{text.measureAgain}</p>
         </>
       )}
+      <MarkedWeightHelper />
     </section>
   )
 }

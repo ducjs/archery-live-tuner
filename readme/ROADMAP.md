@@ -16,7 +16,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 - [ ] Tìm bảng chọn spine của Easton (PDF) và đặt vào docs/. *Cần cho bài test đối chiếu vùng cân với bảng của nhà sản xuất, là điều kiện để xong V0.2.*
 - [ ] Tải bản PDF gốc sách Easton "Arrow Tuning and Maintenance Guide" (đủ 32 trang, có hình) và bản sạch sách của Murray Elliot, đặt vào docs/. *Bản lưu từ Scribd mất hết hình và thiếu trang; thiếu hình thì không làm được phần xé giấy.*
 - [ ] Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo. *Để kiểm hình dạng mặc định của đường lực kéo trước khi code; hiện hai hệ số của nó mới là ước lượng. Chi tiết ở spec §39 và tuning-references.md mục 8.4.*
-- [ ] Duyệt thiết kế đường lực kéo ở spec §39. *Chưa code gì cho tới khi bạn đồng ý.*
+- [x] Duyệt thiết kế đường lực kéo ở spec §39. *Chưa code gì cho tới khi bạn đồng ý.*
 - [ ] Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có. *Để các commit mới gắn với tài khoản ducjs.*
 
 ## How to use this file
@@ -291,7 +291,7 @@ Why it matters: two bows of the same draw weight can store different energy and 
 - [x] End rise from how the bow length fits the draw length: a short bow drawn long climbs more steeply at the end (§39.3)
 - [x] Own measurement: the force at one or two shorter draw lengths, read from a bow scale, replaces the estimate and is stored with the setup (§39.4)
 - [x] The curve as a chart, with stored energy and the force gain per inch at the clicker; two curves in the comparison of setups
-- [ ] Helper from the draw weight marked on the limbs to the force on the fingers: 5% per inch from 28 in, limb bolts ±5%, shown as an estimate (§39.6)
+- [x] Helper from the draw weight marked on the limbs to the force on the fingers: 5% per inch from 28 in, limb bolts ±5%, shown as an estimate (§39.6)
 
 ### Execution errors (idea, not scheduled)
 

@@ -186,6 +186,16 @@ export const vi: Messages = {
   },
 
   curve: {
+    marked: {
+      open: 'Tôi chỉ biết số ghi trên limb',
+      weight: 'Số ghi trên limb, lb',
+      bolts: 'Limb bolt',
+      bolt: { OUT: 'Nới hết', MIDDLE: 'Ở giữa', IN: 'Vặn hết' },
+      estimate: (weight: string, length: string) =>
+        `Khoảng ${weight} trên ngón tay ở draw length ${length} của bạn.`,
+      use: 'Dùng làm lực kéo',
+      note: 'Chỉ là ước lượng: 5% mỗi inch tính từ 28 in, và 5% mỗi chiều cho limb bolt. Cân cung ở full draw thì chính xác hơn. Draw length ở đây là AMO: từ nocking point tới pivot point của grip, cộng 1,75 in.',
+    },
     compared: 'Nét liền là setup đang mở; nét đứt là các setup đã lưu.',
     heading: 'Đường lực kéo',
     chart: (weight: string, length: string) =>

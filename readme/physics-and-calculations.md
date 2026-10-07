@@ -146,6 +146,16 @@ hai điểm (thêm trước full draw 8 in): giải hệ hai phương trình b�
 
 Số đo bị bỏ, và ước lượng được dùng lại, khi: điểm gần không nhỏ hơn lực kéo, điểm xa không nhỏ hơn điểm gần, `h` ra ngoài −0.3 … 0.9, hoặc đường cong không tăng suốt hành trình. Điểm xa nằm trước brace height thì không tính.
 
+### 5.1b Từ số ghi trên limb ra lực trên ngón tay
+
+Không thuộc mô hình; chỉ là quy tắc quen dùng, để người chưa có cân cung điền được lực kéo:
+
+```text
+lực_trên_ngón = số_ghi · (1 + 0.05 · (drawLength − 28 in)) · (1 + bolt)        bolt từ −5% tới +5%
+```
+
+Số ghi trên limb được hiểu là ở 28 in AMO, riser 25 in, limb bolt ở giữa. Nguồn và giới hạn ở tuning-references.md mục 8.1.
+
 ### 5.2 Quán tính của cung
 
 ```text

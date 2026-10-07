@@ -81,7 +81,7 @@ export const PINNED: PinnedTask[] = [
   {
     text: 'Duyệt thiết kế đường lực kéo ở spec §39',
     why: 'Chưa code gì cho tới khi bạn đồng ý.',
-    done: false,
+    done: true,
   },
   {
     text: 'Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có',
@@ -463,7 +463,7 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Đồ thị đường lực kéo, kèm năng lượng tích và lực tăng mỗi inch ở clicker; khi so sánh hai setup thì vẽ hai đường',
           ),
-          todo(
+          done(
             'Đổi số pound ghi trên limb ra lực trên ngón tay: 5% mỗi inch tính từ 28 inch, limb bolt ±5%, ghi rõ là ước lượng',
           ),
         ],
