@@ -416,6 +416,26 @@ Cách đọc thành lời:
 | Thấp hơn cụm | nocking point quá cao |
 | Cao hơn cụm | nocking point quá thấp |
 
+### 10.1 Xé giấy
+
+Phép thử xé giấy bắn một mũi tên có cánh qua tờ giấy ở cách 1,2 tới 1,8 m. Gần cung như vậy cánh chưa kịp lái tên, nên tờ giấy cho thấy đúng sai số lúc rời cung mà bare shaft cho thấy, nhìn từ đầu kia: tên rời cung với đuôi lệch phải thì bay sang trái. Mô hình vì vậy đọc vết rách từ chính `offset` của bare shaft, không có hệ số riêng:
+
+```text
+đuôi.ngang = −offset.lateral          dương là vết cánh nằm bên phải lỗ point
+đuôi.dọc   = −offset.vertical         dương là vết cánh nằm trên lỗ point
+```
+
+| Bare shaft rơi | Vết cánh so với lỗ point | Kết luận (tay phải) |
+|---|---|---|
+| Trái | Phải | tên cứng |
+| Phải | Trái | tên yếu |
+| Thấp | Trên | nocking point quá cao |
+| Cao | Dưới | nocking point quá thấp |
+
+Ngưỡng "lỗ gọn" là ngưỡng TOGETHER của bare shaft, nên hai phép thử không bao giờ nói ngược nhau. Hướng rách lấy từ hình trong sách Easton (tuning-references.md mục 9.1). Sách cũng ghi rách lên trên và rách về phía yếu có thể do tên chạm cung; khi vết rách thuộc hai kiểu đó và nguy cơ chạm cung không ở mức Thấp, bảng kết quả ghi thêm câu đó.
+
+Hình vẽ: lỗ point và chữ Y của ba cánh đặt đối xứng quanh giữa tờ giấy. Khoảng cách giữa chúng là `150 · |đuôi|` đơn vị trên tờ giấy 120 đơn vị, không quá 38, nên vết rách ở ngưỡng TOGETHER (0.05) vẫn thấy được và vết rách lớn nhất không ra ngoài giấy. Độ dài trên hình không phải cm thật.
+
 ## 11. Gợi ý tuning
 
 ### 11.1 Điểm sai lệch
@@ -555,7 +575,8 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 | Spine cần thiết, mismatch | `src/engine/simulation/dynamicSpine.ts` |
 | Plunger | `src/engine/simulation/plungerModel.ts` |
 | Các chỉ số, bare shaft | `src/engine/simulation/simulate.ts` |
-| Grains per pound, FOC, động năng | `src/engine/simulation/derivedMetrics.ts` |
+| Xé giấy | `src/engine/simulation/paperTear.ts`; hình vẽ ở `src/components/tuning/paperTearGeometry.ts` |
+| Grains per pound, FOC, động năng, khối lượng tên tối thiểu theo AMO | `src/engine/simulation/derivedMetrics.ts` |
 | Ngưỡng phân loại | `src/engine/simulation/classification.ts` |
 | Đường bay | `src/engine/simulation/trajectory.ts` |
 | Gợi ý | `src/engine/recommendation/suggest.ts` |

@@ -149,7 +149,7 @@ Brace height tốt nhất là chỗ cung êm và ít rung nhất. Từ 2026-10-0
 
 ## 6. Ý cho các phase sau
 
-- **Paper tear (V0.2).** Quy trình và các cách sửa đã có ở trên. Hướng rách đã có, ở mục 9.1.
+- **Paper tear (V0.2).** Đã làm ngày 2026-10-07, theo hướng rách ở mục 9.1; cách tính ở physics-and-calculations.md mục 10.1.
 - **Minnowing.** Đuôi tên lắc ngang nhanh hơn và biên độ nhỏ hơn fishtailing; là dấu hiệu chạm cung, thường do cánh chạm rest. Hoạt hình có thể vẽ riêng kiểu này khi nguy cơ clearance cao.
 - **Đọc cụm tên theo cự ly (V0.4).** Cụm bình thường to dần đều theo cự ly. Cụm xa to bất thường còn cụm gần ổn: lực cản quá lớn, giảm cỡ hoặc góc cánh. Cụm gần không nhỏ đi tương ứng với cụm xa: vấn đề clearance.
 - **Bay xấu mà cụm vẫn tốt.** Thường là tên cứng: lệch lúc rời cung nhưng hồi nhanh. Ngược lại, bare shaft trùng cụm hoặc lỗ giấy tròn chưa bảo đảm cụm tốt. Hợp với ý mô phỏng cụm tên ở spec §37.
@@ -324,7 +324,7 @@ Xếp theo độ chắc của nguồn. Chưa việc nào được làm; mỗi vi
 
 | Việc | Nguồn | Đụng tới |
 |---|---|---|
-| Phép thử xé giấy ảo: từ `verticalTendency` và `dynamicBehavior` ra hướng rách theo bảng 9.1; clearance cao thì ghi chú là rách trái hoặc rách trên có thể do chạm cung | Easton, A | Tính năng mới, không đổi hệ số |
+| **Xong.** Phép thử xé giấy ảo: hướng rách theo bảng 9.1, đọc từ cùng sai số lúc rời cung với bare shaft; khi nguy cơ chạm cung không thấp thì ghi chú là rách về phía yếu hoặc rách lên trên có thể do chạm cung | Easton, A | `paperTear.ts`, `ResultPanel.tsx`; không đổi hệ số |
 | **Xong.** Cảnh báo tên nhẹ theo bảng AMO ở 9.2, đặt cạnh mốc 5 gr/lb. Có bỏ mốc 5 gr/lb hay không còn chờ quyết định | Easton, A | `derivedMetrics.ts`, `ResultPanel.tsx` |
 | **Xong.** Gợi ý tuning theo thứ tự sách: dọc trước ngang; ngang thì plunger, rồi point, rồi lực kéo, rồi spine. Center shot chỉ được gợi ý đưa về vị trí mặc định | Easton và *Total Archery* | `suggest.ts` |
 | **Xong.** Đích của "đã cân": chấp nhận bare shaft hơi thấp và hơi cứng, không đòi trùng khít | Easton, A (mục 4.4) | `suggest.ts`, physics mục 11.1 |

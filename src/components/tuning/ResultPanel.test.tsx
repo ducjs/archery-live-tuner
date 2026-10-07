@@ -24,6 +24,34 @@ const tooLight = withDisplay(reference, 'bow.drawWeight', 64)
 // On a 70 lb bow the AMO chart asks for 312 gr.
 const belowAmo = withDisplay(reference, 'bow.drawWeight', 70)
 
+describe('paper tear in the result panel', () => {
+  const panel = (setup: TuningSetup, withComparison = true) =>
+    render(
+      <ResultPanel
+        result={heuristicModel.simulate(setup)}
+        comparison={withComparison ? heuristicModel.compareBareShaft(setup) : undefined}
+        handedness="RH"
+      />,
+    )
+
+  it('comes with the bare shaft test, not without it', () => {
+    panel(reference, false)
+    expect(screen.queryByText('Paper tear test')).toBeNull()
+    cleanup()
+
+    panel(reference)
+    expect(screen.getByText('Paper tear test')).toBeTruthy()
+    expect(screen.getByText(/go through one hole/)).toBeTruthy()
+  })
+
+  it('draws the tear and says what it means', () => {
+    panel(withDisplay(reference, 'arrow.spine', 500))
+    expect(screen.getByText(/tears to the right of the hole.*stiff arrow/)).toBeTruthy()
+    const figure = screen.getByRole('img', { name: /sheet of paper.*to the right of the hole/ })
+    expect(figure.querySelector('circle')).toBeTruthy()
+  })
+})
+
 describe('derived numbers in the result panel', () => {
   it('shows them in Advanced only', () => {
     const result = heuristicModel.simulate(reference)

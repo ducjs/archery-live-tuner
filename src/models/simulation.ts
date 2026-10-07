@@ -108,6 +108,26 @@ export type BareShaftComparison = {
   }
 }
 
+/**
+ * The paper tear test: a fletched arrow shot through a sheet of paper from a
+ * couple of meters. The point makes a hole, and the fletching tears to the
+ * side of it that the tail of the arrow was on.
+ */
+export type PaperTear = {
+  /** Where the fletching tears, relative to the hole of the point. */
+  horizontal: 'LEFT' | 'CLEAN' | 'RIGHT'
+  vertical: 'LOW' | 'CLEAN' | 'HIGH'
+  /** The tail relative to the point, on the -1..+1 scales, for drawing the tear. */
+  tail: {
+    /** positive = right */
+    lateral: number
+    /** positive = high */
+    vertical: number
+  }
+  /** True when the guide names poor clearance as another cause of this tear, and the model rates clearance as a risk. */
+  clearanceSuspect: boolean
+}
+
 /** The shot before the arrow is free: what the views need to draw the bow at full draw. */
 export type LaunchGeometry = {
   /** mm, how far the string carries the arrow, from full draw to brace height */

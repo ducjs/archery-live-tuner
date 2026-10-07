@@ -70,7 +70,7 @@ export const PINNED: PinnedTask[] = [
   },
   {
     text: 'Tìm bài của Kooi và Sparenberg, "On the mechanics of the arrow: Archer\'s Paradox" (Journal of Engineering Mathematics, 1997), và bản sạch sách của Murray Elliot, đặt vào docs/',
-    why: 'Bài của Kooi là nguồn duy nhất đã biết có mô hình tên uốn quanh cung, cần để kiểm độ lớn của weak và stiff. Sách Easton đủ trang đã có, phần xé giấy không còn bị chặn.',
+    why: 'Bài của Kooi là nguồn duy nhất đã biết có mô hình tên uốn quanh cung, cần để kiểm độ lớn của weak và stiff. Sách Easton đủ trang đã có, và phần xé giấy đã làm xong.',
     done: false,
   },
   {
@@ -298,7 +298,10 @@ export const ROADMAP: RoadmapPhase[] = [
             'Test giữ mô hình trong vùng số liệu đã công bố: số chu kỳ uốn của tên lúc còn trên dây, phần năng lượng tên nhận được, vận tốc theo khối lượng tên và brace height',
           ),
           done('Bài test ảo: bareshaft'),
-          todo('Bài test ảo: xé giấy, walk-back'),
+          done(
+            'Bài test ảo: xé giấy. Bảng kết quả vẽ tờ giấy và đọc vết rách, cạnh bài thử bareshaft; hướng rách lấy từ sách Easton',
+          ),
+          todo('Bài test ảo: walk-back. Mới có một nguồn tả nó, độ tin thấp'),
           todo('Đối chiếu với bảng spine của nhà sản xuất'),
         ],
       },

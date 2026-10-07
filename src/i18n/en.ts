@@ -194,6 +194,21 @@ export const en = {
     meaning: (conclusions: string[]) => `That reads as ${conclusions.join(' and ')}.`,
   },
 
+  paperTear: {
+    heading: 'Paper tear test',
+    clean: 'The point and the fletching go through one hole.',
+    above: 'above',
+    below: 'below',
+    left: 'to the left of',
+    right: 'to the right of',
+    tearing: (where: string[]) =>
+      `The fletching tears ${where.join(' and ')} the hole the point made.`,
+    clearance:
+      'Poor clearance tears the paper the same way, and the model rates it a risk here: the arrow may be touching the bow on its way out.',
+    note: 'A fletched arrow through a sheet of paper from 1.2 to 1.8 m, seen from the shooting line. Once the hole is clean, step back another 1.8 m and shoot again.',
+    figure: (tearing: string) => `The sheet of paper after the shot. ${tearing}`,
+  },
+
   suggestions: {
     heading: 'Tuning suggestions',
     tuned: 'The model reads this setup as tuned. There is nothing to suggest.',

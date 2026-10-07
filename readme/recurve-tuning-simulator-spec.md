@@ -1423,6 +1423,8 @@ Report results in the language archers already use, so they can be checked again
 
 These are easier to compare with reality than `WEAK / STIFF`.
 
+As built: the bare shaft test and the paper tear are in the result panel, shown together when the bare shaft is switched on. The paper tear is drawn as the sheet looks from the shooting line: the hole of the point, and the Y of the fletching to the side of it the tail was on. So close to the bow the fletching has not yet steered the arrow, so the tear is read from the same launch error as the bare shaft and the two always agree: a bare shaft that lands left goes with a tear to the right. Directions and meanings follow the Easton guide. When the tear is one that poor clearance also makes (high, or to the weak side) and the model rates clearance as a risk, the panel says so. Walk-back is not built: the only description found so far is from a low-trust source and contradicts the Easton guide.
+
 ## 34.4 Derived metrics
 
 - FOC %

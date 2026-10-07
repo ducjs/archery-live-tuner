@@ -14,7 +14,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 - [ ] Quyết định điểm cân của center shot: giữ 0 mm, dời ra ngoài khoảng 2,4 mm theo sách Easton, hay đổi nghĩa thông số thành "lệch so với vị trí chuẩn". *Hiện đặt center shot đúng như sách thì mô hình báo bareshaft lệch trái. Chi tiết ở tuning-references.md mục 4.2.*
 - [ ] Quyết định điểm cân của nocking point: giữ 4 mm hay nâng lên. *Easton ghi 13 mm, Total Archery ghi 4,8 tới 9,5 mm; 4 mm nằm dưới cả hai. Tiller cũng vậy: sách ghi 4,8 tới 6,4 mm, mô hình coi 4 mm là cân. Chi tiết ở tuning-references.md mục 4.3.*
 - [ ] Tìm bảng chọn spine của Easton (PDF) và đặt vào docs/. *Cần cho bài test đối chiếu vùng cân với bảng của nhà sản xuất, là điều kiện để xong V0.2.*
-- [ ] Tìm bài của Kooi và Sparenberg, "On the mechanics of the arrow: Archer's Paradox" (Journal of Engineering Mathematics, 1997), và bản sạch sách của Murray Elliot, đặt vào docs/. *Bài của Kooi là nguồn duy nhất đã biết có mô hình tên uốn quanh cung, cần để kiểm độ lớn của weak và stiff. Sách Easton đủ trang đã có, phần xé giấy không còn bị chặn.*
+- [ ] Tìm bài của Kooi và Sparenberg, "On the mechanics of the arrow: Archer's Paradox" (Journal of Engineering Mathematics, 1997), và bản sạch sách của Murray Elliot, đặt vào docs/. *Bài của Kooi là nguồn duy nhất đã biết có mô hình tên uốn quanh cung, cần để kiểm độ lớn của weak và stiff. Sách Easton đủ trang đã có, và phần xé giấy đã làm xong.*
 - [ ] Quyết định có giữ lời nhắc tên nhẹ ở mốc 5 gr/lb không, khi đã có cảnh báo theo bảng AMO. *Hiện có cả hai: dưới bảng AMO thì cảnh báo cung có thể gãy, dưới 5 gr/lb thì chỉ nhắc là tên nhẹ. Mốc 5 gr/lb là quy tắc của compound và cao hơn bảng AMO ở hầu hết recurve. Chi tiết ở tuning-references.md mục 9.2.*
 - [ ] Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo. *Để kiểm hai hệ số hình dạng mặc định của đường lực kéo, hiện vẫn là ước lượng; ứng dụng đã nhận thẳng các số này ở Nâng cao, "Lực kéo tự đo". Chi tiết ở spec §39 và tuning-references.md mục 8.4.*
 - [x] Duyệt thiết kế đường lực kéo ở spec §39. *Chưa code gì cho tới khi bạn đồng ý.*
@@ -35,7 +35,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | Phase | Theme | Status |
 |---|---|---|
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
-| V0.2 | Improved dynamic model | In progress (7 of 10 done; paper tear and walk-back are open; the spine chart test waits for the Easton chart) |
+| V0.2 | Improved dynamic model | In progress (8 of 11 done; walk-back needs a better source; the spine chart test waits for the Easton chart) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
 | V0.4 | Real-world calibration | Not started |
 | V0.5 | Advanced parameters and recommendations | In progress (the draw force curve and the items done ahead of the phase are built) |
@@ -47,7 +47,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 Every phase has a demo on the "Xem trước" page of the app (`#demo-v0-1` to `#demo-v1-0`, one tab per phase). Each demo card says whether it runs on the current model, on a simple stand-in calculation, or on fake data. A demo does not tick its roadmap item: the items below stay open until the real feature is built.
 
 Done ahead of their phase:
-- V0.2: everything except the paper tear and walk-back tests and the spine chart test. Paper tear is no longer blocked: the tear directions are in tuning-references.md section 9.1. Walk-back has only one low-trust source so far (section 9.7). The spine chart test waits for the Easton chart in the pinned list
+- V0.2: everything except the walk-back test and the spine chart test. Walk-back has only one low-trust source so far (tuning-references.md section 9.7). The spine chart test waits for the Easton chart in the pinned list
 - V0.3: all of it
 - V0.5: ranked tuning suggestions, bow size, limb alignment, the draw force curve
 
@@ -184,7 +184,8 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 - [x] Warning for an arrow under the AMO minimum weight for the draw weight and draw length, from the chart in the Easton guide. It replaces the 5 gr/lb note when both apply
 - [x] Tests that hold the model against published figures: the bending cycles on the string (Pratt, 1.25), the share of the stored energy the arrow gets, speed against arrow mass and brace height. Sources in tuning-references.md section 10.3
 - [x] Virtual tuning test: bare shaft (done early in M5)
-- [ ] Virtual tuning tests: paper tear, walk-back (§34.3)
+- [x] Virtual tuning test: paper tear (§34.3). The result panel draws the sheet and reads the tear, next to the bare shaft test; directions from the Easton guide
+- [ ] Virtual tuning test: walk-back (§34.3). Only one low-trust source describes it so far (tuning-references.md section 9.7)
 - [ ] Spine chart sanity test (§25 Test 8)
 
 **Exit criteria:** the new model sits behind the same `SimulationModel` interface with no UI rewrite, all §25 tests pass, and the NEUTRAL zone agrees with a manufacturer spine chart for the reference setups.

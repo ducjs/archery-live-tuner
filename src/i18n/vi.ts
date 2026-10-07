@@ -239,6 +239,20 @@ export const vi: Messages = {
     meaning: (conclusions) => `Đó là dấu hiệu của ${conclusions.join(' và ')}.`,
   },
 
+  paperTear: {
+    heading: 'Bài thử xé giấy',
+    clean: 'Point và cánh đi qua cùng một lỗ.',
+    above: 'cao hơn',
+    below: 'thấp hơn',
+    left: 'lệch trái',
+    right: 'lệch phải',
+    tearing: (where) => `Vết cánh rách ${where.join(' và ')} so với lỗ của point.`,
+    clearance:
+      'Tên chạm cung cũng làm giấy rách kiểu này, và ở setup này mô hình thấy có nguy cơ đó: có thể tên đang chạm cung lúc rời đi.',
+    note: 'Bắn một mũi tên có cánh qua tờ giấy từ 1,2 tới 1,8 m, nhìn từ vạch bắn. Khi lỗ đã gọn, lùi thêm 1,8 m và bắn lại.',
+    figure: (tearing) => `Tờ giấy sau phát bắn. ${tearing}`,
+  },
+
   suggestions: {
     heading: 'Gợi ý tune',
     tuned: 'Mô hình đọc setup này là đã cân. Không có gì cần gợi ý.',

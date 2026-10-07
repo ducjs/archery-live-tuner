@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { HEURISTIC_V0, MIN_GRAINS_PER_POUND } from '../../engine/index.ts'
+import { HEURISTIC_V0, MIN_GRAINS_PER_POUND, readPaperTear } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { BareShaftComparison, SimulationResult } from '../../models/simulation.ts'
 import { convert } from '../../utils/units.ts'
 import { bareShaftReading } from './bareShaftReading.ts'
+import { PaperTearFigure } from './PaperTearFigure.tsx'
+import { paperTearReading } from './paperTearReading.ts'
 import { resultReading } from './resultReading.ts'
 
 type GaugeProps = {
@@ -129,6 +131,8 @@ export function ResultPanel({
   const m = useMessages()
   const text = m.result
   const reading = comparison && bareShaftReading(comparison, handedness, m)
+  const tear = comparison && readPaperTear(comparison, handedness)
+  const tearReading = tear && paperTearReading(tear, handedness, m)
   // The reading in words comes first. On a phone the gauges behind it wait to
   // be asked for; a wide screen has room to show them from the start.
   const [gaugesOpen, setGaugesOpen] = useState(
@@ -239,6 +243,23 @@ export function ResultPanel({
               {reading.landing} {reading.meaning}
             </p>
             <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.bareShaftNote}</p>
+          </div>
+        )}
+        {tear && tearReading && (
+          <div className="border-line mt-5 border-t pt-4">
+            <h3 className="font-semibold">{m.paperTear.heading}</h3>
+            <div className="mt-2 flex items-start gap-4">
+              <PaperTearFigure tear={tear} label={m.paperTear.figure(tearReading.tearing)} />
+              <div className="min-w-0">
+                <p className="max-w-prose">
+                  {tearReading.tearing} {tearReading.meaning}
+                </p>
+                {tearReading.clearance && (
+                  <p className="mt-1 max-w-prose">{tearReading.clearance}</p>
+                )}
+                <p className="text-ink-muted mt-1 max-w-prose text-sm">{m.paperTear.note}</p>
+              </div>
+            </div>
           </div>
         )}
         <p className="mt-5">
