@@ -2,7 +2,14 @@ import { useMessages } from '../../i18n/useMessages.ts'
 import type { SimulationResult, TrajectoryPoint } from '../../models/simulation.ts'
 import { sampleTrajectory, type ArrowPose, type ScreenPoint } from './arrowGeometry.ts'
 import { AimLine, FlyingArrow, TargetEdge } from './sceneParts.tsx'
-import { SCENE, drawBack, driftPixels, launchEase, type ImpactMode } from './timing.ts'
+import {
+  EQUIPMENT_SCALE,
+  SCENE,
+  drawBack,
+  driftPixels,
+  launchEase,
+  type ImpactMode,
+} from './timing.ts'
 
 // Visual amplification. The drawing is not to scale.
 /**
@@ -19,9 +26,26 @@ const BOW_SCALE = 0.86
 const TRAIL_STEP = 6
 /** Distance from the string at which the bow angle is marked, just past the long rod. */
 const ANGLE_MARK = 96
+/** Where the sight extension leaves the riser, in the frame of the bow. */
+const RISER_FRONT = 31
+/** mm above the arrow at which the sight extension is drawn: about where a sight mounts. */
+const SIGHT_BAR_TOP = 130
+
+/** The sight as it is set for the distance being shot, in mm. */
+export type SightOnBow = {
+  /** How far in front of the riser the pin sits. */
+  extension: number
+  /** The middle of the pin above the line of the arrow; negative when it would be below. */
+  pinHeight: number
+  pinDiameter: number
+  /** How much room the vanes have under the pin. */
+  status: 'clear' | 'close' | 'blocked'
+}
 
 type Props = {
   result: SimulationResult
+  /** Draws the sight on the bow, with the pin where this distance puts it. */
+  sight?: SightOnBow
   /** A bare shaft to fly alongside. */
   bare?: SimulationResult
   impact: ImpactMode
@@ -32,7 +56,7 @@ type Props = {
 }
 
 /** The flight seen from the side. Shaft bending is sideways, so none is drawn here. */
-export function SideView({ result, bare, impact, time, exaggeration }: Props) {
+export function SideView({ result, bare, sight, impact, time, exaggeration }: Props) {
   const m = useMessages()
   const { classification } = result
   const distance = result.trajectory.at(-1)!.x
@@ -91,6 +115,24 @@ export function SideView({ result, bare, impact, time, exaggeration }: Props) {
   const limb = (side: 1 | -1) =>
     `M26 ${side * 34}C22 ${side * 68} ${6 + 0.7 * (tipX - 1)} ${side * (84 - 0.7 * (100 - tipY))} ${tipX} ${side * tipY}q1 ${side * 8} 9 ${side * 9}`
 
+  // The sight, in the frame of the bow: 1 unit there is BOW_SCALE drawing units.
+  const perMm = EQUIPMENT_SCALE / BOW_SCALE
+  const pinX = RISER_FRONT + (sight?.extension ?? 0) * perMm
+  // The arrow on the bow is drawn tipped nose-down, more than it really is. The
+  // pin is placed against that drawn line, so that a pin in the way of the
+  // arrow is also seen to be in its way.
+  // The line is that of the arrow at full draw, which is how the clip opens.
+  const fullDrawNock = 1 - drawBack(result, Number.NEGATIVE_INFINITY) / BOW_SCALE
+  const arrowLine = (pinX - fullDrawNock) * Math.tan(result.launch.nockAngle * exaggeration)
+  const pin = sight && {
+    x: pinX,
+    y: arrowLine - sight.pinHeight * perMm,
+    // Drawn no smaller than this, or a 12 mm ring could not be seen.
+    radius: Math.max(2.2, (sight.pinDiameter / 2) * perMm),
+    // The bar the pin slides on reaches from above the highest mark to the pin.
+    top: arrowLine - SIGHT_BAR_TOP * perMm,
+  }
+
   const fly = (flight: SimulationResult) => {
     const { trajectory } = flight
     const now = sampleTrajectory(trajectory, time)
@@ -145,7 +187,10 @@ export function SideView({ result, bare, impact, time, exaggeration }: Props) {
     <svg
       viewBox={`0 0 ${SCENE.width} ${SCENE.height}`}
       role="img"
-      aria-label={m.stage.sideViewLabel(vertical)}
+      // The sight is told in words too: its state must not rest on color alone.
+      aria-label={[m.stage.sideViewLabel(vertical), sight && m.sight.sightLabel[sight.status]]
+        .filter(Boolean)
+        .join(' ')}
       className="block h-auto w-full"
     >
       <AimLine fromX={SCENE.bowX} toX={SCENE.targetX} y={SCENE.centerY} />
@@ -166,6 +211,28 @@ export function SideView({ result, bare, impact, time, exaggeration }: Props) {
         <path d="M26 -34Q33 0 26 34" strokeWidth="7" />
         {/* The long rod is square to the string, so it shows where the bow points. */}
         <line x1="32" y1="19" x2="98" y2="19" strokeWidth="3" />
+        {pin && (
+          // The sight: the extension out from the riser, the bar down from it, the pin on the bar.
+          <g data-sight={sight.status}>
+            <path
+              d={`M${RISER_FRONT} ${pin.top}H${pin.x}V${Math.max(pin.y, pin.top + 4)}`}
+              strokeWidth="1.5"
+            />
+            <circle
+              cx={pin.x}
+              cy={pin.y}
+              r={pin.radius}
+              strokeWidth="2"
+              className={
+                sight.status === 'clear'
+                  ? 'stroke-ink fill-surface'
+                  : sight.status === 'close'
+                    ? 'stroke-gold fill-surface'
+                    : 'stroke-weak fill-weak'
+              }
+            />
+          </g>
+        )}
       </g>
 
       {/* How far the bow is raised: the arc is drawn steeper, the number is the real angle. */}

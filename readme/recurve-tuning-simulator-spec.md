@@ -1620,7 +1620,7 @@ Limits: the commonly taught splits differ between coaches and there is no measur
 
 # 38. Sight mark prediction
 
-Status: 38.1 to 38.5 are built, as described under "As built" at the end of this section. 38.6, the sight drawn on the bow, is not.
+Status: built, as described under "As built" at the end of this section.
 
 Goal: the archer enters the sight marks they already have, and the app predicts the marks for the distances they have not shot.
 
@@ -1700,6 +1700,24 @@ Drag is never fitted from marks, also with four or more. Over the distances arch
 The range of a predicted mark is the spread of predictions when each estimate is off by a plausible amount, refitting to the known marks every time: the eye height by 2 cm, the drag by half, the model's speed by 5 % (only while it is the model's), and the nearest and furthest marks read half a millimeter off in opposite directions. It is narrow between the known marks and widens away from them. All four amounts are assumptions.
 
 The marks can be saved as a real-world observation, with the implied speed when there is one; the observation then shows it beside the model's estimate for the same values.
+
+### The sight on the bow (38.6)
+
+Below the marks, "Room under the sight pin". Where the pin sits is geometry and needs no marks: the pin lies on the line from the eye to the target, and the arrow leaves pointing above that line by the launch angle.
+
+```text
+pin above the arrow = eye above the arrow − reach · tan(launch angle)
+reach               = draw length to the pivot point + sight extension
+room                = pin above the arrow − half the pin ring − vane height − half the shaft
+```
+
+Two things are entered: how far in front of the riser the pin sits (15 cm unless changed) and the outside diameter of the pin ring (12 mm). The eye height is the one already entered for the marks. The speed is the one the marks imply when there are three or more, and the model's estimate otherwise. So `38.6`'s "where zero on the scale sits" is not needed: the pin is placed from the anchor, not from the scale.
+
+A table gives, for each of the five distances, how far the pin is above the arrow and how much room the vanes have: clear, close (under 1 cm), none (the vanes would strike the pin, or the pin would have to sit below the arrow), or out of reach. Where there is none, the panel says what helps: a shorter extension or a lower anchor.
+
+A checkbox draws the sight on the bow in the side view, for the distance being shown: the extension out from the riser, the bar down from it, and the pin, as a ring when clear, a gold ring when close and a filled red disc when in the way. The pin is placed against the arrow as drawn, which is tipped nose-down more than it really is, so that a pin in the way is also seen in the way.
+
+Limits. The eye is taken to be straight above the nock. A vane is taken to stand 12 mm off the shaft, as the arrow has no vane height yet. The sideways bend of the shaft as it passes the pin is not considered, nor is the sight bar itself; only the pin.
 
 ---
 

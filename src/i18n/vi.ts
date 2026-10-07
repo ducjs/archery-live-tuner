@@ -362,6 +362,26 @@ export const vi: Messages = {
     saved: 'Đã lưu cùng setup đang mở.',
     limits:
       'Vạch chỉ đúng cho một setup: đổi tên, đổi lực kéo, đổi anchor hay đổi cần thước ngắm thì vạch cũ hết dùng được. Gió, nhiệt độ và độ cao so với mặt biển không được tính.',
+    onBowHeading: 'Khoảng hở dưới đầu ngắm',
+    onBowIntro:
+      'Bia càng xa thì đầu ngắm càng hạ thấp, tiến dần về phía mũi tên. Phần này không cần vạch: nó suy ra từ anchor, thước ngắm và vận tốc tên của bạn.',
+    extension: 'Đầu ngắm cách riser về phía trước',
+    pinDiameter: 'Vòng ngắm, đường kính ngoài',
+    pinAbove: 'Đầu ngắm cao hơn mũi tên',
+    room: 'Khoảng hở cho cánh',
+    clear: (cm) => `${cm} cm`,
+    close: (cm) => `Sát: ${cm} cm`,
+    blocked: 'Không còn: cánh sẽ chạm đầu ngắm',
+    blockedAdvice:
+      'Ở cự ly không còn khoảng hở, hãy đưa đầu ngắm lại gần riser bằng cần ngắn hơn, hoặc anchor thấp hơn. Cả hai đều nâng đầu ngắm ra xa mũi tên.',
+    drawOnBow: 'Vẽ thước ngắm trên cung ở góc nhìn ngang',
+    onBowLimits:
+      'Mắt được coi là nằm ngay trên nock, và cánh được coi là cao 12 mm so với thân tên. Lúc đi qua đầu ngắm tên vẫn chưa ổn định, nên khoảng hở dưới một centimet được gọi là sát.',
+    sightLabel: {
+      clear: 'Đầu ngắm cách xa mũi tên.',
+      close: 'Đầu ngắm nằm sát mũi tên.',
+      blocked: 'Đầu ngắm chắn đường mũi tên.',
+    },
     kept: 'Vạch thước ngắm',
     keptMark: (meters, mark) => `${meters} m: ${mark}`,
     keptSpeed: (implied, model) => `Vạch cho ra ${implied} m/s; mô hình ước lượng ${model} m/s.`,

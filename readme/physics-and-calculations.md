@@ -445,6 +445,15 @@ góc(D) = góc bắn, tính từ đường ngắm, để tên leo từ vị trí
 - Từ ba vạch, vận tốc tên cũng được dò (tìm theo tỉ lệ vàng trong 35 tới 95 m/s). Việc này chỉ làm được vì chiều cao mắt so với mũi tên được coi là đã biết (mặc định 11 cm), nên vận tốc suy ra là ước lượng thô: lệch 2 cm ở chiều cao mắt làm nó đổi hơn 5 %.
 - Lực cản không bao giờ được dò từ vạch. Trong tầm cự ly người ta bắn, vận tốc và lực cản uốn đường cong gần như cùng một kiểu.
 - Khoảng của mỗi vạch đoán là độ trải của kết quả khi từng ước lượng lệch một mức: chiều cao mắt 2 cm, lực cản 50 %, vận tốc của mô hình 5 % (chỉ khi vận tốc chưa dò từ vạch), và vạch gần nhất cùng vạch xa nhất bị đọc lệch nửa milimet ngược chiều nhau. Mỗi lần đều khớp lại với các vạch đã biết, nên khoảng hẹp ở giữa các vạch đó và rộng dần khi ra xa. Cả bốn mức đều là giả định.
+- Khoảng hở dưới đầu ngắm (`src/engine/ballistics/sightClearance.ts`, spec §38.7) là hình học thuần, không cần vạch:
+
+```text
+đầu_ngắm_trên_tên = chiều_cao_mắt − tầm · tan(góc(D))
+tầm               = (drawLength − 44,45 mm) + cần_thước          từ mắt tới đầu ngắm
+khoảng_hở         = đầu_ngắm_trên_tên − ½·vòng_ngắm − 12 mm − ½·shaftDiameter
+```
+
+  44,45 mm là 1,75 in mà draw length AMO tính thêm phía trước pivot point. 12 mm là chiều cao cánh, ước chừng vì mô hình chưa có thông số này. Hở dưới 10 mm gọi là "sát", âm là "chắn"; ngưỡng 10 mm cũng là ước chừng. Setup tham chiếu với cần 15 cm, mắt 11 cm: 84 mm ở 18 m, 22 mm ở 70 m (sát), −4 mm ở 90 m (chắn).
 - Ví dụ của spec, vạch 15 ở 18 m và 30 ở 30 m: đường thẳng qua hai vạch cho 55, 80 và 105 ở 50, 70 và 90 m; mô hình cho khoảng 58, 88 và 120.
 
 ## 10. Bare shaft
@@ -615,6 +624,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 
 - Đoạn phim mở đầu ở tư thế kéo hết dây và đứng yên tới khi bấm chạy. Dây kéo lùi đúng bằng power stroke theo tỉ lệ của cung. Cánh cung cong theo: đầu cánh lùi về sau và khép vào vừa đủ để dây giữ nguyên chiều dài (đầu cánh lùi 35% quãng kéo, con số chọn cho hợp mắt).
 - Quãng dây đẩy tên được chiếu chậm hơn quãng bay. Cung vẽ to hơn nhiều so với cự ly tới bia, nên nếu chiếu cùng nhịp thì tên vọt khỏi dây rồi như bị phanh lại. Nhịp chiếu được chọn để tên rời dây đúng bằng tốc độ nó bay trên màn hình sau đó, tối đa 1,2 giây. Số mili giây hiển thị vẫn là thời gian thật.
+- Thước ngắm trên cung (bật ở mục "Vạch thước ngắm"): cần thước, thanh đứng và đầu ngắm vẽ cùng tỉ lệ với cung, riêng đầu ngắm không nhỏ hơn 2,2 đơn vị để còn nhìn thấy. Đầu ngắm đặt theo đường mũi tên đang vẽ lúc kéo hết dây, vốn chúc mũi nhiều hơn thật, để một đầu ngắm chắn đường cũng được thấy là chắn. Vòng rỗng là còn hở, vòng vàng là sát, đĩa đỏ đặc là chắn.
 - Góc nhìn ngang: cung nghiêng theo hướng tên rời cung, thanh cân bằng vuông góc với dây. Tên trên dây chúc mũi xuống theo `nockAngle`, nhân với mức phóng đại.
 - Chuyển động chậm: tốc độ thường là chậm 12 lần so với thật; các mức là 1/48, 1/24, 1/12, 1/6 và tốc độ thật.
 - Cung và mũi tên vẽ cùng một tỉ lệ: cung 68 in cao 187 đơn vị, nên tên 27 in dài khoảng 74 đơn vị. Cự ly tới bia, độ uốn và độ trôi mỗi thứ có tỉ lệ riêng, nên toàn cảnh vẫn không theo tỉ lệ.
@@ -648,7 +658,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 | Gợi ý | `src/engine/recommendation/suggest.ts` |
 | Đọc bia thật và chẩn đoán | `src/engine/diagnosis/targetPlot.ts` |
 | Dịch chuyển riêng của từng người, phép dò | `src/models/calibration.ts`, `src/engine/calibration/fit.ts` |
-| Đường bay có lực cản, vạch thước ngắm | `src/engine/ballistics/flight.ts`, `src/engine/ballistics/sightMarks.ts` |
+| Đường bay có lực cản, vạch thước ngắm, khoảng hở dưới đầu ngắm | `src/engine/ballistics/flight.ts`, `sightMarks.ts`, `sightClearance.ts` |
 | Quan sát thực tế: kiểu dữ liệu, kiểm tra, lưu | `src/models/observation.ts`, `src/utils/observations.ts`, `src/storage/observationRepository.ts` |
 | Đường lực kéo: hình dạng, ước lượng, dựng từ số đo | `src/engine/simulation/drawCurve.ts` |
 | Số ghi trên limb ra lực trên ngón tay | `src/utils/markedDrawWeight.ts` |

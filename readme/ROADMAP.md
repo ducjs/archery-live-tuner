@@ -38,7 +38,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | In progress (8 of 12 done; walk-back needs a better source; the spine chart test waits for the Easton chart; the tail wobble needs measurements) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
-| V0.4 | Real-world calibration | In progress (16 of 17 done. Open: the sight drawn on the bow. The exit criterion still waits for real observations: the fit has only been tested on made-up ones) |
+| V0.4 | Real-world calibration | All items done. Open: the exit criterion, which waits for real observations; the fit has only been tested on made-up ones |
 | V0.5 | Advanced parameters and recommendations | In progress (the draw force curve and the items done ahead of the phase are built) |
 | V0.6 | Backend: setup storage | Not started |
 | V1.0 | Stable public release | Not started |
@@ -256,7 +256,7 @@ Why it matters: a setup can look tuned in the simulator and still shoot differen
 
 ### Sight marks
 
-> **Nói đơn giản:** Nhập vạch thước ngắm (sight) ở vài cự ly đã bắn chuẩn, ví dụ 18 m vạch 15 và 30 m vạch 30, ứng dụng đoán vạch cho 50, 70, 90 m. Ra bãi không phải dò lại từ đầu, chỉ cần bắn vài mũi để chỉnh tinh. Phần đoán vạch đã làm; vẽ thước ngắm lên cung thì chưa.
+> **Nói đơn giản:** Nhập vạch thước ngắm (sight) ở vài cự ly đã bắn chuẩn, ví dụ 18 m vạch 15 và 30 m vạch 30, ứng dụng đoán vạch cho 50, 70, 90 m. Ra bãi không phải dò lại từ đầu, chỉ cần bắn vài mũi để chỉnh tinh. Đã làm xong, kể cả vẽ thước ngắm lên cung.
 
 Why it matters: every archer needs marks for distances they have not shot yet, and finding them by trial costs arrows and time. The known marks are also real measurements of how this bow throws this arrow, which the model otherwise only estimates. Details and limits are in §38.
 
@@ -265,7 +265,7 @@ Why it matters: every archer needs marks for distances they have not shot yet, a
 - [x] Air drag in the flight path, since without it the long distances come out too low. The animation and the sight marks fly the same path
 - [x] A range for each predicted mark, wider the further it lies from the known ones, and a note that it is a starting point to confirm by shooting
 - [x] The arrow speed that the known marks imply, shown next to the model's estimate and stored as a real-world observation. From three marks on, and given as a rough reading with its own range
-- [ ] The sight drawn on the bow in the side view, with the pin where the mark for the chosen distance puts it, and a warning when the arrow or its vanes would pass too close to the pin or the sight bar (§38.6)
+- [x] The sight drawn on the bow in the side view, with the pin where the chosen distance puts it, and a warning when the vanes would pass too close to the pin (§38.6). The room under the pin is listed for every distance; it follows from the anchor, the sight extension and the arrow speed, and needs no marks
 
 **Exit criteria:** after a user logs observations for several setups, the calibrated model matches those observations better than the base model, and the user can always switch back to the base model.
 

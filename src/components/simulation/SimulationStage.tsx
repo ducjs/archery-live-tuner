@@ -3,7 +3,7 @@ import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { SegmentedControl } from '../common/SegmentedControl.tsx'
-import { SideView } from './SideView.tsx'
+import { SideView, type SightOnBow } from './SideView.tsx'
 import { sampleTrajectory } from './arrowGeometry.ts'
 import {
   DEFAULT_IMPACT,
@@ -25,6 +25,8 @@ type FlightViewProps = {
   result: SimulationResult
   /** A bare shaft to fly alongside the fletched arrow. */
   bare?: SimulationResult
+  /** Draws the sight on the bow in the side view. */
+  sight?: SightOnBow
   handedness: Handedness
   /** How the landing is drawn. One point of impact when left out. */
   impact?: ImpactMode
@@ -61,6 +63,7 @@ export function FlightView({
   view,
   result,
   bare,
+  sight,
   handedness,
   impact = DEFAULT_IMPACT,
   elapsed,
@@ -116,6 +119,7 @@ export function FlightView({
             <SideView
               result={result}
               bare={bare}
+              sight={sight}
               impact={impact}
               time={time}
               exaggeration={exaggeration}

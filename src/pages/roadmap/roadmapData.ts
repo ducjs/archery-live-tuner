@@ -444,7 +444,7 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Vận tốc tên suy ra từ các vạch đã có, đặt cạnh ước lượng của mô hình và lưu làm quan sát thực tế',
           ),
-          todo(
+          done(
             'Vẽ thước ngắm (sight) trên cung ở góc nhìn ngang, đầu ngắm nằm đúng vạch của cự ly đang chọn, và cảnh báo khi mũi tên hoặc cánh đi quá sát đầu ngắm hay thanh thước',
           ),
         ],

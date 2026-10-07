@@ -33,6 +33,7 @@ import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
 import { CalibrationPanel } from '../components/target/CalibrationPanel.tsx'
 import { ObservationPanel } from '../components/target/ObservationPanel.tsx'
 import { SightMarksPanel } from '../components/target/SightMarksPanel.tsx'
+import { useSight } from '../components/target/useSight.ts'
 import { TargetControls } from '../components/target/TargetControls.tsx'
 import { TargetFace } from '../components/target/TargetFace.tsx'
 import { TargetReading } from '../components/target/TargetReading.tsx'
@@ -116,6 +117,19 @@ export function Simulator() {
     () => suggestTuning(model, setup, { tier: mode, limit: Infinity }),
     [model, setup, mode],
   )
+
+  // The sight on the bow, with its pin where the distance being shot puts it.
+  const sight = useSight(setup, result)
+  const pinNow = sight.pins.find((pin) => pin.distance === view.distance * 1000)
+  const sightOnBow =
+    sight.entry.onBow && pinNow && pinNow.status !== 'unreachable'
+      ? {
+          extension: sight.entry.extension,
+          pinHeight: pinNow.pinHeight,
+          pinDiameter: sight.entry.pinDiameter,
+          status: pinNow.status,
+        }
+      : undefined
 
   const [stage, setStage] = useState<Stage>(() =>
     window.location.hash === '#3d'
@@ -287,6 +301,7 @@ export function Simulator() {
                     view={view.view}
                     result={result}
                     bare={bareShaft ? comparison.bare : undefined}
+                    sight={sightOnBow}
                     handedness={setup.bow.handedness}
                     impact={view.impact}
                     elapsed={playback.elapsed}
@@ -402,7 +417,7 @@ export function Simulator() {
                   onSave={saveTarget}
                   saved={savedPlot === plot}
                 />
-                <SightMarksPanel setup={setup} result={result} />
+                <SightMarksPanel setup={setup} result={result} sight={sight} />
                 <ObservationPanel setup={setup} />
                 <CalibrationPanel />
               </div>

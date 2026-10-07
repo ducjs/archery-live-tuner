@@ -327,6 +327,26 @@ export const en = {
     saved: 'Saved with the setup on screen.',
     limits:
       'Marks belong to one setup: other arrows, another draw weight, another anchor or another sight extension make them useless. Wind, temperature and altitude are left out.',
+    onBowHeading: 'Room under the sight pin',
+    onBowIntro:
+      'The further the target, the lower the pin sits, and it comes down toward the arrow. This needs no marks: it follows from your anchor, your sight and the speed of the arrow.',
+    extension: 'Pin in front of the riser',
+    pinDiameter: 'Pin ring, outside',
+    pinAbove: 'Pin above the arrow',
+    room: 'Room for the vanes',
+    clear: (cm: string) => `${cm} cm`,
+    close: (cm: string) => `Close: ${cm} cm`,
+    blocked: 'None: the vanes would strike the pin',
+    blockedAdvice:
+      'Where there is no room, bring the pin closer to the riser with a shorter extension, or anchor lower. Either lifts the pin away from the arrow.',
+    drawOnBow: 'Draw the sight on the bow in the side view',
+    onBowLimits:
+      'The eye is taken to be over the nock, and a vane to stand 12 mm off the shaft. The arrow is still settling as it passes the pin, so under a centimeter of room is called close.',
+    sightLabel: {
+      clear: 'The sight pin is clear of the arrow.',
+      close: 'The sight pin is close to the arrow.',
+      blocked: 'The sight pin is in the way of the arrow.',
+    },
     kept: 'Sight marks',
     keptMark: (meters: string, mark: string) => `${meters} m: ${mark}`,
     keptSpeed: (implied: string, model: string) =>

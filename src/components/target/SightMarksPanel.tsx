@@ -1,15 +1,15 @@
-import { useMemo, useState } from 'react'
-import { MIN_MARKS, dragPerMeter, fitSightMarks } from '../../engine/index.ts'
+import { useState } from 'react'
+import { MIN_MARKS } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import type { TuningSetup } from '../../models/setup.ts'
 import { useObservationStore } from '../../state/observationStore.ts'
-import { sightOf, useSightStore } from '../../state/sightStore.ts'
+import { useSightStore } from '../../state/sightStore.ts'
 import { createObservation } from '../../utils/observations.ts'
 import { buttonClass, inputClass } from '../common/styles.ts'
-import { DISTANCES } from '../simulation/timing.ts'
+import { SIGHT_DISTANCES, type Sight } from './useSight.ts'
 
-const TO_PREDICT = DISTANCES.map((meters) => meters * 1000)
+const TO_PREDICT = SIGHT_DISTANCES
 
 /** Reads a number an archer typed, with a comma or a point. Empty and nonsense are null. */
 function typed(text: string): number | null {
@@ -23,15 +23,18 @@ type Props = {
   setup: TuningSetup
   /** The model result for the setup, for the speed it estimates. */
   result: SimulationResult
+  /** The sight of the setup, fitted and placed: see `useSight`. */
+  sight: Sight
 }
 
 /**
  * The sight marks the archer has, and the marks the model expects for the
  * other distances. The marks in are real; the marks out are a model result.
  */
-export function SightMarksPanel({ setup, result }: Props) {
+export function SightMarksPanel({ setup, result, sight }: Props) {
   const text = useMessages().sight
-  const entry = useSightStore((state) => sightOf(state.bySetup, setup.id))
+  const { entry, fit, pins } = sight
+  const setSight = useSightStore((state) => state.setSight)
   const setMark = useSightStore((state) => state.setMark)
   const setEyeHeight = useSightStore((state) => state.setEyeHeight)
   const saveObservation = useObservationStore((state) => state.save)
@@ -39,15 +42,6 @@ export function SightMarksPanel({ setup, result }: Props) {
   const [saved, setSaved] = useState<typeof entry | null>(null)
 
   const modelSpeed = result.metrics.launchSpeed
-  const fit = useMemo(
-    () =>
-      fitSightMarks(
-        entry.marks,
-        { speed: modelSpeed, drag: dragPerMeter(setup.arrow), eyeHeight: entry.eyeHeight },
-        TO_PREDICT,
-      ),
-    [entry, modelSpeed, setup.arrow],
-  )
   const fromMarks = fit?.speedFrom === 'marks'
   // A fit that misses an entered mark by this much is not to be trusted.
   const span = Math.abs((fit?.predictions.at(-1)?.mark ?? 0) - (fit?.predictions[0]?.mark ?? 0))
@@ -209,6 +203,88 @@ export function SightMarksPanel({ setup, result }: Props) {
         </div>
       )}
       <p className="text-ink-muted mt-3 max-w-prose text-sm">{text.limits}</p>
+
+      <h3 className="mt-5 font-semibold">{text.onBowHeading}</h3>
+      <p className="text-ink-muted max-w-prose text-sm">{text.onBowIntro}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-2">
+        {(
+          [
+            ['extension', text.extension, 'cm', 10, 40],
+            ['pinDiameter', text.pinDiameter, 'mm', 1, 60],
+          ] as const
+        ).map(([key, label, unit, perUnit, most]) => (
+          <label key={key} className="flex items-center gap-2">
+            <span className="font-medium">{label}</span>
+            <input
+              type="text"
+              inputMode="decimal"
+              className={`${inputClass} w-20`}
+              key={`${setup.id}-${entry[key]}`}
+              defaultValue={entry[key] / perUnit}
+              onBlur={(event) => {
+                const value = typed(event.target.value)
+                if (value !== null && value > 0 && value <= most) {
+                  setSight(setup.id, { [key]: value * perUnit })
+                } else {
+                  event.target.value = String(entry[key] / perUnit)
+                }
+              }}
+            />
+            <span className="text-ink-muted">{unit}</span>
+          </label>
+        ))}
+      </div>
+      <table className="mt-3 w-full max-w-xl text-left">
+        <thead>
+          <tr className="text-ink-muted text-sm">
+            <th scope="col" className="py-1 pr-3 font-normal">
+              {text.distance}
+            </th>
+            <th scope="col" className="py-1 pr-3 font-normal">
+              {text.pinAbove}
+            </th>
+            <th scope="col" className="py-1 font-normal">
+              {text.room}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {pins.map((pin) => (
+            <tr key={pin.distance} className="border-line border-t align-baseline">
+              <th scope="row" className="py-1.5 pr-3 font-semibold whitespace-nowrap">
+                {pin.distance / 1000} m
+              </th>
+              <td className="py-1.5 pr-3">
+                {pin.status === 'unreachable' ? '' : `${(pin.pinHeight / 10).toFixed(1)} cm`}
+              </td>
+              <td className={`py-1.5 ${pin.status === 'clear' ? '' : 'font-semibold'}`}>
+                {pin.status === 'unreachable'
+                  ? text.outOfReach
+                  : pin.status === 'blocked'
+                    ? text.blocked
+                    : pin.status === 'close'
+                      ? text.close((pin.room / 10).toFixed(1))
+                      : text.clear((pin.room / 10).toFixed(1))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {pins.some((pin) => pin.status === 'blocked') && (
+        <p className="border-gold bg-gold/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2">
+          {text.blockedAdvice}
+        </p>
+      )}
+      <label className="mt-3 flex min-h-11 cursor-pointer items-center gap-2 font-medium">
+        <input
+          type="checkbox"
+          className="accent-accent size-5"
+          checked={entry.onBow}
+          onChange={(event) => setSight(setup.id, { onBow: event.target.checked })}
+        />
+        {text.drawOnBow}
+      </label>
+      <p className="text-ink-muted max-w-prose text-sm">{text.onBowLimits}</p>
     </section>
   )
 }

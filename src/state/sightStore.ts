@@ -6,13 +6,35 @@ import { parseSight } from '../utils/observations.ts'
 /** mm, a usual distance from the eye to the arrow with an anchor under the chin. HEURISTIC. */
 export const DEFAULT_EYE_HEIGHT = 110
 
+/** mm, a usual sight extension on a recurve. HEURISTIC. */
+export const DEFAULT_EXTENSION = 150
+/** mm, a usual sight ring. HEURISTIC. */
+export const DEFAULT_PIN_DIAMETER = 12
+
 export type SightEntry = {
   marks: KnownMark[]
   /** mm */
   eyeHeight: number
+  /** mm, how far in front of the riser the pin sits */
+  extension: number
+  /** mm, outer diameter of the pin housing or ring */
+  pinDiameter: number
+  /** Draw the sight on the bow in the side view. */
+  onBow: boolean
 }
 
-const EMPTY: SightEntry = { marks: [], eyeHeight: DEFAULT_EYE_HEIGHT }
+const EMPTY: SightEntry = {
+  marks: [],
+  eyeHeight: DEFAULT_EYE_HEIGHT,
+  extension: DEFAULT_EXTENSION,
+  pinDiameter: DEFAULT_PIN_DIAMETER,
+  onBow: false,
+}
+
+/** A stored number when it is one within bounds, the default otherwise. */
+function within(value: unknown, low: number, high: number, fallback: number): number {
+  return typeof value === 'number' && value >= low && value <= high ? value : fallback
+}
 
 type SightState = {
   /**
@@ -23,6 +45,11 @@ type SightState = {
   /** Sets the mark for a distance, or takes it away with `null`. */
   setMark: (setupId: string, distance: number, mark: number | null) => void
   setEyeHeight: (setupId: string, eyeHeight: number) => void
+  /** Changes what the sight is like, or whether it is drawn on the bow. */
+  setSight: (
+    setupId: string,
+    change: Partial<Pick<SightEntry, 'extension' | 'pinDiameter' | 'onBow'>>,
+  ) => void
 }
 
 /** The sight marks of a setup; nothing entered yet reads as no marks. */
@@ -46,6 +73,7 @@ export const useSightStore = create<SightState>()(
             return { ...entry, marks: marks.sort((a, b) => a.distance - b.distance) }
           }),
         setEyeHeight: (setupId, eyeHeight) => change(setupId, (entry) => ({ ...entry, eyeHeight })),
+        setSight: (setupId, next) => change(setupId, (entry) => ({ ...entry, ...next })),
       }
     },
     {
@@ -58,7 +86,15 @@ export const useSightStore = create<SightState>()(
         const bySetup: SightState['bySetup'] = {}
         for (const [setupId, entry] of Object.entries(remembered)) {
           const parsed = parseSight(entry)
-          if (parsed) bySetup[setupId] = { marks: parsed.marks, eyeHeight: parsed.eyeHeight }
+          if (!parsed) continue
+          const extra = entry as Record<string, unknown>
+          bySetup[setupId] = {
+            marks: parsed.marks,
+            eyeHeight: parsed.eyeHeight,
+            extension: within(extra.extension, 0, 400, DEFAULT_EXTENSION),
+            pinDiameter: within(extra.pinDiameter, 1, 60, DEFAULT_PIN_DIAMETER),
+            onBow: extra.onBow === true,
+          }
         }
         return { ...current, bySetup }
       },

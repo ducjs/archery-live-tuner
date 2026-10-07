@@ -27,6 +27,12 @@ export {
 } from './diagnosis/observation.ts'
 export { DRAG_COEFFICIENT, dragPerMeter, launchAngleFor } from './ballistics/flight.ts'
 export {
+  CLOSE_ROOM,
+  pinPosition,
+  type PinPosition,
+  type SightGeometry,
+} from './ballistics/sightClearance.ts'
+export {
   MIN_MARKS,
   fitSightMarks,
   usableMarks,
