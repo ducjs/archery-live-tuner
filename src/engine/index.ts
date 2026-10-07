@@ -8,6 +8,18 @@ export {
   type LandscapeCell,
   type Sensitivity,
 } from './explore/explore.ts'
+export {
+  MIN_BARE,
+  MIN_FLETCHED,
+  diagnosePlot,
+  plungerReach,
+  readPlot,
+  shaftLimit,
+  type Diagnosis,
+  type DiagnosisCause,
+  type DiagnosisStep,
+  type PlotReading,
+} from './diagnosis/targetPlot.ts'
 export { HEURISTIC_V0, parseCoefficients, type Coefficients } from './coefficients/coefficients.ts'
 export {
   suggestTuning,
