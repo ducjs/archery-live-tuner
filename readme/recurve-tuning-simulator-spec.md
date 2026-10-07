@@ -1652,7 +1652,7 @@ Two marks fix only two unknowns, `offset` and `scale`. Without drag and at small
 
 ## 38.3 What the model needs first
 
-- Air drag in the flight path. The trajectory is drag-free today, which is harmless for an animation and wrong for a 90 m mark.
+- Air drag in the flight path. Without it the trajectory is harmless for an animation and wrong for a 90 m mark. (Built: see 38.7.)
 - The height of the eye above the arrow at anchor, or a way to absorb it into the fit. It matters most at short distances.
 
 ## 38.4 What it gives back
@@ -1679,7 +1679,7 @@ Needs, beyond the marks: the length of the sight extension, where zero on the sc
 
 Under "Show: Target", between the reading of the target and the observations. The archer enters the marks they have for any of 18, 30, 50, 70 and 90 m, as read on their own sight; a scale that counts down works as well as one that counts up. Marks are kept in the browser for each setup separately.
 
-The flight used here has air drag: the arrow is a point that loses speed in proportion to the square of its speed, by an amount that follows from its shaft diameter and its mass. The animation keeps its drag-free path.
+The flight used here has air drag: the arrow is a point that loses speed in proportion to the square of its speed, by an amount that follows from its shaft diameter and its mass. The animation flies the same path, so its flight time and launch angle include drag as well.
 
 ```text
 mark(D) = offset + scale · tan(angle(D))

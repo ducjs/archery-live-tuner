@@ -587,6 +587,35 @@ describe('draw force curve (§39)', () => {
 // Figures from the literature, with wide margins. The model is not fitted to
 // them: they are here so that a later change of coefficients cannot walk it out
 // of the plausible range unnoticed. Sources in readme/tuning-references.md §10.3.
+describe('air drag in the flight', () => {
+  const flight = (setup: TuningSetup, meters: number) =>
+    heuristicModel.simulate(setup, { trajectory: { distance: meters * 1000, timeStep: 0.001 } })
+      .trajectory
+
+  it('makes the arrow later than its launch speed alone would have it', () => {
+    for (const meters of [18, 70]) {
+      const points = flight(reference, meters)
+      const speed = heuristicModel.analyze(reference).metrics.launchSpeed
+      expect(points.at(-1)!.t).toBeGreaterThan((meters * 1000) / speed)
+    }
+  })
+
+  it('slows a thick, light arrow more than a thin, heavy one', () => {
+    const light = withDisplay(withDisplay(reference, 'arrow.shaftDiameter', 7), 'arrow.shaftGpi', 5)
+    const heavy = withDisplay(reference, 'arrow.shaftGpi', 9)
+    const late = (setup: TuningSetup) =>
+      flight(setup, 70).at(-1)!.t - 70_000 / heuristicModel.analyze(setup).metrics.launchSpeed
+    expect(late(light)).toBeGreaterThan(late(heavy))
+  })
+
+  it('still draws a whole flight for a bow too slow for the distance', () => {
+    const slow = withDisplay(reference, 'bow.drawWeight', 10)
+    const points = flight(slow, 90)
+    expect(points.at(-1)!.x).toBeCloseTo(90_000, 6)
+    expect(points.every((point) => Number.isFinite(point.y) && Number.isFinite(point.t))).toBe(true)
+  })
+})
+
 describe('against published figures', () => {
   const efficiency = (setup: TuningSetup) => {
     const m = heuristicModel.analyze(setup).metrics

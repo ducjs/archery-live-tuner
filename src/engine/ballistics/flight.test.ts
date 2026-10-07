@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createDefaultSetup } from '../../models/setup.ts'
-import { dragPerMeter, launchAngleFor } from './flight.ts'
+import { dragPerMeter, flightPath, launchAngleFor } from './flight.ts'
 
 const { arrow } = createDefaultSetup()
 const SPEED = 58_000
@@ -17,6 +17,32 @@ describe('dragPerMeter', () => {
     expect(dragPerMeter({ ...arrow, pointWeight: arrow.pointWeight * 1.5 })).toBeLessThan(
       dragPerMeter(arrow),
     )
+  })
+})
+
+describe('flightPath', () => {
+  const drag = dragPerMeter(arrow)
+  const path = (distance: number, k = drag) =>
+    flightPath(SPEED, k, launchAngleFor(SPEED, k, distance), distance, 0.001, 5000)
+
+  it('starts at the bow and ends on the target, a millimeter or so from its height', () => {
+    const samples = path(70_000)
+    expect(samples[0]).toEqual({ t: 0, x: 0, y: 0 })
+    expect(samples.at(-1)!.x).toBe(70_000)
+    expect(Math.abs(samples.at(-1)!.y)).toBeLessThan(5)
+  })
+
+  it('takes longer than the same shot without drag, and more so far out', () => {
+    const late = (distance: number) => path(distance).at(-1)!.t - path(distance, 0).at(-1)!.t
+    expect(late(18_000)).toBeGreaterThan(0)
+    expect(late(90_000)).toBeGreaterThan(10 * late(18_000))
+    // At 70 m the arrow is a few hundredths of a second late, not tenths.
+    expect(late(70_000)).toBeGreaterThan(0.02)
+    expect(late(70_000)).toBeLessThan(0.12)
+  })
+
+  it('is empty when the arrow never gets there', () => {
+    expect(flightPath(15_000, drag, Math.PI / 4, 90_000, 0.001, 5000)).toEqual([])
   })
 })
 

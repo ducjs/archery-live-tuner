@@ -14,7 +14,7 @@ Khi code và tài liệu này khác nhau thì code đúng. Sửa công thức ho
 | Tần số uốn của thân tên trần | Vật lý | Dầm tự do hai đầu, mode 1 |
 | Hiệu chỉnh tần số cho point và nock | Ước chừng | Một hệ số duy nhất |
 | Năng lượng tích trữ, vận tốc rời cung | Vật lý đơn giản | Cân bằng năng lượng với khối lượng ảo; hai hằng số là ước chừng |
-| Đường bay dọc (cung đạn đạo) | Vật lý | Không có lực cản không khí |
+| Đường bay dọc (cung đạn đạo) | Vật lý | Có lực cản không khí; hệ số cản là ước chừng |
 | Spine cần thiết, weak / stiff | Ước chừng | Luật lũy thừa quanh setup tham chiếu |
 | Dao động, lệch ngang, lệch dọc, clearance | Ước chừng | Tổng có trọng số, chuẩn hóa về thang 0..1 hoặc −1..+1 |
 | Độ trôi ngang / dọc trên đường bay | Minh họa | Không phải vị trí trúng bia |
@@ -378,20 +378,18 @@ FOC % = (điểm_cân_bằng − L/2) / L · 100
 
 ## 9. Đường bay
 
-Cung đạn đạo không lực cản, ngắm vào tâm bia ở khoảng cách `D` (18, 30, 50, 70 hoặc 90 m):
+Cung đạn đạo có lực cản không khí, ngắm vào tâm bia ở khoảng cách `D` (18, 30, 50, 70 hoặc 90 m). Mũi tên là một chất điểm; lực cản tỉ lệ với bình phương vận tốc, công thức và hệ số ở mục 9.2. Từ 2026-10-07 hoạt hình và vạch thước ngắm dùng chung một đường bay.
 
 ```text
-g = 9806.65 mm/s²
-
-góc_nâng = ½ · asin(min(1, g·D / v²))
-v_x      = v · cos(góc_nâng)
-T        = D / v_x                             thời gian bay
+góc_nâng = góc bắn để tên về đúng độ cao lúc rời cung sau quãng D, tìm bằng chia đôi khoảng
+(x, y)   = tích phân từng bước 1 ms từ góc đó, tới khi x = D
+T        = thời điểm x = D                      thời gian bay
 ```
 
-Mẫu cách nhau 1 ms, tối đa 5000 điểm. Tại thời điểm `t`, với `x = v_x · t`:
+Mẫu cách nhau 1 ms, tối đa 5000 điểm; mẫu cuối nằm đúng trên bia. Với `(x, y_đạn_đạo)` của từng mẫu:
 
 ```text
-y(t)    = v · sin(góc_nâng) · t − ½·g·t² − verticalTendency · driftFactor · (1/200) · x
+y(t)    = y_đạn_đạo − verticalTendency · driftFactor · (1/200) · x
 z(t)    = lateralDeviation · (1/120) · x
 
 lắng(t) = exp(−oscillationDecay · t)
@@ -419,7 +417,7 @@ Setup tham chiếu: `timeOnString` = 16,8 ms, `nockAngle` khoảng 1°. Lực đ
 
 ### 9.2 Đường bay có lực cản, cho vạch thước ngắm
 
-Đường bay ở mục 9 không có lực cản, đủ cho hoạt hình. Vạch thước ngắm ở cự ly xa thì cần lực cản, nên phần đó dùng một đường bay riêng (`src/engine/ballistics/flight.ts`): mũi tên là một chất điểm, lực cản tỉ lệ với bình phương vận tốc.
+Đường bay của mục 9 và của vạch thước ngắm là một (`src/engine/ballistics/flight.ts`): mũi tên là một chất điểm, lực cản tỉ lệ với bình phương vận tốc.
 
 ```text
 gia tốc = −g·ĵ − k · |v| · v
@@ -568,14 +566,17 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 | Power stroke | 491.2 mm |
 | Năng lượng tích trữ | 47.3 J |
 | Vận tốc rời cung | 58.4 m/s (khoảng 192 fps) |
-| Thời gian bay 18 m / 70 m | 0.308 s / 1.204 s |
+| Thời gian bay 18 m / 70 m | 0.311 s / 1.242 s |
+| Góc bắn 18 m / 70 m | 1,5° / 6,1° |
+| Vận tốc khi tới bia 18 m / 70 m | 57,5 m/s / 55,1 m/s |
 | `dynamicBehavior`, lệch ngang, lệch dọc | 0, 0, 0 |
 | `flexAmplitude` / `oscillation` / `clearanceRisk` | 0.40 / 0.20 / 0.15 |
 | `oscillationDecay` / `stabilityTime` | 22 /s / 0.063 s |
 
 ## 13. Giới hạn đã biết
 
-- Đường bay của hoạt hình không có lực cản không khí. Vận tốc không giảm trên đường bay, nên thời gian bay ở cự ly xa bị ngắn hơn thực tế. Chỉ phần vạch thước ngắm dùng đường bay có lực cản (mục 9.2).
+- Lực cản không khí dùng một hệ số cản ước chừng (`C_d = 2`, mục 9.2), chưa có nguồn; cánh và point không được tính riêng. Thời gian bay ở cự ly xa vì vậy có thể lệch vài phần trăm. Gió không được tính.
+- Bia quá xa so với vận tốc tên (cung rất nhẹ ở 90 m) thì đường bay được vẽ bằng một cung không lực cản ở 45°, chỉ để hình không bị đứt; con số thời gian bay khi đó không có nghĩa.
 - Mọi nhiễu của mũi tên (góc lệch, lắc đuôi, uốn) đều lớn nhất lúc rời cung rồi chỉ tắt dần. Mô hình không tái hiện được trường hợp tên ra thẳng rồi gần bia đuôi mới đá, cũng không cho bareshaft lệch dần; cả hai đã được chủ dự án thấy trên phim quay chậm. Xem ROADMAP, V0.2.
 - `shaftGpi` chỉ ảnh hưởng tần số uốn và vận tốc (và qua đó clearance), không ảnh hưởng weak / stiff. `shaftDiameter` chỉ ảnh hưởng clearance.
 - Bow mass và stabilizer chỉ ảnh hưởng mức dao động.
@@ -623,7 +624,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 - "Một điểm chạm" (mặc định), tên có cánh làm chuẩn: coi như thước ngắm đã chỉnh để nó vào tâm vàng, đúng như cách làm phép thử bareshaft. Độ trôi của tên có cánh được trừ khỏi cả hai đường bay, nên tên có cánh luôn cắm tâm, còn bareshaft cắm lệch đúng bằng `offset` ở mục 10. Xu hướng lệch của tên có cánh chỉ còn thấy qua tư thế bay (lắc, chúc, uốn) và qua bảng kết quả. Thang vẽ: `offset` lớn nhất thường gặp (khoảng 0,46) cắm ngay ngoài mép bia.
 - "Hai điểm chạm": không trừ gì cả, mỗi mũi tên cắm đúng chỗ mô hình tính. Xu hướng lệch ngang và dọc của tên có cánh hiện thành trượt tâm. Thang vẽ nhỏ hơn (1,4 lần bán kính mặt bia cho xu hướng tối đa không có cánh lái về, so với 2,4 lần ở chế độ kia): bareshaft ở mức tối đa cắm ra ngoài bia một chút, tên có cánh được lái về nên vẫn nằm trên bia.
 - Độ lệch vẽ theo một thang riêng cho từng chế độ, giống nhau ở hai góc nhìn và không đổi khi bật hay tắt bareshaft. Ở góc nhìn ngang, đường bay được tách thành cung đạn đạo (vẽ theo thang của góc bắn) cộng độ lệch (vẽ theo thang này); vẽ chung một thang thì khoảng cách giữa hai mũi tên chỉ còn vài đơn vị, không đọc được.
-- Góc cung được ghi bằng số ở góc nhìn ngang. Con số là góc bắn thật của mô hình (không có lực cản không khí); cung tròn đánh dấu thì vẽ theo góc đã phóng to 3 lần.
+- Góc cung được ghi bằng số ở góc nhìn ngang. Con số là góc bắn thật của mô hình (có lực cản không khí); cung tròn đánh dấu thì vẽ theo góc đã phóng to 3 lần.
 - Bia vẽ theo chuẩn World Archery, cùng tỉ lệ với cung: mặt 40 cm ở 18 m, 80 cm ở 30 và 50 m, 122 cm ở 70 và 90 m. Năm màu, mỗi màu hai vòng điểm, mười vòng rộng bằng nhau. Độ trôi ngang và dọc của tên thì không theo tỉ lệ này: tên cắm lệch tâm bao nhiêu trên hình không phải là số cm thật.
 - Dạng uốn của thân tên theo mode 1: điểm cách nock một phần `s` (0..1) lệch ngang `bend · cos(2π · (s − ½))`, tức giữa thân đi một phía, hai đầu đi phía kia.
 - Vị trí giữa hai mẫu đường bay được nội suy tuyến tính.

@@ -1,8 +1,7 @@
 import { arrowTotalMass, type ArrowSetup } from '../../models/arrow.ts'
 
-// The flight of the arrow as a point with air drag, for what depends on the
-// far end of the flight: sight marks. The animation keeps its own drag-free
-// path (trajectory.ts), where the difference cannot be seen.
+// The flight of the arrow as a point with air drag: the path the animation
+// draws, and the launch angles that sight marks are read from.
 
 const GRAVITY = 9.80665
 /** kg/m³, air at about 20 °C at sea level */
@@ -54,6 +53,67 @@ function heightAt(speed: number, drag: number, distance: number, angle: number):
     if (vx <= 0) break
   }
   return Number.NEGATIVE_INFINITY
+}
+
+export type FlightSample = {
+  /** s */
+  t: number
+  /** mm, downrange */
+  x: number
+  /** mm, above the launch point */
+  y: number
+}
+
+/**
+ * The path from the bow to `distance`, sampled every `timeStep`. The last
+ * sample is on the target. Empty when the arrow comes to a stop before it.
+ *
+ * @param speed mm/s
+ * @param drag 1/m, see `dragPerMeter`
+ * @param angle rad above the horizontal
+ * @param distance mm
+ * @param timeStep s
+ * @param most the most samples to make
+ */
+export function flightPath(
+  speed: number,
+  drag: number,
+  angle: number,
+  distance: number,
+  timeStep: number,
+  most: number,
+): FlightSample[] {
+  const d = distance / 1000
+  let x = 0
+  let y = 0
+  let vx = (speed / 1000) * Math.cos(angle)
+  let vy = (speed / 1000) * Math.sin(angle)
+  const samples: FlightSample[] = [{ t: 0, x: 0, y: 0 }]
+  for (let step = 1; step < most; step++) {
+    const v = Math.hypot(vx, vy)
+    const mx = vx - 0.5 * timeStep * drag * v * vx
+    const my = vy - 0.5 * timeStep * (drag * v * vy + GRAVITY)
+    const mv = Math.hypot(mx, my)
+    const nextX = x + timeStep * mx
+    const nextY = y + timeStep * my
+    if (nextX >= d) {
+      // The step that reaches the target is cut where it reaches it.
+      const share = (d - x) / (nextX - x)
+      samples.push({
+        t: (step - 1 + share) * timeStep,
+        x: distance,
+        y: (y + (nextY - y) * share) * 1000,
+      })
+      return samples
+    }
+    x = nextX
+    y = nextY
+    vx -= timeStep * drag * mv * mx
+    vy -= timeStep * (drag * mv * my + GRAVITY)
+    if (vx <= 0) return []
+    samples.push({ t: step * timeStep, x: x * 1000, y: y * 1000 })
+  }
+  return []
 }
 
 /**

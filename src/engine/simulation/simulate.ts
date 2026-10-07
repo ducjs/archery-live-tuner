@@ -8,6 +8,7 @@ import { arrowTotalMass } from '../../models/arrow.ts'
 import { BRACE_PER_INCH, bowLength, braceHeightRange } from '../../models/bow.ts'
 import { NO_PERSONAL, isPersonal, type Personal } from '../../models/calibration.ts'
 import type { TuningSetup } from '../../models/setup.ts'
+import { dragPerMeter } from '../ballistics/flight.ts'
 import { HEURISTIC_V0, type Coefficients } from '../coefficients/coefficients.ts'
 import { clamp01 } from '../math/scalar.ts'
 import { bendingFrequency } from './arrowModel.ts'
@@ -278,7 +279,7 @@ export function createHeuristicModel(
       classification,
       metrics,
       trajectory: buildTrajectory(
-        { metrics, verticalTendency, driftFactor, flexDirection },
+        { metrics, verticalTendency, driftFactor, flexDirection, drag: dragPerMeter(arrow) },
         coefficients,
         options?.trajectory,
       ),
