@@ -119,7 +119,7 @@ Mỗi lần chỉ đổi một thông số. Phần đọc bia ở trang "Xem tr�
 ### Bare shaft
 
 - Bắn ít nhất 3 tên có cánh và 2 bare shaft, ở 15 tới 20 m. Khi đã gần thì ra 25 tới 30 m để đọc tinh hơn.
-- Bare shaft lệch ngang quá 15 cm ở 18 m sau khi đã chỉnh: phải đổi cỡ thân tên hoặc đổi thiết bị. Phần đọc bia đang dùng ngưỡng 6 cm.
+- Bare shaft lệch ngang quá 15 cm ở 18 m sau khi đã chỉnh: phải đổi cỡ thân tên hoặc đổi thiết bị. Phần đọc bia dùng ngưỡng này từ 2026-10-07 (trước đó là 6 cm).
 - Bare shaft không về được gần cụm bằng các chỉnh ngang: spine sai.
 
 ### Bước chỉnh
@@ -328,7 +328,7 @@ Xếp theo độ chắc của nguồn. Chưa việc nào được làm; mỗi vi
 | Cảnh báo tên nhẹ theo bảng AMO ở 9.2, thay hoặc đặt cạnh mốc 5 gr/lb | Easton, A | `derivedMetrics.ts`, lời cảnh báo |
 | **Xong.** Gợi ý tuning theo thứ tự sách: dọc trước ngang; ngang thì plunger, rồi point, rồi lực kéo, rồi spine. Center shot chỉ được gợi ý đưa về vị trí mặc định | Easton và *Total Archery* | `suggest.ts` |
 | **Xong.** Đích của "đã cân": chấp nhận bare shaft hơi thấp và hơi cứng, không đòi trùng khít | Easton, A (mục 4.4) | `suggest.ts`, physics mục 11.1 |
-| Ngưỡng đọc bia: lệch quá 15 cm ở 18 m thì đổi thân tên (Easton); dưới 7,6 cm ở 30 m thì plunger là đủ (*Total Archery*) | A và A− | Phần đọc bia ở trang "Xem trước", đang dùng 6 cm |
+| **Xong.** Ngưỡng đọc bia: lệch quá 15 cm ở 18 m thì đổi thân tên (Easton); dưới 7,6 cm ở 30 m thì plunger là đủ (*Total Archery*). Hai mức chia tỉ lệ theo cự ly, đây là giả định | A và A− | `targetPlot.ts` ở trang "Xem trước" |
 
 ### 10.2 Đủ nguồn về chiều, cần quyết định về con số
 

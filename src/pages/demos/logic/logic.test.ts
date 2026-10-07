@@ -8,7 +8,7 @@ import {
 } from '../../../models/parameters.ts'
 import { createDefaultSetup, type TuningSetup } from '../../../models/setup.ts'
 import { tunePlan } from './explore.ts'
-import { advise, readPlot, type Mark } from './targetPlot.ts'
+import { advise, plungerReach, shaftLimit, readPlot, type Mark } from './targetPlot.ts'
 
 const reference = createDefaultSetup('Reference')
 
@@ -78,5 +78,42 @@ describe('target plot', () => {
     expect(advice[0]!.action).toContain('nocking point')
     expect(advice[1]!.action).toContain('plunger')
     expect(advice[1]!.why).toContain('cách thả dây')
+  })
+
+  // Thresholds from the Easton guide and Total Archery, see tuning-references.md §9.7.
+  describe('how far the bare shaft is off', () => {
+    const adviceAt = (x: number) =>
+      advise(readPlot([...group, { x, y: 0, bare: true }], 'RH'), true)
+
+    it('scales the two limits with the shooting distance', () => {
+      expect(shaftLimit(18)).toBeCloseTo(15, 9)
+      expect(plungerReach(30)).toBeCloseTo(7.6, 9)
+      expect(plungerReach(18)).toBeCloseTo(4.56, 9)
+    })
+
+    it('leaves it at the plunger when the offset is within its reach', () => {
+      const advice = adviceAt(4)
+      expect(advice).toHaveLength(1)
+      expect(advice[0]!.action).toContain('plunger')
+    })
+
+    it('adds point and draw weight beyond the reach of the plunger', () => {
+      const advice = adviceAt(9)
+      expect(advice.map((item) => item.action)).toEqual([
+        expect.stringContaining('plunger'),
+        expect.stringContaining('point'),
+      ])
+    })
+
+    it('says to change the shaft only past 15 cm at 18 m', () => {
+      expect(adviceAt(14).some((item) => item.action.includes('thân tên'))).toBe(false)
+      const advice = adviceAt(16)
+      expect(advice.at(-1)!.action).toContain('thân tên cứng hơn')
+    })
+
+    it('moves the limits out at a longer distance', () => {
+      const reading = readPlot([...group, { x: 16, y: 0, bare: true }], 'RH')
+      expect(advise(reading, true, 30).some((item) => item.action.includes('thân tên'))).toBe(false)
+    })
   })
 })

@@ -516,8 +516,11 @@ tâm_cụm = trung bình vị trí tên có cánh              cần ít nhất 
 offset  = tâm bare shaft − tâm_cụm
 đủ_kết_luận = |offset| > max(1.5 cm, 0.75 · độ_tản)
 một chiều chỉ được tính khi thành phần của nó > 0.4 · |offset|
-đề nghị đổi thân tên khi |offset| > max(6 cm, 2.5 · độ_tản)
+tầm_plunger   = 7,6 cm · cự_ly / 30 m          lệch ngang trong tầm này: chỉ gợi ý plunger
+giới_hạn_thân = 15 cm · cự_ly / 18 m           lệch ngang quá mức này: gợi ý thêm đổi thân tên
 ```
+
+Giữa hai mức thì gợi ý plunger, rồi point, rồi lực kéo. 7,6 cm ở 30 m lấy từ *Total Archery*, 15 cm ở 18 m từ sách Easton; chia tỉ lệ theo cự ly là giả định của mô hình, hai sách chỉ cho mỗi con số ở một cự ly. Demo bắn ở 18 m nên hai mức là 4,6 cm và 15 cm. Trước 2026-10-07 mức đổi thân tên là 6 cm hoặc 2,5 lần độ tản, không có nguồn.
 
 ## 15. Hiển thị
 

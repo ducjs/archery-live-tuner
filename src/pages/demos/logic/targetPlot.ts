@@ -77,11 +77,37 @@ export function readPlot(marks: Mark[], handedness: Handedness): PlotReading {
 
 export type PlotAdvice = { action: string; why: string }
 
+/** m, the distance the demo's 40 cm face is shot at. */
+export const DEFAULT_RANGE = 18
+
 /**
- * Turns the reading into things to try, most worthwhile first. `modelAgrees`
- * says whether the setup, as entered, also reads weak or stiff in the model.
+ * cm to the side within which the plunger alone will most likely bring the
+ * bare shaft back. Total Archery gives 3 in at 30 m; scaling it with the
+ * distance is an assumption.
  */
-export function advise(reading: PlotReading, modelAgrees: boolean): PlotAdvice[] {
+export function plungerReach(range: number): number {
+  return 7.6 * (range / 30)
+}
+
+/**
+ * cm to the side past which the shaft is the wrong one, when adjusting the bow
+ * has not brought it back. The Easton guide gives 6 in at 20 yd (15 cm at
+ * 18 m); scaling it with the distance is an assumption.
+ */
+export function shaftLimit(range: number): number {
+  return 15 * (range / 18)
+}
+
+/**
+ * Turns the reading into things to try, in the order the tuning guides work
+ * in. `modelAgrees` says whether the setup, as entered, also reads weak or
+ * stiff in the model. `range` is the shooting distance in m.
+ */
+export function advise(
+  reading: PlotReading,
+  modelAgrees: boolean,
+  range: number = DEFAULT_RANGE,
+): PlotAdvice[] {
   const advice: PlotAdvice[] = []
   if (!reading.conclusive) return advice
 
@@ -97,23 +123,26 @@ export function advise(reading: PlotReading, modelAgrees: boolean): PlotAdvice[]
 
   if (reading.horizontal !== 'OK') {
     const weak = reading.horizontal === 'WEAK'
-    const far = reading.distance > Math.max(6, reading.spread * 2.5)
+    const sideways = Math.abs(reading.offset.x)
+    const cm = (value: number) => value.toFixed(0)
     advice.push({
       action: weak ? 'Tăng độ cứng plunger một nấc' : 'Giảm độ cứng plunger một nấc',
       why: modelAgrees
         ? `Bia và mô hình cùng cho thấy tên đang ${weak ? 'yếu' : 'cứng'}. Plunger là thứ chỉnh nhanh nhất, không tốn gì.`
         : `Trên giấy setup này đã cân, nhưng bia cho thấy tên đang ${weak ? 'yếu' : 'cứng'}. Khác biệt có thể đến từ cách thả dây, nên chỉnh plunger trước khi nghĩ tới đổi tên.`,
     })
-    advice.push({
-      action: weak
-        ? 'Thử point nhẹ hơn, hoặc giảm lực kéo một chút'
-        : 'Thử point nặng hơn, hoặc tăng lực kéo một chút',
-      why: 'Nếu plunger chưa đủ kéo bareshaft về cụm.',
-    })
-    if (far) {
+    if (sideways > plungerReach(range)) {
+      advice.push({
+        action: weak
+          ? 'Thử point nhẹ hơn, rồi mới tới giảm lực kéo'
+          : 'Thử point nặng hơn, rồi mới tới tăng lực kéo',
+        why: `Lệch ngang hơn ${cm(plungerReach(range))} cm ở ${range} m thì plunger thường không đủ kéo bareshaft về cụm.`,
+      })
+    }
+    if (sideways > shaftLimit(range)) {
       advice.push({
         action: weak ? 'Cân nhắc thân tên cứng hơn' : 'Cân nhắc thân tên mềm hơn',
-        why: 'Độ lệch lớn so với độ tản của cụm, khó sửa hết chỉ bằng chỉnh trên cung.',
+        why: `Nếu đã chỉnh các thứ trên mà bareshaft vẫn lệch ngang hơn ${cm(shaftLimit(range))} cm ở ${range} m, sách Easton coi là thân tên không hợp với cung.`,
       })
     }
   }
