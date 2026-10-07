@@ -16,6 +16,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 - [ ] Tìm bảng chọn spine của Easton (PDF) và đặt vào docs/. *Cần cho bài test đối chiếu vùng cân với bảng của nhà sản xuất, là điều kiện để xong V0.2.*
 - [ ] Tìm bài của Kooi và Sparenberg, "On the mechanics of the arrow: Archer's Paradox" (Journal of Engineering Mathematics, 1997), và bản sạch sách của Murray Elliot, đặt vào docs/. *Bài của Kooi là nguồn duy nhất đã biết có mô hình tên uốn quanh cung, cần để kiểm độ lớn của weak và stiff. Sách Easton đủ trang đã có, và phần xé giấy đã làm xong.*
 - [ ] Quyết định có giữ lời nhắc tên nhẹ ở mốc 5 gr/lb không, khi đã có cảnh báo theo bảng AMO. *Hiện có cả hai: dưới bảng AMO thì cảnh báo cung có thể gãy, dưới 5 gr/lb thì chỉ nhắc là tên nhẹ. Mốc 5 gr/lb là quy tắc của compound và cao hơn bảng AMO ở hầu hết recurve. Chi tiết ở tuning-references.md mục 9.2.*
+- [ ] Bắn xé giấy ở ba cự ly, ví dụ 2 m, 4 m và 6 m, và bareshaft ở 18 m; ghi lại vết rách về phía nào ở từng cự ly. *Bạn thấy trên phim quay chậm: có lúc đuôi tên đá ngang ngay khi rời cung, có lúc ra thẳng rồi gần 18 m đuôi mới đá, mũi nào cũng vậy. Mô hình chưa tái hiện được trường hợp sau. Nếu vết rách đổi chiều theo cự ly thì đó là đuôi lắc qua lại, và quãng giữa hai lần đổi chiều cho biết chu kỳ thật để chỉnh mô hình.*
 - [ ] Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo. *Để kiểm hai hệ số hình dạng mặc định của đường lực kéo, hiện vẫn là ước lượng; ứng dụng đã nhận thẳng các số này ở Nâng cao, "Lực kéo tự đo". Chi tiết ở spec §39 và tuning-references.md mục 8.4.*
 - [x] Duyệt thiết kế đường lực kéo ở spec §39. *Chưa code gì cho tới khi bạn đồng ý.*
 - [ ] Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có. *Để các commit mới gắn với tài khoản ducjs.*
@@ -35,9 +36,9 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | Phase | Theme | Status |
 |---|---|---|
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
-| V0.2 | Improved dynamic model | In progress (8 of 11 done; walk-back needs a better source; the spine chart test waits for the Easton chart) |
+| V0.2 | Improved dynamic model | In progress (8 of 12 done; walk-back needs a better source; the spine chart test waits for the Easton chart; the tail wobble needs measurements) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
-| V0.4 | Real-world calibration | In progress (9 of 11 done: the target plot, observations and their export. Open: fitting and the personal coefficient set, which wait for real observations) |
+| V0.4 | Real-world calibration | In progress (14 of 17 done: the target plot, observations and their export, sight marks. Open: fitting and the personal coefficient set, which wait for real observations, and the sight drawn on the bow) |
 | V0.5 | Advanced parameters and recommendations | In progress (the draw force curve and the items done ahead of the phase are built) |
 | V0.6 | Backend: setup storage | Not started |
 | V1.0 | Stable public release | Not started |
@@ -186,6 +187,7 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 - [x] Virtual tuning test: bare shaft (done early in M5)
 - [x] Virtual tuning test: paper tear (§34.3). The result panel draws the sheet and reads the tear, next to the bare shaft test; directions from the Easton guide
 - [ ] Virtual tuning test: walk-back (§34.3). Only one low-trust source describes it so far (tuning-references.md section 9.7)
+- [ ] Tail wobble as the real oscillation of an arrow in the air: frequency and damping from the fletching, the balance and the speed, so that an arrow that leaves straight and kicks its tail near the target can be shown, and a bare shaft drifts off instead of settling. Today every disturbance is largest at the bow and only dies away (reported by the owner from slow motion video on 2026-10-07)
 - [ ] Spine chart sanity test (§25 Test 8)
 
 **Exit criteria:** the new model sits behind the same `SimulationModel` interface with no UI rewrite, all §25 tests pass, and the NEUTRAL zone agrees with a manufacturer spine chart for the reference setups.
@@ -252,17 +254,17 @@ Why it matters: a setup can look tuned in the simulator and still shoot differen
 - [x] Diagnosis that starts from the observed offset, uses the entered setup to choose between causes (spine, plunger, center shot, nocking point), and ranks the changes in the order of the tuning guides. It says when the model reads the setup differently from the target
 - [x] Target stored as a real-world observation, with the values of the setup as it was shot, so it also feeds calibration
 
-### Sight marks (idea, not scheduled)
+### Sight marks
 
-> **Nói đơn giản:** Nhập vạch thước ngắm (sight) ở vài cự ly đã bắn chuẩn, ví dụ 18 m vạch 15 và 30 m vạch 30, ứng dụng đoán vạch cho 50, 70, 90 m. Ra bãi không phải dò lại từ đầu, chỉ cần bắn vài mũi để chỉnh tinh. Đây mới là ý tưởng, chưa lên lịch làm.
+> **Nói đơn giản:** Nhập vạch thước ngắm (sight) ở vài cự ly đã bắn chuẩn, ví dụ 18 m vạch 15 và 30 m vạch 30, ứng dụng đoán vạch cho 50, 70, 90 m. Ra bãi không phải dò lại từ đầu, chỉ cần bắn vài mũi để chỉnh tinh. Phần đoán vạch đã làm; vẽ thước ngắm lên cung thì chưa.
 
 Why it matters: every archer needs marks for distances they have not shot yet, and finding them by trial costs arrows and time. The known marks are also real measurements of how this bow throws this arrow, which the model otherwise only estimates. Details and limits are in §38.
 
-- [ ] Enter sight marks for the distances already shot, at least two, in the archer's own sight scale (§38)
-- [ ] Predict the marks for the other distances, 18 m to 90 m, from a flight path fitted to the known marks
-- [ ] Air drag in the flight path, since without it the long distances come out too low
-- [ ] A range for each predicted mark, wider the further it lies from the known ones, and a note that it is a starting point to confirm by shooting
-- [ ] The arrow speed that the known marks imply, shown next to the model's estimate and stored as a real-world observation
+- [x] Enter sight marks for the distances already shot, at least two, in the archer's own sight scale (§38). Under "Show: Target"; marks are kept per setup
+- [x] Predict the marks for the other distances, 18 m to 90 m, from a flight path fitted to the known marks
+- [x] Air drag in the flight path, since without it the long distances come out too low. In the flight used for sight marks; the animation keeps its drag-free path
+- [x] A range for each predicted mark, wider the further it lies from the known ones, and a note that it is a starting point to confirm by shooting
+- [x] The arrow speed that the known marks imply, shown next to the model's estimate and stored as a real-world observation. From three marks on, and given as a rough reading with its own range
 - [ ] The sight drawn on the bow in the side view, with the pin where the mark for the chosen distance puts it, and a warning when the arrow or its vanes would pass too close to the pin or the sight bar (§38.6)
 
 **Exit criteria:** after a user logs observations for several setups, the calibrated model matches those observations better than the base model, and the user can always switch back to the base model.

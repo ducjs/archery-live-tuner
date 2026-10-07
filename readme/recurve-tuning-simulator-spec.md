@@ -1604,9 +1604,9 @@ Limits: the commonly taught splits differ between coaches and there is no measur
 
 ---
 
-# 38. Sight mark prediction (idea, V0.4 at the earliest)
+# 38. Sight mark prediction
 
-Status: an idea, written down so it is not lost. Nothing here is scheduled or built.
+Status: 38.1 to 38.5 are built, as described under "As built" at the end of this section. 38.6, the sight drawn on the bow, is not.
 
 Goal: the archer enters the sight marks they already have, and the app predicts the marks for the distances they have not shot.
 
@@ -1660,6 +1660,32 @@ Needs, beyond the marks: the length of the sight extension, where zero on the sc
 - The known marks must come from the same setup. A change of arrows, draw weight, anchor or sight extension makes old marks useless.
 - Wind, temperature and altitude are ignored.
 - Section 2.1 applies: this is a model result, labelled as such.
+
+## 38.7 As built
+
+Under "Show: Target", between the reading of the target and the observations. The archer enters the marks they have for any of 18, 30, 50, 70 and 90 m, as read on their own sight; a scale that counts down works as well as one that counts up. Marks are kept in the browser for each setup separately.
+
+The flight used here has air drag: the arrow is a point that loses speed in proportion to the square of its speed, by an amount that follows from its shaft diameter and its mass. The animation keeps its drag-free path.
+
+```text
+mark(D) = offset + scale · tan(angle(D))
+
+angle(D) = the launch angle, above the line of sight, at which the arrow
+           climbs from the arrow to the eye over the distance D
+```
+
+| Marks entered | Fitted from them | Taken from the model |
+|---|---|---|
+| 2 | offset, scale | arrow speed, drag |
+| 3 or more | offset, scale, arrow speed | drag |
+
+The height of the eye above the arrow is an input, 11 cm unless the archer changes it. It is what lets three marks pin down the speed: without it a faster arrow and a sight further from the eye give the same marks. The speed read this way is therefore soft, and is shown as a rough reading with the range it takes when the eye height is 2 cm off. When the best speed lies at either end of what a recurve can do, the marks do not agree with each other; the model's speed is used and the panel says a mark is off.
+
+Drag is never fitted from marks, also with four or more. Over the distances archers shoot, speed and drag bend the curve in nearly the same way, and marks read to half a millimeter cannot tell them apart.
+
+The range of a predicted mark is the spread of predictions when each estimate is off by a plausible amount, refitting to the known marks every time: the eye height by 2 cm, the drag by half, the model's speed by 5 % (only while it is the model's), and the nearest and furthest marks read half a millimeter off in opposite directions. It is narrow between the known marks and widens away from them. All four amounts are assumptions.
+
+The marks can be saved as a real-world observation, with the implied speed when there is one; the observation then shows it beside the model's estimate for the same values.
 
 ---
 

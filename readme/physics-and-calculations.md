@@ -387,6 +387,38 @@ nockAngle    = atan(nockingPointHeight / braceHeight)
 
 Setup tham chiếu: `timeOnString` = 16,8 ms, `nockAngle` khoảng 1°. Lực đẩy đều là giả định đơn giản; dây thật đẩy mạnh lúc đầu và yếu dần. Trong quãng này tên được vẽ thẳng; mô hình chưa tính độ uốn khi tên còn trên dây.
 
+### 9.2 Đường bay có lực cản, cho vạch thước ngắm
+
+Đường bay ở mục 9 không có lực cản, đủ cho hoạt hình. Vạch thước ngắm ở cự ly xa thì cần lực cản, nên phần đó dùng một đường bay riêng (`src/engine/ballistics/flight.ts`): mũi tên là một chất điểm, lực cản tỉ lệ với bình phương vận tốc.
+
+```text
+gia tốc = −g·ĵ − k · |v| · v
+
+k = ½ · ρ · C_d · A / m          1/m: mỗi mét bay, tên mất chừng ấy phần vận tốc
+    ρ   = 1,2 kg/m³              không khí khoảng 20 °C ở mực nước biển
+    C_d = 2                      ước chừng, tính trên tiết diện thân tên
+    A   = π · (shaftDiameter / 2)²
+    m   = khối lượng cả mũi tên
+```
+
+- Setup tham chiếu: `k` = 0,00083 mỗi mét, tức tên mất khoảng 6 % vận tốc sau 70 m.
+- `C_d = 2` là con số tròn trong khoảng 1,5 tới 2,6 mà các phép đo trong hầm gió trên mũi tên thường ghi. Chưa có nguồn cho nó trong tuning-references.md; cánh và point không được tính riêng.
+- Tích phân bằng bước giữa (midpoint), bước 4 ms. Góc bắn cần cho một cự ly tìm bằng chia đôi khoảng.
+
+Vạch thước ngắm (`src/engine/ballistics/sightMarks.ts`, spec §38.7):
+
+```text
+vạch(D) = offset + scale · tan(góc(D))
+
+góc(D) = góc bắn, tính từ đường ngắm, để tên leo từ vị trí mũi tên lên ngang mắt sau quãng D
+```
+
+- `offset` và `scale` thuộc về thước ngắm và cách anchor, dò bằng bình phương tối thiểu từ các vạch đã có. Hai vạch là đủ.
+- Từ ba vạch, vận tốc tên cũng được dò (tìm theo tỉ lệ vàng trong 35 tới 95 m/s). Việc này chỉ làm được vì chiều cao mắt so với mũi tên được coi là đã biết (mặc định 11 cm), nên vận tốc suy ra là ước lượng thô: lệch 2 cm ở chiều cao mắt làm nó đổi hơn 5 %.
+- Lực cản không bao giờ được dò từ vạch. Trong tầm cự ly người ta bắn, vận tốc và lực cản uốn đường cong gần như cùng một kiểu.
+- Khoảng của mỗi vạch đoán là độ trải của kết quả khi từng ước lượng lệch một mức: chiều cao mắt 2 cm, lực cản 50 %, vận tốc của mô hình 5 % (chỉ khi vận tốc chưa dò từ vạch), và vạch gần nhất cùng vạch xa nhất bị đọc lệch nửa milimet ngược chiều nhau. Mỗi lần đều khớp lại với các vạch đã biết, nên khoảng hẹp ở giữa các vạch đó và rộng dần khi ra xa. Cả bốn mức đều là giả định.
+- Ví dụ của spec, vạch 15 ở 18 m và 30 ở 30 m: đường thẳng qua hai vạch cho 55, 80 và 105 ở 50, 70 và 90 m; mô hình cho khoảng 58, 88 và 120.
+
 ## 10. Bare shaft
 
 Bare shaft được bay với `cánh_gr = 0` nhưng giữ nguyên khối lượng, như thân tên trần dán băng cho nặng bằng tên có cánh. Cánh che sai số lúc rời cung; bare shaft cho thấy nó.
@@ -513,7 +545,8 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 
 ## 13. Giới hạn đã biết
 
-- Không có lực cản không khí. Vận tốc không giảm trên đường bay, nên thời gian bay ở cự ly xa bị ngắn hơn thực tế.
+- Đường bay của hoạt hình không có lực cản không khí. Vận tốc không giảm trên đường bay, nên thời gian bay ở cự ly xa bị ngắn hơn thực tế. Chỉ phần vạch thước ngắm dùng đường bay có lực cản (mục 9.2).
+- Mọi nhiễu của mũi tên (góc lệch, lắc đuôi, uốn) đều lớn nhất lúc rời cung rồi chỉ tắt dần. Mô hình không tái hiện được trường hợp tên ra thẳng rồi gần bia đuôi mới đá, cũng không cho bareshaft lệch dần; cả hai đã được chủ dự án thấy trên phim quay chậm. Xem ROADMAP, V0.2.
 - `shaftGpi` chỉ ảnh hưởng tần số uốn và vận tốc (và qua đó clearance), không ảnh hưởng weak / stiff. `shaftDiameter` chỉ ảnh hưởng clearance.
 - Bow mass và stabilizer chỉ ảnh hưởng mức dao động.
 - Tốc độ tắt của rung uốn (14 /s) và tần số lắc đuôi (6 Hz) là hằng số, không phụ thuộc setup.
@@ -583,6 +616,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 | Đường bay | `src/engine/simulation/trajectory.ts` |
 | Gợi ý | `src/engine/recommendation/suggest.ts` |
 | Đọc bia thật và chẩn đoán | `src/engine/diagnosis/targetPlot.ts` |
+| Đường bay có lực cản, vạch thước ngắm | `src/engine/ballistics/flight.ts`, `src/engine/ballistics/sightMarks.ts` |
 | Quan sát thực tế: kiểu dữ liệu, kiểm tra, lưu | `src/models/observation.ts`, `src/utils/observations.ts`, `src/storage/observationRepository.ts` |
 | Đường lực kéo: hình dạng, ước lượng, dựng từ số đo | `src/engine/simulation/drawCurve.ts` |
 | Số ghi trên limb ra lực trên ngón tay | `src/utils/markedDrawWeight.ts` |

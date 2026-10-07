@@ -332,6 +332,41 @@ export const vi: Messages = {
     fileName: 'recurve-observations.json',
   },
 
+  sight: {
+    heading: 'Vạch thước ngắm',
+    intro:
+      'Nhập các vạch bạn đã có, đúng như bạn đọc trên thước của mình. Mô hình khớp thước của bạn với các vạch đó rồi cho vạch khởi đầu ở các cự ly còn lại.',
+    distance: 'Cự ly',
+    yours: 'Vạch của bạn',
+    predicted: 'Mô hình',
+    range: 'Nhiều khả năng trong khoảng',
+    markAt: (meters) => `Vạch thước ngắm của bạn ở ${meters} m`,
+    between: (low, high) => `${low} tới ${high}`,
+    outOfReach: 'Không tới',
+    need: (marks) =>
+      `Hãy nhập vạch của ít nhất ${marks} cự ly. Hai vạch đủ để xác định thước; từ ba vạch trở lên, vận tốc tên cũng được suy ra từ chúng.`,
+    confirm:
+      'Vạch mô hình đưa ra chỉ là chỗ bắt đầu, cần bắn để chỉnh lại. Cự ly càng xa các cự ly bạn đã bắn thì khoảng càng rộng.',
+    poorFit: (miss) =>
+      `Các vạch của bạn không nằm trên cùng một đường: có vạch lệch ${miss}. Hãy kiểm lại, và chắc rằng tất cả đều bắn với setup này.`,
+    modelSpeed: 'Vận tốc tên do mô hình ước lượng',
+    impliedSpeed: 'Vận tốc tên suy ra từ vạch của bạn',
+    tooFew: 'Cần ba vạch',
+    speedNote: (low, high) =>
+      `Đây là ước lượng thô: nó dựa vào khoảng cách từ mắt bạn tới mũi tên. Lệch hai centimet thì nó nằm trong khoảng ${low} tới ${high} m/s.`,
+    eyeHeight: 'Mắt cao hơn mũi tên lúc anchor',
+    eyeHeightHint:
+      'Đo từ mũi tên lên tới mắt ngắm, khi kéo hết. Khoảng 11 cm với anchor dưới cằm. Con số này ảnh hưởng nhiều nhất ở cự ly gần.',
+    save: 'Lưu thành quan sát',
+    saveHint: 'Giữ lại các vạch này cùng giá trị của setup đang mở.',
+    saved: 'Đã lưu cùng setup đang mở.',
+    limits:
+      'Vạch chỉ đúng cho một setup: đổi tên, đổi lực kéo, đổi anchor hay đổi cần thước ngắm thì vạch cũ hết dùng được. Gió, nhiệt độ và độ cao so với mặt biển không được tính.',
+    kept: 'Vạch thước ngắm',
+    keptMark: (meters, mark) => `${meters} m: ${mark}`,
+    keptSpeed: (implied, model) => `Vạch cho ra ${implied} m/s; mô hình ước lượng ${model} m/s.`,
+  },
+
   paperTear: {
     heading: 'Bài thử xé giấy',
     clean: 'Point và cánh đi qua cùng một lỗ.',

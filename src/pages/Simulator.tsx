@@ -31,6 +31,7 @@ import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx
 import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
 import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
 import { ObservationPanel } from '../components/target/ObservationPanel.tsx'
+import { SightMarksPanel } from '../components/target/SightMarksPanel.tsx'
 import { TargetControls } from '../components/target/TargetControls.tsx'
 import { TargetFace } from '../components/target/TargetFace.tsx'
 import { TargetReading } from '../components/target/TargetReading.tsx'
@@ -397,6 +398,7 @@ export function Simulator() {
                   onSave={saveTarget}
                   saved={savedPlot === plot}
                 />
+                <SightMarksPanel setup={setup} result={result} />
                 <ObservationPanel setup={setup} />
               </div>
             ) : compared ? (

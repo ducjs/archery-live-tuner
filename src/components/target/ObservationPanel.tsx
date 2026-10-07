@@ -6,7 +6,7 @@ import { SEEN_KEYS, type Observation, type Seen } from '../../models/observation
 import type { TuningSetup } from '../../models/setup.ts'
 import { useObservationStore } from '../../state/observationStore.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
-import { createObservation, exportObservations } from '../../utils/observations.ts'
+import { createObservation, exportObservations, observedSetup } from '../../utils/observations.ts'
 import { buttonClass, inputClass } from '../common/styles.ts'
 
 /** What can be noted for each thing, in the order it is offered. */
@@ -114,6 +114,15 @@ function ObservationCard({ observation }: { observation: Observation }) {
     () => compareObservation(observation, heuristicModel),
     [observation],
   )
+  // What the model estimates for the values this observation was made with.
+  const modelSpeed = useMemo(
+    () =>
+      observation.sight?.impliedSpeed === undefined
+        ? 0
+        : heuristicModel.analyze(observedSetup(observation)).metrics.launchSpeed,
+    [observation],
+  )
+  const { sight } = observation
   const when = new Date(observation.createdAt).toLocaleString(language, {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -126,7 +135,9 @@ function ObservationCard({ observation }: { observation: Observation }) {
         <p className="text-ink-muted text-sm">
           {observation.plot
             ? text.fromTarget((observation.plot.distance / 1000).toFixed(0))
-            : text.byHand}
+            : sight
+              ? m.sight.kept
+              : text.byHand}
         </p>
       </div>
       {rows.length > 0 && (
@@ -162,6 +173,25 @@ function ObservationCard({ observation }: { observation: Observation }) {
             ))}
           </tbody>
         </table>
+      )}
+      {sight && (
+        <>
+          <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1">
+            {sight.marks.map((mark) => (
+              <li key={mark.distance}>
+                {m.sight.keptMark((mark.distance / 1000).toFixed(0), String(mark.mark))}
+              </li>
+            ))}
+          </ul>
+          {sight.impliedSpeed !== undefined && (
+            <p className="text-ink-muted mt-1 text-sm">
+              {m.sight.keptSpeed(
+                (sight.impliedSpeed / 1000).toFixed(1),
+                (modelSpeed / 1000).toFixed(1),
+              )}
+            </p>
+          )}
+        </>
       )}
       {observation.notes && <p className="mt-2 max-w-prose">{observation.notes}</p>}
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3">

@@ -79,6 +79,11 @@ export const PINNED: PinnedTask[] = [
     done: false,
   },
   {
+    text: 'Bắn xé giấy ở ba cự ly, ví dụ 2 m, 4 m và 6 m, và bareshaft ở 18 m; ghi lại vết rách về phía nào ở từng cự ly',
+    why: 'Bạn thấy trên phim quay chậm: có lúc đuôi tên đá ngang ngay khi rời cung, có lúc ra thẳng rồi gần 18 m đuôi mới đá, mũi nào cũng vậy. Mô hình chưa tái hiện được trường hợp sau. Nếu vết rách đổi chiều theo cự ly thì đó là đuôi lắc qua lại, và quãng giữa hai lần đổi chiều cho biết chu kỳ thật để chỉnh mô hình.',
+    done: false,
+  },
+  {
     text: 'Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo',
     why: 'Để kiểm hai hệ số hình dạng mặc định của đường lực kéo, hiện vẫn là ước lượng; ứng dụng đã nhận thẳng các số này ở Nâng cao, "Lực kéo tự đo". Chi tiết ở spec §39 và tuning-references.md mục 8.4.',
     done: false,
@@ -302,6 +307,9 @@ export const ROADMAP: RoadmapPhase[] = [
             'Bài test ảo: xé giấy. Bảng kết quả vẽ tờ giấy và đọc vết rách, cạnh bài thử bareshaft; hướng rách lấy từ sách Easton',
           ),
           todo('Bài test ảo: walk-back. Mới có một nguồn tả nó, độ tin thấp'),
+          todo(
+            'Lắc đuôi như dao động thật của mũi tên trong không khí: tần số và độ tắt theo cánh, FOC và vận tốc, để tái hiện được trường hợp tên ra thẳng rồi gần bia đuôi mới đá, và bareshaft lệch dần',
+          ),
           todo('Đối chiếu với bảng spine của nhà sản xuất'),
         ],
       },
@@ -416,22 +424,22 @@ export const ROADMAP: RoadmapPhase[] = [
         ],
       },
       {
-        title: 'Đoán vạch thước ngắm (ý tưởng, chưa lên lịch)',
+        title: 'Đoán vạch thước ngắm',
         summary:
           'Nhập vạch thước ngắm (sight) ở vài cự ly đã bắn chuẩn, ví dụ 18 m vạch 15 và 30 m vạch 30, ứng dụng đoán vạch cho 50, 70, 90 m. Ra bãi không phải dò lại từ đầu, chỉ cần bắn vài mũi để chỉnh tinh.',
         note: 'Vì sao cần: ai cũng cần vạch cho cự ly chưa bắn, và dò bằng cách bắn thử thì tốn tên, tốn thời gian. Các vạch đã có cũng là số đo thật về cách cây cung này đẩy mũi tên này, thứ mà mô hình mới chỉ ước lượng.',
         items: [
-          todo(
+          done(
             'Nhập vạch thước cho các cự ly đã bắn, ít nhất hai cự ly, theo thang của chính thước đó',
           ),
-          todo(
+          done(
             'Đoán vạch cho các cự ly còn lại, từ 18 m tới 90 m, bằng đường bay khớp với các vạch đã có',
           ),
-          todo('Thêm lực cản không khí vào đường bay, nếu không cự ly xa sẽ bị đoán thấp'),
-          todo(
+          done('Thêm lực cản không khí vào đường bay, nếu không cự ly xa sẽ bị đoán thấp'),
+          done(
             'Mỗi vạch đoán có khoảng sai số, càng xa cự ly đã biết càng rộng, kèm lời nhắc phải bắn thử để chốt',
           ),
-          todo(
+          done(
             'Vận tốc tên suy ra từ các vạch đã có, đặt cạnh ước lượng của mô hình và lưu làm quan sát thực tế',
           ),
           todo(

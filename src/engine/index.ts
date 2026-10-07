@@ -25,6 +25,15 @@ export {
   type ObservationComparison,
   type ObservationRow,
 } from './diagnosis/observation.ts'
+export { DRAG_COEFFICIENT, dragPerMeter, launchAngleFor } from './ballistics/flight.ts'
+export {
+  MIN_MARKS,
+  fitSightMarks,
+  usableMarks,
+  type SightFit,
+  type SightInputs,
+  type SightPrediction,
+} from './ballistics/sightMarks.ts'
 export { HEURISTIC_V0, parseCoefficients, type Coefficients } from './coefficients/coefficients.ts'
 export {
   suggestTuning,

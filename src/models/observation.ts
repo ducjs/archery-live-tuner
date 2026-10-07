@@ -25,6 +25,23 @@ export type TargetPlot = {
   marks: Mark[]
 }
 
+/** A sight mark the archer has: the reading on their own sight scale that hits at a distance. */
+export type KnownMark = {
+  /** mm */
+  distance: number
+  /** In the units of the archer's sight scale, as they read it. */
+  mark: number
+}
+
+/** The sight marks of a setup, with what was needed to read a speed from them. */
+export type SightRecord = {
+  marks: KnownMark[]
+  /** mm, how far the eye is above the arrow at anchor */
+  eyeHeight: number
+  /** mm/s, the arrow speed the marks imply. Left out when there were too few marks to say. */
+  impliedSpeed?: number
+}
+
 /**
  * What the archer saw on the range, in the same words the model reports in.
  * Everything is optional: an archer notes what they looked at.
@@ -66,5 +83,7 @@ export type Observation = {
   seen: Seen
   /** The target the bare shaft result was read from, when it was. */
   plot?: TargetPlot
+  /** Sight marks shot with this setup: real measurements of how it throws the arrow. */
+  sight?: SightRecord
   notes?: string
 }

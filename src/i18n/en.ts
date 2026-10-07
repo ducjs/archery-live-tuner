@@ -297,6 +297,42 @@ export const en = {
     fileName: 'recurve-observations.json',
   },
 
+  sight: {
+    heading: 'Sight marks',
+    intro:
+      'Enter the marks you already have, as you read them on your own sight. The model fits your sight to them and gives a mark to start from at the other distances.',
+    distance: 'Distance',
+    yours: 'Your mark',
+    predicted: 'Model',
+    range: 'Likely between',
+    markAt: (meters: number) => `Your sight mark at ${meters} m`,
+    between: (low: string, high: string) => `${low} and ${high}`,
+    outOfReach: 'Out of reach',
+    need: (marks: number) =>
+      `Enter your marks for at least ${marks} distances. Two fix your sight; from three on, the speed of the arrow is read from them as well.`,
+    confirm:
+      'A predicted mark is a place to start, to confirm by shooting. The further a distance lies from the ones you have shot, the wider its range.',
+    poorFit: (miss: string) =>
+      `Your marks do not lie on one curve: one of them is ${miss} off. Check them, and that all were shot with this setup.`,
+    modelSpeed: 'Arrow speed, estimated by the model',
+    impliedSpeed: 'Arrow speed your marks imply',
+    tooFew: 'Takes three marks',
+    speedNote: (low: string, high: string) =>
+      `A rough reading: it rests on how far your eye is above the arrow. Two centimeters either way puts it between ${low} and ${high} m/s.`,
+    eyeHeight: 'Eye above the arrow at anchor',
+    eyeHeightHint:
+      'From the arrow up to your aiming eye, at full draw. About 11 cm with an anchor under the chin. It matters most for the short distances.',
+    save: 'Save as an observation',
+    saveHint: 'Keeps these marks with the values of the setup on screen.',
+    saved: 'Saved with the setup on screen.',
+    limits:
+      'Marks belong to one setup: other arrows, another draw weight, another anchor or another sight extension make them useless. Wind, temperature and altitude are left out.',
+    kept: 'Sight marks',
+    keptMark: (meters: string, mark: string) => `${meters} m: ${mark}`,
+    keptSpeed: (implied: string, model: string) =>
+      `The marks imply ${implied} m/s; the model estimates ${model} m/s.`,
+  },
+
   paperTear: {
     heading: 'Paper tear test',
     clean: 'The point and the fletching go through one hole.',

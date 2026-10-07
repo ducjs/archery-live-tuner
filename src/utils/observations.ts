@@ -3,6 +3,7 @@ import {
   OBSERVATION_SCHEMA_VERSION,
   type Observation,
   type Seen,
+  type SightRecord,
   type TargetPlot,
 } from '../models/observation.ts'
 import { SETUP_SCHEMA_VERSION, type TuningSetup } from '../models/setup.ts'
@@ -12,7 +13,7 @@ import { parseSetup } from './validation.ts'
 export function createObservation(
   setup: TuningSetup,
   seen: Seen,
-  extra: { plot?: TargetPlot; notes?: string } = {},
+  extra: { plot?: TargetPlot; sight?: SightRecord; notes?: string } = {},
   now = new Date(),
 ): Observation {
   const notes = extra.notes?.trim()
@@ -26,6 +27,7 @@ export function createObservation(
     createdAt: now.toISOString(),
     seen,
     ...(extra.plot && { plot: extra.plot }),
+    ...(extra.sight && { sight: extra.sight }),
     ...(notes && { notes }),
   }
 }
@@ -65,6 +67,23 @@ const plotSchema = z.object({
     .max(2000),
 })
 
+const markSchema = z.object({
+  distance: z.number().min(1000).max(150_000),
+  mark: z.number().min(-10_000).max(10_000),
+})
+
+const sightSchema = z.object({
+  marks: z.array(markSchema).max(50),
+  eyeHeight: z.number().min(0).max(400),
+  impliedSpeed: z.number().min(10_000).max(150_000).optional(),
+})
+
+/** Validates sight marks read back from storage. */
+export function parseSight(input: unknown): SightRecord | null {
+  const result = sightSchema.safeParse(input)
+  return result.success ? result.data : null
+}
+
 /** Validates a target plot read back from storage. */
 export function parsePlot(input: unknown): TargetPlot | null {
   const result = plotSchema.safeParse(input)
@@ -79,6 +98,7 @@ const observationSchema = z.object({
   createdAt: z.string().min(1),
   seen: seenSchema,
   plot: plotSchema.optional(),
+  sight: sightSchema.optional(),
   notes: z.string().max(2000).optional(),
 })
 
