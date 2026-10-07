@@ -98,6 +98,15 @@ export const vi: Messages = {
     'arrow.insertWeight': { label: 'Khối lượng insert' },
     'arrow.nockWeight': { label: 'Khối lượng nock' },
     'arrow.fletchingWeight': { label: 'Khối lượng cánh', hint: 'Tính tổng tất cả các cánh.' },
+    'arrow.fletchingHeight': { label: 'Chiều cao cánh', hint: 'Cánh nhô khỏi thân tên bao nhiêu.' },
+    'arrow.fletchingPosition': {
+      label: 'Cánh cách nock',
+      hint: 'Từ rãnh nock tới giữa cánh.',
+    },
+    'arrow.pointLength': {
+      label: 'Point nhô khỏi thân',
+      hint: 'Phần point thò ra ngoài đầu thân tên.',
+    },
   },
 
   panels: {
@@ -162,6 +171,8 @@ export const vi: Messages = {
     reaching: (metres) => `, tới bia ${metres} m sau`,
     grainsPerPound: 'Grains mỗi pound',
     frontOfCenter: 'FOC (trọng tâm lệch về trước)',
+    focOutside: (foc, low, high, above) =>
+      `FOC ${foc} % nằm ${above ? 'trên' : 'dưới'} khoảng ${low} tới ${high} % mà sách Easton ghi cho tên bắn bia. Đây là khoảng để bắt đầu, không phải giới hạn: nó ảnh hưởng tới cách tên bay ở cự ly xa.`,
     energy: 'Động năng',
     braceOutside: (length, low, high) =>
       `Brace height nằm ngoài khoảng Easton khuyên cho cung ${length} in: ${low} tới ${high} cm.`,
@@ -376,7 +387,7 @@ export const vi: Messages = {
       'Ở cự ly không còn khoảng hở, hãy đưa đầu ngắm lại gần riser bằng cần ngắn hơn, hoặc anchor thấp hơn. Cả hai đều nâng đầu ngắm ra xa mũi tên.',
     drawOnBow: 'Vẽ thước ngắm trên cung ở góc nhìn ngang',
     onBowLimits:
-      'Mắt được coi là nằm ngay trên nock, và cánh được coi là cao 12 mm so với thân tên. Lúc đi qua đầu ngắm tên vẫn chưa ổn định, nên khoảng hở dưới một centimet được gọi là sát.',
+      'Mắt được coi là nằm ngay trên nock. Chiều cao cánh lấy theo giá trị đã nhập cho tên, ở Nâng cao. Lúc đi qua đầu ngắm tên vẫn chưa ổn định, nên khoảng hở dưới một centimet được gọi là sát.',
     sightLabel: {
       clear: 'Đầu ngắm cách xa mũi tên.',
       close: 'Đầu ngắm nằm sát mũi tên.',

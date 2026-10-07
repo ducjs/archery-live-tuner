@@ -72,6 +72,9 @@ const HINTS: Record<string, string> = {
   'arrow.length': 'Nock groove to the end of the shaft, without the point.',
   'arrow.spine': 'A lower number is a stiffer shaft.',
   'arrow.fletchingWeight': 'All vanes together.',
+  'arrow.fletchingHeight': 'How far a vane stands off the shaft.',
+  'arrow.fletchingPosition': 'Nock groove to the middle of the vanes.',
+  'arrow.pointLength': 'How far the point sticks out past the end of the shaft.',
 }
 
 const SIZE_KEYS = ['bow.riserSize', 'bow.limbSize']
@@ -311,6 +314,27 @@ export const PARAMETERS: readonly Parameter[] = [
     max: 30,
     default: 5,
     step: 0.5,
+  }),
+  num('arrow.fletchingHeight', 'advanced', 'Vane height', {
+    units: ['mm', 'mm'],
+    min: 3,
+    max: 30,
+    default: 12,
+    step: 0.5,
+  }),
+  num('arrow.fletchingPosition', 'advanced', 'Vanes from the nock', {
+    units: ['mm', 'mm'],
+    min: 20,
+    max: 150,
+    default: 55,
+    step: 1,
+  }),
+  num('arrow.pointLength', 'advanced', 'Point past the shaft', {
+    units: ['mm', 'mm'],
+    min: 5,
+    max: 60,
+    default: 18,
+    step: 1,
   }),
 ]
 

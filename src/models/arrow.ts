@@ -16,6 +16,12 @@ export type ArrowSetup = {
   nockWeight: number
   /** g, all vanes together */
   fletchingWeight: number
+  /** mm, how far a vane stands off the shaft */
+  fletchingHeight: number
+  /** mm, from the nock groove to the middle of the vanes */
+  fletchingPosition: number
+  /** mm, how far the point sticks out past the end of the shaft */
+  pointLength: number
 }
 
 /** g */

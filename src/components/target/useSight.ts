@@ -48,6 +48,7 @@ export function useSight(setup: TuningSetup, result: SimulationResult): Sight {
       extension: entry.extension,
       pinDiameter: entry.pinDiameter,
       shaftDiameter: arrow.shaftDiameter,
+      vaneHeight: arrow.fletchingHeight,
     }
     return {
       entry,

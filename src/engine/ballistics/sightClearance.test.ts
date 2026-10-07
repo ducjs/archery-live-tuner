@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { launchAngleFor } from './flight.ts'
-import {
-  CLOSE_ROOM,
-  VANE_HEIGHT,
-  pinPosition,
-  pinReach,
-  type SightGeometry,
-} from './sightClearance.ts'
+import { CLOSE_ROOM, pinPosition, pinReach, type SightGeometry } from './sightClearance.ts'
 
 const geometry: SightGeometry = {
   speed: 58_000,
@@ -16,6 +10,7 @@ const geometry: SightGeometry = {
   extension: 150,
   pinDiameter: 12,
   shaftDiameter: 4.2,
+  vaneHeight: 12,
 }
 const at = (meters: number, change: Partial<SightGeometry> = {}) =>
   pinPosition({ ...geometry, ...change }, meters * 1000)
@@ -44,7 +39,7 @@ describe('pinPosition', () => {
 
   it('leaves room for the pin housing, the vanes and half the shaft', () => {
     const { pinHeight, room } = at(30)
-    expect(room).toBeCloseTo(pinHeight - 6 - VANE_HEIGHT - 2.1, 9)
+    expect(room).toBeCloseTo(pinHeight - 6 - 12 - 2.1, 9)
   })
 
   it('is clear at short distance and runs out of room far out', () => {
@@ -73,6 +68,7 @@ describe('pinPosition', () => {
     const room = at(50).room
     expect(at(50, { pinDiameter: 25 }).room).toBeLessThan(room)
     expect(at(50, { shaftDiameter: 9 }).room).toBeLessThan(room)
+    expect(at(50, { vaneHeight: 20 }).room).toBeCloseTo(room - 8, 9)
   })
 
   it('says so when the arrow cannot reach the distance', () => {

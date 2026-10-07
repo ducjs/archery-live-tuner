@@ -62,17 +62,32 @@ export function grainsPerPound(bow: BowSetup, arrow: ArrowSetup): number {
   return convert(arrowTotalMass(arrow), 'g', 'gr') / convert(bow.drawWeight, 'N', 'lbf')
 }
 
+/** mm, how far a target point's shank reaches into the shaft. HEURISTIC: it is not an input. */
+const POINT_SHANK = 25
+/** mm, how far behind the end of the shaft the middle of an insert sits. HEURISTIC. */
+const INSERT_DEPTH = 10
+
+/** %, the front of center the Easton guide gives for target arrows, over its shaft types. */
+export const FOC_RANGE = { low: 7, high: 16 }
+
 /**
- * Front of center, in percent: how far the balance point sits ahead of the
- * middle of the shaft. Point and insert are taken at the front end, the nock
- * at the back end, the fletching a little ahead of the nock.
+ * Front of center, in percent, by the AMO formula: how far the balance point
+ * of the finished arrow sits ahead of the middle of the arrow length, which
+ * runs from the nock groove to the end of the shaft.
+ *
+ * The shaft balances at its middle and the nock sits at the groove. The vanes
+ * sit where the archer says. The point is taken as an even bar from the end
+ * of its shank, inside the shaft, to its tip, and the insert a little inside
+ * the end of the shaft.
  */
 export function frontOfCenter(arrow: ArrowSetup): number {
   const length = arrow.length
+  const pointCenter = length + (arrow.pointLength - POINT_SHANK) / 2
   const moment =
     arrowShaftMass(arrow) * (length / 2) +
-    (arrow.pointWeight + arrow.insertWeight) * length +
-    arrow.fletchingWeight * (length * 0.08)
+    arrow.pointWeight * pointCenter +
+    arrow.insertWeight * (length - INSERT_DEPTH) +
+    arrow.fletchingWeight * arrow.fletchingPosition
   const balance = moment / arrowTotalMass(arrow)
   return ((balance - length / 2) / length) * 100
 }

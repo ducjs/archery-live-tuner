@@ -282,7 +282,7 @@ Goal: cover more equipment detail and suggest what to try next.
 - [x] Bow size: riser (H23, H25, H27) and limbs (66, 68, 70), in a section of their own above the other inputs. They give the bow length, which sets the recommended brace height range (done early, asked for by the owner on 2026-10-06)
 - [x] Limb alignment: how far each limb tip sits to the side, in mm. Both to one side act as a center shot error; apart, they add wobble and clearance risk. Coefficient set `heuristic-0.3` (done early, same request)
 - [ ] Barebow support (§1)
-- [ ] Extra arrow detail: point length, fletching position (§6)
+- [x] Extra arrow detail: how far the point sticks out past the shaft, how high the vanes stand and how far they sit from the nock (§6). The front of center is computed from those places, with a note in Advanced when it lies outside the 7 to 16 % of the Easton guide. The vane height also sets the room under the sight pin
 - [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button, shown in two groups: "Adjust directly" on the bow, and "Equipment")
 - [x] Suggestions in the order the tuning guides work in: set-up, up and down, plunger, point, draw weight, brace height, new shaft. Center shot is only suggested back to where it was set. A bare shaft a little low or a little stiff counts as tuned (§17.1)
 - [ ] Recommendations that plan a sequence of changes, not only the next single step

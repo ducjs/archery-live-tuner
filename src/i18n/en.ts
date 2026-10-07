@@ -113,6 +113,8 @@ export const en = {
     reaching: (metres: string) => `, reaching ${metres} m in`,
     grainsPerPound: 'Grains per pound',
     frontOfCenter: 'Front of center (FOC)',
+    focOutside: (foc: string, low: number, high: number, above: boolean) =>
+      `FOC of ${foc} % is ${above ? 'above' : 'below'} the ${low} to ${high} % the Easton guide gives for target arrows. It is a starting range, not a limit: it matters for how the arrow carries at long distance.`,
     energy: 'Kinetic energy',
     braceOutside: (length: number, low: string, high: string) =>
       `Brace height is outside the range Easton gives for a ${length} in bow: ${low} to ${high} cm.`,
@@ -341,7 +343,7 @@ export const en = {
       'Where there is no room, bring the pin closer to the riser with a shorter extension, or anchor lower. Either lifts the pin away from the arrow.',
     drawOnBow: 'Draw the sight on the bow in the side view',
     onBowLimits:
-      'The eye is taken to be over the nock, and a vane to stand 12 mm off the shaft. The arrow is still settling as it passes the pin, so under a centimeter of room is called close.',
+      'The eye is taken to be over the nock. The vane height is the one entered for the arrow, in Advanced. The arrow is still settling as it passes the pin, so under a centimeter of room is called close.',
     sightLabel: {
       clear: 'The sight pin is clear of the arrow.',
       close: 'The sight pin is close to the arrow.',

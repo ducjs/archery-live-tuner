@@ -471,7 +471,9 @@ export const ROADMAP: RoadmapPhase[] = [
             'Cánh cung lệch ngang: đầu mỗi cánh lệch trái hay phải bao nhiêu mm. Hai cánh lệch cùng phía thì như center shot bị lệch; lệch ngược phía thì tên lắc hơn và dễ chạm cung hơn',
           ),
           todo('Hỗ trợ barebow'),
-          todo('Chi tiết thêm cho tên: chiều dài point, vị trí cánh'),
+          done(
+            'Chi tiết thêm cho tên: point nhô khỏi thân bao nhiêu, cánh cao bao nhiêu và cách nock bao xa. FOC tính theo các vị trí đó, và có ghi chú khi nằm ngoài khoảng 7 tới 16 % của sách Easton',
+          ),
           done(
             'Gợi ý tune có thứ tự ưu tiên, kèm nút thử ngay, chia hai nhóm: chỉnh trực tiếp và thiết bị',
           ),

@@ -67,6 +67,25 @@ describe('derived numbers in the result panel', () => {
     expect(screen.getByText('Kinetic energy').nextElementSibling?.textContent).toMatch(/ J$/)
   })
 
+  it('notes a front of center outside the range of the Easton guide, in Advanced only', () => {
+    // The reference arrow is front-heavy: 19 %.
+    const result = heuristicModel.simulate(reference)
+    const { rerender } = render(<ResultPanel result={result} handedness="RH" />)
+    expect(screen.queryByText(/FOC of/)).toBeNull()
+    rerender(<ResultPanel result={result} handedness="RH" advanced />)
+    expect(screen.getByText(/FOC of 19\.0 % is above the 7 to 16 %/)).toBeTruthy()
+    cleanup()
+
+    // A light point on a long shaft brings it inside the range.
+    const balanced = withDisplay(
+      withDisplay(reference, 'arrow.pointWeight', 80),
+      'arrow.length',
+      31,
+    )
+    render(<ResultPanel result={heuristicModel.simulate(balanced)} handedness="RH" advanced />)
+    expect(screen.queryByText(/FOC of/)).toBeNull()
+  })
+
   it('gives no warning for an arrow that is heavy enough', () => {
     render(<ResultPanel result={heuristicModel.simulate(reference)} handedness="RH" advanced />)
     expect(screen.queryByRole('status')).toBeNull()

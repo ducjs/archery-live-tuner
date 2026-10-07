@@ -259,7 +259,7 @@ A = từ đáy rãnh nock tới điểm cân bằng của mũi tên đã lắp �
 | Tên săn | 10 – 15 % |
 
 - FOC quan trọng nhất ở cự ly xa (FITA tới 90 m); trong nhà thì không đáng kể. *Total Archery* nói cùng ý và khuyên point từ 100 gr trở lên vì giữ hướng trong gió tốt hơn.
-- Công thức của mô hình (physics-and-calculations.md mục 7.7) cùng dạng, nhưng đặt toàn bộ khối lượng point và insert ở đúng cuối thân tên. Setup tham chiếu ra 19,3 %, nằm ngoài mọi khoảng trên. Hai lý do có thể: trọng tâm của point và insert thật nằm lùi vào trong thân tên, và setup tham chiếu đang nặng đầu (132 gr phía trước trên thân 162 gr). Chưa tách được phần nào do đâu.
+- Công thức của mô hình (physics-and-calculations.md mục 7.7) cùng dạng, nhưng đặt toàn bộ khối lượng point và insert ở đúng cuối thân tên. Setup tham chiếu ra 19,3 %, nằm ngoài mọi khoảng trên. Đã tách ngày 2026-10-08: đặt point và insert lùi đúng chỗ chỉ hạ FOC xuống 19,0 %. Phần còn lại là do chính setup tham chiếu nặng đầu (132 gr phía trước trên thân 162 gr dài 27 in). Khoảng của Easton cũng ứng với tên dài hơn; cùng point đó trên thân 30 in thì FOC thấp hơn rõ.
 
 ### 9.4 Tên uốn quanh cung (Kooi 1998)
 
@@ -337,7 +337,7 @@ Xếp theo độ chắc của nguồn. Chưa việc nào được làm; mỗi vi
 | Dời điểm trung tính của center shot ra ngoài khoảng 2,4 mm | Easton và *Total Archery* | Đổi kết quả của mọi setup đã lưu (mục 4.2) |
 | Nâng điểm trung tính của nocking point và nới ngưỡng "quá cao" | Easton 13 mm, *Total Archery* 4,8 – 9,5 mm | Các nguồn cho con số khác nhau; phụ thuộc cách đo (mục 4.3) |
 | Nâng điểm trung tính của tiller lên khoảng 5 – 6 mm | *Total Archery* | Một nguồn, và chính nó nói tiller tùy người |
-| Cảnh báo FOC ngoài 7 – 16 %, sau khi lùi trọng tâm của point và insert vào trong thân tên | Easton, A | Phải chọn lùi bao nhiêu; chưa có số đo (mục 9.3) |
+| **Xong, dưới dạng ghi chú.** FOC ngoài 7 – 16 % thì chế độ Nâng cao ghi chú; point và insert đã đặt lùi vào trong thân tên | Easton, A | Chuôi point 25 mm và insert lùi 10 mm là ước chừng |
 | Thông số "loại nocking point" (chỉ buộc hoặc hạt đồng) và khối lượng serving, đi vào spine cần thiết cùng chiều với khối lượng dây | Easton về chiều, *Total Archery* về độ lớn | Mốc độ lớn duy nhất là "tới 15 cm ở 30 m" |
 
 ### 10.3 Dùng làm phép kiểm, không đổi công thức

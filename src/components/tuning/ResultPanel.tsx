@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { HEURISTIC_V0, MIN_GRAINS_PER_POUND, readPaperTear } from '../../engine/index.ts'
+import { FOC_RANGE, HEURISTIC_V0, MIN_GRAINS_PER_POUND, readPaperTear } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { BareShaftComparison, SimulationResult } from '../../models/simulation.ts'
@@ -148,6 +148,7 @@ export function ResultPanel({
   // What the limbs add to the center shot the archer entered.
   const limbShift = centerShot === undefined ? 0 : metrics.effectiveCenterShot - centerShot
   const frontOfCenter = metrics.frontOfCenter.toFixed(1)
+  const focOutside = metrics.frontOfCenter < FOC_RANGE.low || metrics.frontOfCenter > FOC_RANGE.high
 
   return (
     <section aria-labelledby="result-heading" className="@container">
@@ -284,6 +285,17 @@ export function ResultPanel({
               </div>
             ))}
           </dl>
+        )}
+        {advanced && focOutside && (
+          // A note, not a warning: the guide calls its range a starting point.
+          <p className="text-ink-muted mt-2 max-w-prose text-sm">
+            {text.focOutside(
+              frontOfCenter,
+              FOC_RANGE.low,
+              FOC_RANGE.high,
+              metrics.frontOfCenter > FOC_RANGE.high,
+            )}
+          </p>
         )}
       </div>
       <p className="text-ink-muted mt-2 max-w-prose text-sm">{text.note}</p>

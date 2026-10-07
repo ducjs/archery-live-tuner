@@ -309,8 +309,12 @@ describe('derived metrics', () => {
 
   it('gives grains per pound, front of center and energy for the reference setup', () => {
     expect(metrics.grainsPerPound).toBeCloseTo(308 / 38, 6)
-    // 162 gr shaft at the middle, 132 gr at the front, 9 gr at the back, 5 gr near the back.
-    expect(metrics.frontOfCenter).toBeCloseTo(((132 - 9 - 5 * 0.84) / 2 / 308) * 100, 6)
+    // AMO: balance point ahead of the middle, over the arrow length of 685.8 mm.
+    // Shaft 162 gr at the middle; point 120 gr centered 3.5 mm inside the end of the
+    // shaft; insert 12 gr 10 mm inside it; vanes 5 gr at 55 mm; nock 9 gr at the groove.
+    const balance = (162 * 342.9 + 120 * 682.3 + 12 * 675.8 + 5 * 55) / 308
+    expect(metrics.frontOfCenter).toBeCloseTo(((balance - 342.9) / 685.8) * 100, 6)
+    expect(metrics.frontOfCenter).toBeCloseTo(19.0, 1)
     expect(metrics.kineticEnergy).toBeGreaterThan(25)
     expect(metrics.kineticEnergy).toBeLessThan(45)
   })
@@ -383,6 +387,15 @@ describe('derived metrics', () => {
         }
       }
     })
+  })
+
+  it('moves the balance back with vanes further up the shaft, and forward with a longer point', () => {
+    const foc = (key: string, value: number) =>
+      heuristicModel.analyze(withDisplay(reference, key, value)).metrics.frontOfCenter
+    expect(foc('arrow.fletchingPosition', 120)).toBeGreaterThan(metrics.frontOfCenter)
+    expect(foc('arrow.pointLength', 40)).toBeGreaterThan(metrics.frontOfCenter)
+    // Both move it by a fraction of a percent: the masses decide, the places adjust.
+    expect(foc('arrow.pointLength', 40) - metrics.frontOfCenter).toBeLessThan(1)
   })
 
   it('counts fewer grains per pound on a heavier bow', () => {

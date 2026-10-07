@@ -14,8 +14,6 @@ import { launchAngleFor } from './flight.ts'
 
 /** in → mm. The AMO draw length is measured to 1.75 in past the pivot point of the grip. */
 const AMO_PAST_PIVOT = 1.75 * 25.4
-/** mm, how high a target vane stands off the shaft. HEURISTIC: the arrow model has no vane height. */
-export const VANE_HEIGHT = 12
 /** mm, room under which the pin is called close: the arrow is still settling as it passes. HEURISTIC. */
 export const CLOSE_ROOM = 10
 
@@ -34,6 +32,8 @@ export type SightGeometry = {
   pinDiameter: number
   /** mm */
   shaftDiameter: number
+  /** mm, how far a vane stands off the shaft */
+  vaneHeight: number
 }
 
 export type PinPosition = {
@@ -63,7 +63,8 @@ export function pinPosition(geometry: SightGeometry, distance: number): PinPosit
     return { distance, pinHeight: Number.NaN, room: Number.NaN, status: 'unreachable' }
   }
   const pinHeight = geometry.eyeHeight - pinReach(geometry) * Math.tan(angle)
-  const room = pinHeight - geometry.pinDiameter / 2 - VANE_HEIGHT - geometry.shaftDiameter / 2
+  const room =
+    pinHeight - geometry.pinDiameter / 2 - geometry.vaneHeight - geometry.shaftDiameter / 2
   return {
     distance,
     pinHeight,
