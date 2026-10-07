@@ -189,8 +189,8 @@ describe('fit to measured forces (§39.4)', () => {
     // 20 in of draw on a 30 cm brace height: a 208 mm power stroke.
     const short = { ...reference.bow, drawLength: 508, braceHeight: 300 }
     const curve = drawCurve(measuredOn(0.42, 0.39, 2, short), c)
-    expect(curve.measuredPoints).toBeLessThan(2)
+    expect(curve.measuredPoints).toBe(1)
+    expect(curve.endRise).toBeCloseTo(0.39, 9)
     expect(Number.isFinite(curve.fullness)).toBe(true)
-    expect(Number.isFinite(curve.endRise)).toBe(true)
   })
 })

@@ -36,6 +36,21 @@ describe('SetupPanels', () => {
     expect(JSON.parse(localStorage.getItem('tuner.ui')!).state).toMatchObject({ mode: 'advanced' })
   })
 
+  it('shows nothing of the draw force curve in Simple mode, and all of it in Advanced', async () => {
+    render(<SetupPanels />)
+    const parts = [
+      'Draw force, measured',
+      'Force 2 in before full draw',
+      'Draw force curve',
+    ] as const
+    for (const part of parts) expect(screen.queryAllByText(part), part).toHaveLength(0)
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Advanced' }))
+    for (const part of parts) {
+      expect(screen.queryAllByText(part).length, part).toBeGreaterThan(0)
+    }
+  })
+
   it('updates the setup from the number input, in display units', async () => {
     render(<SetupPanels />)
     const input = screen.getByRole('spinbutton', { name: 'Point weight' })

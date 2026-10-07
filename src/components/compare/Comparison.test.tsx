@@ -164,4 +164,18 @@ describe('the draw force curves of the compared setups', () => {
     expect(label.getAttribute('stroke')).toBe('var(--color-paper)')
     expect(label.getAttribute('stroke-width')).toBe('3')
   })
+  it('says a force was not measured instead of showing zero', () => {
+    const unmeasured = createDefaultSetup('Unmeasured')
+    const measured = setValue(unmeasured, getParameter('bow.drawForceNear'), 150)
+    render(
+      <ComparisonTable
+        saved={[{ setup: unmeasured, result: heuristicModel.simulate(unmeasured) }]}
+        now={{ setup: measured, result: heuristicModel.simulate(measured) }}
+        units="archery"
+      />,
+    )
+    const row = screen.getByRole('row', { name: /Force 2 in before full draw/ })
+    const values = [...row.querySelectorAll('td')].map((cell) => cell.textContent)
+    expect(values).toEqual(['Not measured', expect.stringMatching(/^\d+\.\d lb$/)])
+  })
 })

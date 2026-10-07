@@ -75,7 +75,7 @@ export const PINNED: PinnedTask[] = [
   },
   {
     text: 'Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo',
-    why: 'Để kiểm hình dạng mặc định của đường lực kéo trước khi code; hiện hai hệ số của nó mới là ước lượng. Chi tiết ở spec §39 và tuning-references.md mục 8.4.',
+    why: 'Để kiểm hai hệ số hình dạng mặc định của đường lực kéo, hiện vẫn là ước lượng; ứng dụng đã nhận thẳng các số này ở Nâng cao, "Lực kéo tự đo". Chi tiết ở spec §39 và tuning-references.md mục 8.4.',
     done: false,
   },
   {
@@ -446,7 +446,7 @@ export const ROADMAP: RoadmapPhase[] = [
         title: 'Đường lực kéo (DFC)',
         summary:
           'Vẽ đường lực kéo của cây cung: kéo tới đâu thì nặng bao nhiêu, cung tích được bao nhiêu năng lượng, và lúc gần clicker lực còn tăng nhanh hay chậm. Ứng dụng dựng một đường chung từ cỡ cung và draw length, rồi sửa lại cho đúng cây cung của bạn nếu bạn tự đo vài điểm bằng cân cung.',
-        note: 'Vì sao cần: hai cây cung cùng số pound vẫn có thể tích năng lượng khác nhau và cho cảm giác khác nhau ở clicker, mà mô hình hiện coi là một. Hãng không công bố đường này, và không đoán được nó từ lõi foam hay gỗ: số đo cho thấy lõi không quyết định hình dạng.',
+        note: 'Vì sao cần: hai cây cung cùng số pound vẫn có thể tích năng lượng khác nhau và cho cảm giác khác nhau ở clicker, mà trước đây mô hình coi là một. Giờ ứng dụng vẽ đường này, ước lượng từ cỡ cung hoặc uốn theo lực người bắn tự đo. Hãng không công bố đường này, và không đoán được nó từ lõi foam hay gỗ: số đo cho thấy lõi không quyết định hình dạng.',
         items: [
           done(
             'Đường lực kéo chung từ lực kéo, draw length và brace height, với hai số hình dạng: độ đầy quyết định năng lượng tích, độ dốc cuối quyết định lực tăng ở clicker',

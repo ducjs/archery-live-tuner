@@ -15,7 +15,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 - [ ] Quyết định điểm cân của nocking point: giữ 4 mm hay nâng lên. *Các nguồn ghi từ 3 tới 13 mm; 4 mm nằm ở đầu thấp. Chi tiết ở tuning-references.md mục 4.3.*
 - [ ] Tìm bảng chọn spine của Easton (PDF) và đặt vào docs/. *Cần cho bài test đối chiếu vùng cân với bảng của nhà sản xuất, là điều kiện để xong V0.2.*
 - [ ] Tải bản PDF gốc sách Easton "Arrow Tuning and Maintenance Guide" (đủ 32 trang, có hình) và bản sạch sách của Murray Elliot, đặt vào docs/. *Bản lưu từ Scribd mất hết hình và thiếu trang; thiếu hình thì không làm được phần xé giấy.*
-- [ ] Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo. *Để kiểm hình dạng mặc định của đường lực kéo trước khi code; hiện hai hệ số của nó mới là ước lượng. Chi tiết ở spec §39 và tuning-references.md mục 8.4.*
+- [ ] Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo. *Để kiểm hai hệ số hình dạng mặc định của đường lực kéo, hiện vẫn là ước lượng; ứng dụng đã nhận thẳng các số này ở Nâng cao, "Lực kéo tự đo". Chi tiết ở spec §39 và tuning-references.md mục 8.4.*
 - [x] Duyệt thiết kế đường lực kéo ở spec §39. *Chưa code gì cho tới khi bạn đồng ý.*
 - [ ] Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có. *Để các commit mới gắn với tài khoản ducjs.*
 
@@ -37,7 +37,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | V0.2 | Improved dynamic model | In progress (5 of 8 done; paper tear, walk-back and the spine chart test wait for reference documents) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
 | V0.4 | Real-world calibration | Not started |
-| V0.5 | Advanced parameters and recommendations | Not started |
+| V0.5 | Advanced parameters and recommendations | In progress (the draw force curve and the items done ahead of the phase are built) |
 | V0.6 | Backend: setup storage | Not started |
 | V1.0 | Stable public release | Not started |
 
@@ -48,7 +48,7 @@ Every phase has a demo on the "Xem trước" page of the app (`#demo-v0-1` to `#
 Done ahead of their phase:
 - V0.2: everything except the paper tear and walk-back tests and the spine chart test, which wait for the Easton documents in the pinned list
 - V0.3: all of it
-- V0.5: ranked tuning suggestions, bow size, limb alignment
+- V0.5: ranked tuning suggestions, bow size, limb alignment, the draw force curve
 
 ---
 
@@ -284,7 +284,7 @@ Goal: cover more equipment detail and suggest what to try next.
 
 > **Nói đơn giản:** Vẽ đường lực kéo của cây cung: kéo tới đâu thì nặng bao nhiêu, cung tích được bao nhiêu năng lượng, và lúc gần clicker lực còn tăng nhanh hay chậm. Hãng không công bố đường này, nên ứng dụng dựng một đường chung từ cỡ cung và draw length, rồi sửa lại cho đúng cây cung của bạn nếu bạn tự đo vài điểm bằng cân cung. Không đoán theo lõi foam hay gỗ, vì số đo cho thấy lõi không quyết định hình dạng đường này.
 
-Why it matters: two bows of the same draw weight can store different energy and feel different at the clicker, and the model so far treats them as one. Details and limits are in §39; the sources are in tuning-references.md section 8.
+Why it matters: two bows of the same draw weight can store different energy and feel different at the clicker, and the model used to treat them as one. It now draws the curve, estimated from the bow size or shaped by forces the archer measured. Details and limits are in §39; the sources are in tuning-references.md section 8.
 
 - [x] A common curve from draw weight, draw length and brace height, with two shape numbers: fullness, which sets the stored energy, and end rise, which sets the force gain at the clicker (§39.2)
 - [x] Curve style in three steps (straight, standard, full in mid-draw), labelled as an estimate. It replaces the fixed `drawCurveFactor`; the standard style gives the same results as today

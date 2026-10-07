@@ -107,7 +107,9 @@ export function ComparisonTable({ saved, now, units }: TableProps) {
       parameter.kind === 'enum'
         ? (parameterText(m, parameter).options?.[getValue(setup, parameter)] ??
           getValue(setup, parameter))
-        : formatValue(parameter, getValue(setup, parameter), units)
+        : parameter.group === 'curve' && getValue(setup, parameter) === 0
+          ? m.curve.notMeasured
+          : formatValue(parameter, getValue(setup, parameter), units)
     const values = sides.map((side) => show(side.setup))
     return values.every((value) => value === values[0])
       ? []

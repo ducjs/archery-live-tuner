@@ -34,10 +34,10 @@ describe('draw force curve panel', () => {
     )
   })
 
-  it('uses newtons and centimetres in metric', () => {
+  it('uses the units the draw weight and draw length are shown in, in metric', () => {
     show(reference, 'metric')
     expect(screen.getByText('Force gain at the clicker').nextElementSibling?.textContent).toMatch(
-      /^\d\.\d N per cm$/,
+      /^\d\.\d kg per cm$/,
     )
   })
 

@@ -122,6 +122,8 @@ m_động = m_tổng + limbVirtualMass + stringMass · stringMassShare
 v = √(2·E / m_động)                                            m/s (m_động đổi ra kg)
 ```
 
+`limbVirtualMass` là phần khối lượng của limb và dây cùng chuyển động với tên, nên ăn bớt năng lượng.
+
 `½·F·s` là năng lượng của đường lực kéo thẳng; `1 + h / 3` là phần cung recurve tích thêm nhờ đường cong phồng lên ở giữa hành trình. Mức chuẩn cho đúng hệ số 1.14 mà mô hình dùng từ trước (từ `heuristic-0.4` hệ số cố định `drawCurveFactor` không còn).
 
 Đường lực kéo, với `u` là phần power stroke đã kéo (0 ở brace height, 1 ở full draw):
@@ -135,7 +137,7 @@ k = 0.39 + 0.10 · (drawLength − drawVừa)          inch, giữ trong 0 … 0
 lực tăng ở clicker = drawWeight / powerStroke · (1 − h + k)
 ```
 
-`k` (độ dốc cuối) không đổi năng lượng: số hạng của nó thêm bao nhiêu diện tích ở nửa đầu thì bớt bấy nhiêu ở nửa sau. Nó chỉ đổi lực tăng ở clicker. 0.39 làm setup tham chiếu tăng 5% lực kéo mỗi inch ở full draw; 0.10 mỗi inch là ước đoán về độ lớn, chưa có số đo. Chi tiết ở spec §39. `limbVirtualMass` là phần khối lượng của limb và dây cùng chuyển động với tên, nên ăn bớt năng lượng. Không có hệ số hiệu suất riêng.
+`k` (độ dốc cuối) không đổi năng lượng: số hạng của nó thêm bao nhiêu diện tích ở nửa đầu thì bớt bấy nhiêu ở nửa sau. Nó chỉ đổi lực tăng ở clicker. 0.39 làm setup tham chiếu tăng 5% lực kéo mỗi inch ở full draw; 0.10 mỗi inch là ước đoán về độ lớn, chưa có số đo. Chi tiết ở spec §39. Không có hệ số hiệu suất riêng.
 
 Khi người bắn nhập lực đo bằng cân cung, hai số `h` và `k` lấy từ số đo thay cho ước lượng. Với `L = F_đo / drawWeight − u` tại mỗi điểm:
 
@@ -144,7 +146,7 @@ một điểm (trước full draw 2 in):   k = (L₁ − h·u₁(1−u₁)) / (u
 hai điểm (thêm trước full draw 8 in): giải hệ hai phương trình bậc nhất theo h và k
 ```
 
-Số đo bị bỏ, và ước lượng được dùng lại, khi: điểm gần không nhỏ hơn lực kéo, điểm xa không nhỏ hơn điểm gần, `h` ra ngoài −0.3 … 0.9, hoặc đường cong không tăng suốt hành trình. Điểm xa nằm trước brace height thì không tính.
+Số đo bị bỏ, và ước lượng được dùng lại, khi: điểm gần không nhỏ hơn lực kéo, điểm xa không nhỏ hơn điểm gần, `h` ra ngoài −0.3 … 0.9, hoặc đường cong không tăng suốt hành trình. "Tăng suốt hành trình" nghĩa là độ dốc không bao giờ xuống dưới 0.05 độ dốc trung bình (hằng `LEAST_SLOPE` trong `drawCurve.ts`). Điểm xa nằm trước brace height thì không tính, và điểm xa nằm trong 5% đầu của power stroke cũng không dùng.
 
 ### 5.1b Từ số ghi trên limb ra lực trên ngón tay
 
@@ -548,5 +550,7 @@ Không thuộc mô hình, nhưng quyết định cái người dùng thấy:
 | Ngưỡng phân loại | `src/engine/simulation/classification.ts` |
 | Đường bay | `src/engine/simulation/trajectory.ts` |
 | Gợi ý | `src/engine/recommendation/suggest.ts` |
+| Đường lực kéo: hình dạng, ước lượng, dựng từ số đo | `src/engine/simulation/drawCurve.ts` |
+| Số ghi trên limb ra lực trên ngón tay | `src/utils/markedDrawWeight.ts` |
 | Đổi đơn vị | `src/utils/units.ts` |
 | Giới hạn và mặc định của thông số | `src/models/parameters.ts` |

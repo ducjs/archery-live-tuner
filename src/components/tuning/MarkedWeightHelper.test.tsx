@@ -53,10 +53,14 @@ describe('marked draw weight helper', () => {
     expect(screen.queryByRole('button', { name: 'Use as draw weight' })).toBeNull()
   })
 
-  it('keeps the draw weight inside what the app accepts', async () => {
-    await open()
-    await userEvent.type(screen.getByRole('spinbutton', { name: /Marked on the limbs/ }), '500')
-    await userEvent.click(screen.getByRole('button', { name: 'Use as draw weight' }))
-    expect(useTuningStore.getState().setup.bow.drawWeight).toBeCloseTo(convert(80, 'lbf', 'N'), 9)
-  })
+  it.each(['500', '1e308'])(
+    'says so, and offers nothing to use, when %s is outside the draw weights the app accepts',
+    async (typed) => {
+      await open()
+      await userEvent.type(screen.getByRole('spinbutton', { name: /Marked on the limbs/ }), typed)
+      expect(screen.getByText('That is outside the draw weights this app accepts.')).toBeTruthy()
+      expect(screen.queryByRole('button', { name: 'Use as draw weight' })).toBeNull()
+      expect(screen.queryByText(/About/)).toBeNull()
+    },
+  )
 })

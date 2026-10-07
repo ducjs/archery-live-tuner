@@ -4,7 +4,6 @@ import { getParameter, type NumberParameter } from '../../models/parameters.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
 import { BOLT_RANGE, onFingers } from '../../utils/markedDrawWeight.ts'
 import { convert } from '../../utils/units.ts'
-import { clampValue } from '../../utils/validation.ts'
 import { SegmentedControl } from '../common/SegmentedControl.tsx'
 import { buttonClass, inputClass } from '../common/styles.ts'
 
@@ -24,7 +23,9 @@ export function MarkedWeightHelper() {
   // Limbs are marked in pounds whatever units the rest of the page shows.
   const marked = Number(typed)
   const usable = typed.trim() !== '' && Number.isFinite(marked) && marked > 0
+  const weight = getParameter('bow.drawWeight') as NumberParameter
   const estimate = usable ? onFingers(convert(marked, 'lbf', 'N'), drawLength, BOLTS[bolt]) : 0
+  const accepted = Number.isFinite(estimate) && estimate >= weight.min && estimate <= weight.max
 
   return (
     <div className="mt-4">
@@ -60,7 +61,8 @@ export function MarkedWeightHelper() {
             value={bolt}
             onChange={(value) => setBolt(value as Bolt)}
           />
-          {usable && (
+          {usable && !accepted && <p className="font-medium">{text.outOfRange}</p>}
+          {usable && accepted && (
             <>
               <p className="font-medium">
                 {text.estimate(
@@ -71,12 +73,7 @@ export function MarkedWeightHelper() {
               <button
                 type="button"
                 className={buttonClass}
-                onClick={() =>
-                  setParameter(
-                    'bow.drawWeight',
-                    clampValue(getParameter('bow.drawWeight') as NumberParameter, estimate),
-                  )
-                }
+                onClick={() => setParameter('bow.drawWeight', estimate)}
               >
                 {text.use}
               </button>
