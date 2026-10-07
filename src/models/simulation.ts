@@ -72,6 +72,10 @@ export type SimulationMetrics = {
   curveMeasuredPoints: 0 | 1 | 2
   /** gr/lb, arrow mass per pound of draw weight */
   grainsPerPound: number
+  /** g, the whole arrow */
+  arrowMass: number
+  /** g, the lightest arrow the AMO chart allows on this bow */
+  minimumArrowMass: number
   /** %, how far the balance point sits ahead of the middle of the shaft */
   frontOfCenter: number
   /** in, riser and limbs together */

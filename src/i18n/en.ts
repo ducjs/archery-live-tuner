@@ -119,7 +119,9 @@ export const en = {
       `The limbs carry the string off line, which acts like ${shift} mm more of center shot.`,
     clearanceCycles: 'Bending cycles when the tail passes the bow',
     tooLight: (grainsPerPound: string, minimum: number) =>
-      `This arrow is too light for the draw weight: ${grainsPerPound} gr/lb, under the ${minimum} gr/lb that bow makers commonly give as the minimum. A bow shot with too light an arrow is loaded almost as in a dry fire. Check the limit of your bow maker.`,
+      `This arrow is light for the draw weight: ${grainsPerPound} gr/lb, under the ${minimum} gr/lb that bow makers commonly ask for. A bow shot with too light an arrow is loaded almost as in a dry fire. Check the limit of your bow maker.`,
+    belowMinimum: (arrow: string, minimum: string) =>
+      `This arrow weighs ${arrow} gr, under the ${minimum} gr that the AMO chart gives as the least for a recurve of this draw weight and draw length. Shooting an arrow lighter than that can break the bow. Use a heavier arrow.`,
     note: 'A simplified model, not checked against real shooting. Test on your own bow before changing equipment.',
     showGauges: 'Show the gauges',
     hideGauges: 'Hide the gauges',

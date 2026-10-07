@@ -326,6 +326,65 @@ describe('derived metrics', () => {
     )
   })
 
+  // The AMO chart for recurve bows, as printed in the Easton guide (tuning-references.md §9.2).
+  describe('AMO minimum arrow weight', () => {
+    const minimumGrains = (drawWeight: number, drawLength: number) =>
+      convert(
+        heuristicModel.analyze(
+          withDisplay(
+            withDisplay(reference, 'bow.drawWeight', drawWeight),
+            'bow.drawLength',
+            drawLength,
+          ),
+        ).metrics.minimumArrowMass,
+        'g',
+        'gr',
+      )
+
+    it.each([
+      [30, 28, 150],
+      [38, 28, 150],
+      [41, 33, 165],
+      [44, 30, 163],
+      [50, 28, 167],
+      [58, 33, 305],
+      [62, 28, 240],
+      [70, 28, 312],
+    ])('reads %i lb at %i in as %i gr', (drawWeight, drawLength, grains) => {
+      expect(minimumGrains(drawWeight, drawLength)).toBeCloseTo(grains, 6)
+    })
+
+    it('goes between the columns for a draw length between two inches', () => {
+      expect(minimumGrains(50, 28.5)).toBeCloseTo((167 + 185) / 2, 6)
+    })
+
+    it('takes the band above for a draw weight between two bands', () => {
+      expect(minimumGrains(41.5, 33)).toBeCloseTo(211, 6)
+    })
+
+    it('stays on the chart outside its draw lengths', () => {
+      expect(minimumGrains(58, 22)).toBeCloseTo(150, 6)
+      expect(minimumGrains(58, 35)).toBeCloseTo(305, 6)
+    })
+
+    it('finds the reference arrow well above it', () => {
+      expect(metrics.arrowMass).toBeCloseTo(convert(308, 'gr', 'g'), 6)
+      expect(metrics.arrowMass).toBeGreaterThan(metrics.minimumArrowMass)
+    })
+
+    it('never asks for less at a heavier draw weight or a longer draw', () => {
+      for (let drawLength = 25; drawLength <= 33; drawLength++) {
+        for (let drawWeight = 20; drawWeight < 80; drawWeight++) {
+          const here = minimumGrains(drawWeight, drawLength)
+          expect(minimumGrains(drawWeight + 1, drawLength)).toBeGreaterThanOrEqual(here)
+          if (drawLength < 33) {
+            expect(minimumGrains(drawWeight, drawLength + 1)).toBeGreaterThanOrEqual(here)
+          }
+        }
+      }
+    })
+  })
+
   it('counts fewer grains per pound on a heavier bow', () => {
     const heavyBow = withDisplay(reference, 'bow.drawWeight', 48)
     expect(heuristicModel.analyze(heavyBow).metrics.grainsPerPound).toBeCloseTo(308 / 48, 6)

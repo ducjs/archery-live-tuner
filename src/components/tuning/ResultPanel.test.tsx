@@ -19,8 +19,10 @@ function withDisplay(setup: TuningSetup, key: string, displayValue: number): Tun
 }
 
 const reference = createDefaultSetup()
-// 308 gr on a 70 lb bow is 4.4 gr/lb.
-const tooLight = withDisplay(reference, 'bow.drawWeight', 70)
+// 308 gr on a 64 lb bow is 4.8 gr/lb, and still above the 276 gr of the AMO chart.
+const tooLight = withDisplay(reference, 'bow.drawWeight', 64)
+// On a 70 lb bow the AMO chart asks for 312 gr.
+const belowAmo = withDisplay(reference, 'bow.drawWeight', 70)
 
 describe('derived numbers in the result panel', () => {
   it('shows them in Advanced only', () => {
@@ -50,6 +52,22 @@ describe('derived numbers in the result panel', () => {
         advanced={advanced}
       />,
     )
-    expect(screen.getByRole('status').textContent).toMatch(/too light.*4\.4 gr\/lb.*5 gr\/lb/)
+    expect(screen.getByRole('status').textContent).toMatch(/light.*4\.8 gr\/lb.*5 gr\/lb/)
+    expect(screen.queryByRole('alert')).toBeNull()
   })
+
+  it.each([false, true])(
+    'warns once, and louder, under the AMO minimum (advanced: %s)',
+    (advanced) => {
+      render(
+        <ResultPanel
+          result={heuristicModel.simulate(belowAmo)}
+          handedness="RH"
+          advanced={advanced}
+        />,
+      )
+      expect(screen.getByRole('alert').textContent).toMatch(/308 gr.*312 gr.*AMO/)
+      expect(screen.queryByRole('status')).toBeNull()
+    },
+  )
 })

@@ -3,6 +3,7 @@ import { HEURISTIC_V0, MIN_GRAINS_PER_POUND } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
 import type { BareShaftComparison, SimulationResult } from '../../models/simulation.ts'
+import { convert } from '../../utils/units.ts'
 import { bareShaftReading } from './bareShaftReading.ts'
 import { resultReading } from './resultReading.ts'
 
@@ -134,6 +135,9 @@ export function ResultPanel({
     () => window.matchMedia?.('(min-width: 64rem)').matches ?? true,
   )
   const grainsPerPound = metrics.grainsPerPound.toFixed(1)
+  const grains = (grams: number) => convert(grams, 'g', 'gr').toFixed(0)
+  // Under the AMO chart the bow itself is at risk; that is said once, and louder.
+  const belowMinimum = metrics.arrowMass < metrics.minimumArrowMass
   const braceOff =
     braceHeight !== undefined &&
     (braceHeight < metrics.braceHeightMin - 0.05 || braceHeight > metrics.braceHeightMax + 0.05)
@@ -150,13 +154,22 @@ export function ResultPanel({
         {resultReading(result, m).join(' ')}
         {reading && ` ${reading.landing}`}
       </p>
-      {metrics.grainsPerPound < MIN_GRAINS_PER_POUND && (
+      {belowMinimum ? (
         <p
-          role="status"
-          className="border-weak bg-weak/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2"
+          role="alert"
+          className="border-weak bg-weak/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2 font-medium"
         >
-          {text.tooLight(grainsPerPound, MIN_GRAINS_PER_POUND)}
+          {text.belowMinimum(grains(metrics.arrowMass), grains(metrics.minimumArrowMass))}
         </p>
+      ) : (
+        metrics.grainsPerPound < MIN_GRAINS_PER_POUND && (
+          <p
+            role="status"
+            className="border-weak bg-weak/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2"
+          >
+            {text.tooLight(grainsPerPound, MIN_GRAINS_PER_POUND)}
+          </p>
+        )
       )}
       {braceOff && (
         <p className="border-gold bg-gold/10 mt-3 max-w-prose rounded-md border-l-4 px-3 py-2">

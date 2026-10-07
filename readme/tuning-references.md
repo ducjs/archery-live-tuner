@@ -239,7 +239,7 @@ Bảng do AMO lập theo đề nghị của các hãng cung, vì cung gãy khi b
 | 59 – 63 | 172 | 195 | 217 | 240 | 262 | 284 | 307 | 329 | 352 |
 
 - Bảng nói về an toàn của cung, không nói về đường bay. Nó được suy từ một phép thử trên compound 60 lb có riser đúc; sách ghi riser phay có thể chịu được tên nhẹ hơn, chưa biết bao nhiêu.
-- Mốc 5 gr/lb mà mô hình đang dùng để cảnh báo không có trong bảng này. Nó chỉ xuất hiện trong *Nuts & Bolts*, viết cho compound. Với cung 38 lb ở 28 in, mô hình báo dưới 190 gr còn bảng AMO chỉ đòi 150 gr.
+- Từ 2026-10-07 mô hình cảnh báo theo bảng này. Mốc 5 gr/lb dùng trước đó không có trong bảng, và nay chỉ còn là lời nhắc nhẹ hơn. Nó chỉ xuất hiện trong *Nuts & Bolts*, viết cho compound. Với cung 38 lb ở 28 in, mô hình báo dưới 190 gr còn bảng AMO chỉ đòi 150 gr.
 - Luận án Kooi cho lý do vật lý: tên quá nhẹ thì rời dây trước khi dây căng lại, và hiệu suất tụt mạnh.
 
 ### 9.3 FOC (Easton, trang 32)
@@ -325,7 +325,7 @@ Xếp theo độ chắc của nguồn. Chưa việc nào được làm; mỗi vi
 | Việc | Nguồn | Đụng tới |
 |---|---|---|
 | Phép thử xé giấy ảo: từ `verticalTendency` và `dynamicBehavior` ra hướng rách theo bảng 9.1; clearance cao thì ghi chú là rách trái hoặc rách trên có thể do chạm cung | Easton, A | Tính năng mới, không đổi hệ số |
-| Cảnh báo tên nhẹ theo bảng AMO ở 9.2, thay hoặc đặt cạnh mốc 5 gr/lb | Easton, A | `derivedMetrics.ts`, lời cảnh báo |
+| **Xong.** Cảnh báo tên nhẹ theo bảng AMO ở 9.2, đặt cạnh mốc 5 gr/lb. Có bỏ mốc 5 gr/lb hay không còn chờ quyết định | Easton, A | `derivedMetrics.ts`, `ResultPanel.tsx` |
 | **Xong.** Gợi ý tuning theo thứ tự sách: dọc trước ngang; ngang thì plunger, rồi point, rồi lực kéo, rồi spine. Center shot chỉ được gợi ý đưa về vị trí mặc định | Easton và *Total Archery* | `suggest.ts` |
 | **Xong.** Đích của "đã cân": chấp nhận bare shaft hơi thấp và hơi cứng, không đòi trùng khít | Easton, A (mục 4.4) | `suggest.ts`, physics mục 11.1 |
 | **Xong.** Ngưỡng đọc bia: lệch quá 15 cm ở 18 m thì đổi thân tên (Easton); dưới 7,6 cm ở 30 m thì plunger là đủ (*Total Archery*). Hai mức chia tỉ lệ theo cự ly, đây là giả định | A và A− | `targetPlot.ts` ở trang "Xem trước" |

@@ -1429,7 +1429,7 @@ These are easier to compare with reality than `WEAK / STIFF`.
 - grains per pound, with a warning when the arrow is too light for the draw weight
 - estimated arrow speed
 
-As built: all three are part of the model result, with the kinetic energy of the arrow. The result panel shows them in Advanced. An arrow under 5 gr/lb gets a warning in both modes, because that is a matter of safety for the bow, not of tuning. There is no warning on FOC yet: the balance point is computed with the point and insert at the end of the shaft, which reads higher than a measured FOC, so a published range cannot be applied to it as it is.
+As built: all three are part of the model result, with the kinetic energy of the arrow. The result panel shows them in Advanced. An arrow under 5 gr/lb gets a note in both modes, because that is a matter of safety for the bow, not of tuning. An arrow under the AMO minimum for the draw weight and draw length gets a stronger warning in its place: the AMO chart for recurve bows, as printed in the Easton guide, is the published limit, and 5 gr/lb is only a rule of thumb that sits above it for most recurves. There is no warning on FOC yet: the balance point is computed with the point and insert at the end of the shaft, which reads higher than a measured FOC, so a published range cannot be applied to it as it is.
 
 ## 34.5 Sensitivity chart
 

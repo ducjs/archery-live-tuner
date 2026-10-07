@@ -324,7 +324,8 @@ FOC % = (điểm_cân_bằng − L/2) / L · 100
 ```
 
 - Setup tham chiếu: 308 gr trên cung 38 lb là 8,1 gr/lb; FOC 19,3 %.
-- Dưới 5 gr/lb thì bảng kết quả hiện cảnh báo tên quá nhẹ, ở cả Cơ bản và Nâng cao. 5 gr/lb là quy tắc quen dùng, không phải của AMO: bảng AMO trong sách Easton chỉ đòi 150 gr cho recurve tới 41 lb ở draw length tới 31 in. Bảng và việc thay mốc này ghi ở tuning-references.md mục 9.2 và 10.1.
+- Tên nhẹ có hai mức, hiện ở cả Cơ bản và Nâng cao. Dưới mức tối thiểu của bảng AMO (`minimumArrowMass`) thì cảnh báo cung có thể gãy. Chưa tới mức đó nhưng dưới 5 gr/lb thì chỉ nhắc là tên nhẹ. 5 gr/lb là quy tắc quen dùng, không phải của AMO, và cao hơn bảng AMO ở hầu hết recurve: cung 38 lb ở 28 in thì 5 gr/lb là 190 gr, bảng AMO là 150 gr.
+- Bảng AMO chép từ sách Easton (tuning-references.md mục 9.2), tra theo lực kéo và draw length. Lực kéo nằm giữa hai hàng thì lấy hàng nặng hơn; draw length nằm giữa hai cột thì nội suy thẳng; ngoài 25 tới 33 in thì lấy cột gần nhất. Draw length nhập vào được coi là draw length AMO.
 - Ba con số chỉ hiện ở chế độ Nâng cao.
 - FOC chưa có cảnh báo. Sách Easton ghi 7 tới 16 % tùy loại thân (tuning-references.md mục 9.3), nhưng cách tính ở đây đặt cả point lẫn insert ở đúng đầu thân tên và không tính chiều dài point, nên ra số cao hơn cách đo của sách: setup tham chiếu đã là 19,3 %. So với khoảng của sách thì sẽ báo sai.
 

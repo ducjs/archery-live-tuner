@@ -74,8 +74,8 @@ export const PINNED: PinnedTask[] = [
     done: false,
   },
   {
-    text: 'Quyết định cảnh báo tên nhẹ: giữ mốc 5 gr/lb, đổi sang bảng AMO, hay hiện cả hai',
-    why: 'Mốc 5 gr/lb là quy tắc của compound; bảng AMO cho recurve chỉ đòi 150 gr tới 41 lb. Chi tiết ở tuning-references.md mục 9.2.',
+    text: 'Quyết định có giữ lời nhắc tên nhẹ ở mốc 5 gr/lb không, khi đã có cảnh báo theo bảng AMO',
+    why: 'Hiện có cả hai: dưới bảng AMO thì cảnh báo cung có thể gãy, dưới 5 gr/lb thì chỉ nhắc là tên nhẹ. Mốc 5 gr/lb là quy tắc của compound và cao hơn bảng AMO ở hầu hết recurve. Chi tiết ở tuning-references.md mục 9.2.',
     done: false,
   },
   {
@@ -290,6 +290,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done('Thông số dây cung có ảnh hưởng tới kết quả'),
           done(
             'Chỉ số phụ: FOC, grains mỗi pound kèm cảnh báo, tốc độ ước lượng. Con số hiện ở chế độ Nâng cao; cảnh báo tên dưới 5 gr/lb hiện ở cả hai chế độ',
+          ),
+          done(
+            'Cảnh báo khi tên nhẹ hơn mức tối thiểu của bảng AMO cho lực kéo và draw length đang nhập, lấy từ sách Easton. Khi cả hai cùng đúng thì nó thay cho lời nhắc 5 gr/lb',
           ),
           done(
             'Test giữ mô hình trong vùng số liệu đã công bố: số chu kỳ uốn của tên lúc còn trên dây, phần năng lượng tên nhận được, vận tốc theo khối lượng tên và brace height',

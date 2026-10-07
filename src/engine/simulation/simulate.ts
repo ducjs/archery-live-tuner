@@ -4,6 +4,7 @@ import type {
   SimulationResult,
   TuningClassification,
 } from '../../models/simulation.ts'
+import { arrowTotalMass } from '../../models/arrow.ts'
 import { BRACE_PER_INCH, bowLength, braceHeightRange } from '../../models/bow.ts'
 import type { TuningSetup } from '../../models/setup.ts'
 import { HEURISTIC_V0, type Coefficients } from '../coefficients/coefficients.ts'
@@ -19,7 +20,7 @@ import {
 } from './bowModel.ts'
 import { classify } from './classification.ts'
 import { clickerGain, drawCurve } from './drawCurve.ts'
-import { frontOfCenter, grainsPerPound, kineticEnergy } from './derivedMetrics.ts'
+import { frontOfCenter, grainsPerPound, kineticEnergy, minimumArrowMass } from './derivedMetrics.ts'
 import { stiffnessMismatch } from './dynamicSpine.ts'
 import { plungerBehaviorShift, plungerLateralPush } from './plungerModel.ts'
 import {
@@ -177,6 +178,8 @@ function evaluate(setup: SetupInput, c: Coefficients, bareShaft = false): Intern
     curveEndRise: curve.endRise,
     curveMeasuredPoints: curve.measuredPoints,
     grainsPerPound: grainsPerPound(bow, arrow),
+    arrowMass: arrowTotalMass(arrow),
+    minimumArrowMass: minimumArrowMass(bow),
     frontOfCenter: frontOfCenter(arrow),
     bowLength: bowLength(bow),
     braceHeightMin: braceRange.min,
