@@ -291,6 +291,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Chỉ số phụ: FOC, grains mỗi pound kèm cảnh báo, tốc độ ước lượng. Con số hiện ở chế độ Nâng cao; cảnh báo tên dưới 5 gr/lb hiện ở cả hai chế độ',
           ),
+          done(
+            'Test giữ mô hình trong vùng số liệu đã công bố: số chu kỳ uốn của tên lúc còn trên dây, phần năng lượng tên nhận được, vận tốc theo khối lượng tên và brace height',
+          ),
           done('Bài test ảo: bareshaft'),
           todo('Bài test ảo: xé giấy, walk-back'),
           todo('Đối chiếu với bảng spine của nhà sản xuất'),

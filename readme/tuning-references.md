@@ -348,7 +348,7 @@ Xếp theo độ chắc của nguồn. Chưa việc nào được làm; mỗi vi
 | Brace height cao hơn thì vận tốc thấp hơn | Kooi, bảng 3.5; Easton | Đúng chiều |
 | Lực kéo cần tỉ lệ thuận với `EI` | Kooi 1998 | Số mũ 1.0 |
 
-Hai dòng đầu có thể thành test trong `src/engine`, với khoảng cho phép rộng: chúng bắt được việc một lần chỉnh hệ số về sau đẩy mô hình ra khỏi vùng hợp lý.
+Bốn dòng đầu đã thành test trong `src/engine/simulation/simulate.test.ts` (nhóm "against published figures"), với khoảng cho phép rộng: chu kỳ trên dây trong 1 tới 1,5, hiệu suất trong 60 tới 90 %. Chúng bắt được việc một lần chỉnh hệ số về sau đẩy mô hình ra khỏi vùng hợp lý.
 
 ### 10.4 Cho hoạt hình
 

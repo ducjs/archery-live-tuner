@@ -35,7 +35,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | Phase | Theme | Status |
 |---|---|---|
 | V0.1 | Basic simulator (MVP) | All items done (M1–M8). Open: the owner's check of the ten points of §33 on a phone |
-| V0.2 | Improved dynamic model | In progress (5 of 8 done; paper tear and walk-back are open; the spine chart test waits for the Easton chart) |
+| V0.2 | Improved dynamic model | In progress (6 of 9 done; paper tear and walk-back are open; the spine chart test waits for the Easton chart) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
 | V0.4 | Real-world calibration | Not started |
 | V0.5 | Advanced parameters and recommendations | In progress (the draw force curve and the items done ahead of the phase are built) |
@@ -181,6 +181,7 @@ Goal: replace the blind heuristic core with a cheap physical basis. UI changes a
 - [x] Clearance from oscillation phase vs time on string (§34.2): the risk now depends on how many bending cycles the shaft has gone through when its tail passes the riser. Coefficient set `heuristic-0.2`
 - [x] String parameters feed the model (§5)
 - [x] Derived metrics: FOC, grains per pound with warning, estimated speed (§34.4). The numbers show in Advanced; the warning for an arrow under 5 gr/lb shows in both modes
+- [x] Tests that hold the model against published figures: the bending cycles on the string (Pratt, 1.25), the share of the stored energy the arrow gets, speed against arrow mass and brace height. Sources in tuning-references.md section 10.3
 - [x] Virtual tuning test: bare shaft (done early in M5)
 - [ ] Virtual tuning tests: paper tear, walk-back (§34.3)
 - [ ] Spine chart sanity test (§25 Test 8)

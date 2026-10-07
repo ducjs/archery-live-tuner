@@ -524,3 +524,49 @@ describe('draw force curve (§39)', () => {
     )
   })
 })
+
+// Figures from the literature, with wide margins. The model is not fitted to
+// them: they are here so that a later change of coefficients cannot walk it out
+// of the plausible range unnoticed. Sources in readme/tuning-references.md §10.3.
+describe('against published figures', () => {
+  const efficiency = (setup: TuningSetup) => {
+    const m = heuristicModel.analyze(setup).metrics
+    return m.kineticEnergy / m.storedEnergy
+  }
+
+  it('lets the shaft bend about one and a quarter times before it leaves the string', () => {
+    // Pratt's criterion, as reviewed by Kooi (1998): 1.25 cycles.
+    const { metrics, launch } = heuristicModel.simulate(reference)
+    const cyclesOnString = metrics.oscillationFrequency * launch.timeOnString
+    expect(cyclesOnString).toBeGreaterThan(1)
+    expect(cyclesOnString).toBeLessThan(1.5)
+  })
+
+  it('gives the arrow about three quarters of the stored energy', () => {
+    // Pękalski takes 75 %; Kooi computes 69 to 98 % over arrows of usual mass.
+    expect(efficiency(reference)).toBeGreaterThan(0.6)
+    expect(efficiency(reference)).toBeLessThan(0.9)
+  })
+
+  it('shoots a lighter arrow faster and less efficiently (Kooi, table 3.10)', () => {
+    const light = withDisplay(reference, 'arrow.shaftGpi', 5)
+    const heavy = withDisplay(reference, 'arrow.shaftGpi', 9)
+    expect(metricsOf(light).launchSpeed).toBeGreaterThan(metricsOf(heavy).launchSpeed)
+    expect(efficiency(light)).toBeLessThan(efficiency(heavy))
+  })
+
+  it('loses a little speed with every rise in brace height (Kooi, table 3.5)', () => {
+    const speeds = [21, 22, 23, 24].map(
+      (brace) => metricsOf(withDisplay(reference, 'bow.braceHeight', brace)).launchSpeed,
+    )
+    for (let i = 1; i < speeds.length; i++) {
+      expect(speeds[i]).toBeLessThan(speeds[i - 1]!)
+      // A small loss: under 3 % per centimeter.
+      expect(speeds[i]! / speeds[i - 1]!).toBeGreaterThan(0.97)
+    }
+  })
+
+  function metricsOf(setup: TuningSetup) {
+    return heuristicModel.analyze(setup).metrics
+  }
+})
