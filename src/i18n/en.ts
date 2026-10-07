@@ -195,9 +195,11 @@ export const en = {
   suggestions: {
     heading: 'Tuning suggestions',
     tuned: 'The model reads this setup as tuned. There is nothing to suggest.',
+    tunedSlightlyOff:
+      'The bare shaft lands a little low or a little to the stiff side of the fletched arrows. That is common on a well tuned bow, so the model leaves it alone.',
     none: 'No single change within reach improves this setup much. Try a different shaft or a larger change than one step.',
     intro:
-      'Each group is in order of priority: what helps most for the least effort. Each item is a single change from the setup as it is now, so try one, then look at the lists again.',
+      'Each group follows the order tuning guides work in: up and down first, then left and right with the plunger, the point and the draw weight, and a different shaft last. Each item is a single change from the setup as it is now, so try one, then look at the lists again.',
     groups: {
       adjust: { title: 'Adjust directly', about: 'Set on the bow itself. Nothing to buy.' },
       equipment: { title: 'Equipment', about: 'Change a part of the arrow, or the arrows.' },

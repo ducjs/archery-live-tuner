@@ -27,6 +27,9 @@ export function TuningSuggestions({ advice, before, onTry, perGroup = 3 }: Props
       </h2>
 
       {advice.tuned && <p className="mt-2 max-w-prose">{text.tuned}</p>}
+      {advice.bareShaftSlightlyOff && (
+        <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.tunedSlightlyOff}</p>
+      )}
 
       {!advice.tuned && advice.suggestions.length === 0 && (
         <p className="mt-2 max-w-prose">{text.none}</p>

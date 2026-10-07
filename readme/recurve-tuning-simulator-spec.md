@@ -800,13 +800,21 @@ All recommendations must be labelled as model suggestions, not guaranteed tuning
 
 ## 17.1 How suggestions are ranked
 
-Each suggestion is one change to one parameter. The engine tries each parameter over a limited range, keeps the value that the model scores as closest to tuned, and drops changes that barely help. The list is ordered by improvement divided by effort:
+Each suggestion is one change to one parameter. The engine tries each parameter over a limited range, keeps the value that the model scores as closest to tuned, and drops changes that barely help. The list follows the order the tuning guides work in (the Easton guide and Total Archery, see tuning-references.md): a change of an earlier stage that helps comes before any change of a later one, and within a stage the larger improvement comes first.
 
 ```text
-adjust on the bow      (nocking point, plunger, center shot, brace height, tiller, draw weight)
-change an arrow part   (point weight, nock weight)
-needs new arrows       (spine, arrow length)
+1 set-up        center shot, only back toward where it was set
+2 up and down   nocking point, tiller
+3 plunger       stiffness, preload
+4 point         point weight, nock weight
+5 draw weight
+6 brace height
+7 new shaft     spine, arrow length
 ```
+
+Center shot is not a tuning adjustment on a recurve: the guides set it once and tune with the plunger tension. It is suggested only when it has been moved, and only back.
+
+A setup counts as tuned when all five ratings are neutral or low and the bare shaft lands with the fletched arrows, or a little low, or a little to the stiff side. The Easton guide describes that as common on a well tuned bow. The same distance to the weak side or above the group does not count.
 
 The panel shows two separate groups, each ranked on its own and counting from 1, with up to three items:
 
@@ -815,7 +823,7 @@ Adjust directly   everything in "adjust on the bow"
 Equipment         "change an arrow part" and "needs new arrows", each item saying which
 ```
 
-A group with nothing useful says so. Inside the equipment group a cheap part still ranks before new arrows that help more. Every item shows what the model reports after the change and has a "Try it" action that applies it. In Simple mode only Simple parameters are suggested.
+A group with nothing useful says so. Inside the equipment group a change of point or nock comes before new arrows that help more. Every item shows what the model reports after the change and has a "Try it" action that applies it. In Simple mode only Simple parameters are suggested.
 
 ## 17.2 Diagnosis from a target plot (V0.4)
 

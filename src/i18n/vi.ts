@@ -240,9 +240,11 @@ export const vi: Messages = {
   suggestions: {
     heading: 'Gợi ý tune',
     tuned: 'Mô hình đọc setup này là đã cân. Không có gì cần gợi ý.',
+    tunedSlightlyOff:
+      'Bareshaft rơi hơi thấp hoặc hơi lệch về phía cứng so với tên có cánh. Cung đã cân tốt thường như vậy, nên mô hình để yên.',
     none: 'Không có thay đổi đơn lẻ nào trong tầm chỉnh cải thiện được nhiều. Thử thân tên khác, hoặc đổi nhiều hơn một bước.',
     intro:
-      'Mỗi nhóm xếp theo thứ tự ưu tiên: lợi nhiều nhất mà tốn công ít nhất. Mỗi gợi ý là một thay đổi riêng lẻ tính từ setup hiện tại, nên hãy thử một cái rồi xem lại danh sách.',
+      'Mỗi nhóm xếp theo thứ tự sách tuning vẫn làm: chỉnh lên xuống trước, rồi trái phải bằng plunger, point, lực kéo, và sau cùng mới đổi thân tên. Mỗi gợi ý là một thay đổi riêng lẻ tính từ setup hiện tại, nên hãy thử một cái rồi xem lại danh sách.',
     groups: {
       adjust: { title: 'Chỉnh trực tiếp', about: 'Chỉnh ngay trên cung. Không phải mua gì.' },
       equipment: { title: 'Thiết bị', about: 'Đổi một bộ phận của tên, hoặc đổi tên.' },

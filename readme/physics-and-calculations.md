@@ -427,7 +427,7 @@ tuningError = |dynamicBehavior|
             + 0.3 · oscillation
 ```
 
-Setup được coi là đã cân khi cả năm phân loại đều NEUTRAL hoặc LOW và bare shaft TOGETHER ở cả hai chiều.
+Setup được coi là đã cân khi cả năm phân loại đều NEUTRAL hoặc LOW, và bare shaft ở mỗi chiều hoặc là TOGETHER, hoặc lệch nhẹ về phía sách coi là bình thường: thấp hơn cụm, hay về phía cứng (trái với tay phải). "Nhẹ" là `offset` không quá 0.10, gấp đôi bề rộng của TOGETHER; sách Easton chỉ viết "hơi thấp và hơi cứng", con số là ước chừng. Lệch cùng mức về phía yếu hoặc cao hơn cụm thì chưa cân. Khi rơi vào trường hợp này, phần gợi ý ghi thêm một câu giải thích.
 
 ### 11.2 Tìm và xếp hạng
 
@@ -435,22 +435,26 @@ Với từng thông số trong bảng dưới: thử 24 giá trị, 12 bước m
 
 ```text
 improvement = (sai_lệch_gốc − sai_lệch_tốt_nhất) / sai_lệch_gốc      hiển thị
-rank        = (sai_lệch_gốc − sai_lệch_tốt_nhất) / cost              xếp hạng
+rank        = (sai_lệch_gốc − sai_lệch_tốt_nhất) / cost              xếp trong cùng một bước
 ```
 
-| Thông số | Nhóm | `cost` | `maxMove` |
-|---|---|---|---|
-| nocking point height | chỉnh trên cung | 1 | 6 mm |
-| plunger stiffness | chỉnh trên cung | 1 | 0.6 |
-| plunger preload | chỉnh trên cung | 1 | 1.5 mm |
-| center shot | chỉnh trên cung | 1.2 | 2 mm |
-| brace height | chỉnh trên cung | 1.2 | 1 cm |
-| tiller | chỉnh trên cung | 1.2 | 4 mm |
-| draw weight | chỉnh trên cung | 1.5 | 3 lb |
-| point weight | đổi phụ kiện tên | 1.8 | 20 gr |
-| nock weight | đổi phụ kiện tên | 1.8 | 4 gr |
-| arrow length | mua tên mới | 3 | 1 in |
-| spine | mua tên mới | 3 | 150 |
+Danh sách xếp theo bước trước, `rank` sau. Bước là thứ tự sách tuning vẫn làm (tuning-references.md mục 5 và 9.7): một thay đổi ở bước trước mà có ích thì đứng trước mọi thay đổi ở bước sau, dù bước sau sửa được nhiều hơn. Phần trăm cải thiện vẫn hiện trên từng gợi ý.
+
+| Bước | Thông số | Nhóm | `cost` | `maxMove` |
+|---|---|---|---|---|
+| 1. Lắp đặt | center shot | chỉnh trên cung | 1 | 2 mm |
+| 2. Lên xuống | nocking point height | chỉnh trên cung | 1 | 6 mm |
+| | tiller | chỉnh trên cung | 1.2 | 4 mm |
+| 3. Plunger | plunger stiffness | chỉnh trên cung | 1 | 0.6 |
+| | plunger preload | chỉnh trên cung | 1 | 1.5 mm |
+| 4. Point | point weight | đổi phụ kiện tên | 1 | 20 gr |
+| | nock weight | đổi phụ kiện tên | 1 | 4 gr |
+| 5. Lực kéo | draw weight | chỉnh trên cung | 1 | 3 lb |
+| 6. Brace height | brace height | chỉnh trên cung | 1 | 1 cm |
+| 7. Thân tên | arrow length | mua tên mới | 1 | 1 in |
+| | spine | mua tên mới | 1 | 150 |
+
+Center shot chỉ được gợi ý quay về giá trị mặc định, không bao giờ ra xa nó: với recurve, sách đặt vị trí trong ngoài một lần lúc lắp cung rồi tune bằng lực plunger. Người bắn đã dời center shot thì được gợi ý đặt lại, và việc đó đứng đầu danh sách.
 
 Mỗi gợi ý là một thay đổi đơn lẻ từ setup hiện tại, không phải một chuỗi. Ở chế độ Simple chỉ gợi ý thông số Simple.
 

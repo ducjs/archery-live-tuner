@@ -90,7 +90,7 @@ Sách: với finger release, đầu point đặt lệch ra ngoài đường dây
 
 *Total Archery* nói cùng điều: trên recurve, tên nằm hơi lệch ra ngoài đường dây. Archery Victoria cũng đặt tên "vừa thấy ngoài center shot".
 
-Mô hình coi center shot 0 mm là cân, và đặt center shot đúng như sách (2,4 mm ra ngoài) thì báo bare shaft lệch trái. Hai cách xử lý: dời điểm trung tính ra khoảng 2,4 mm phía ngoài, hoặc định nghĩa lại thông số là "lệch so với vị trí chuẩn". Liên quan: gợi ý tuning hiện có đề xuất chỉnh center shot, trái với lời khuyên của sách cho recurve.
+Mô hình coi center shot 0 mm là cân, và đặt center shot đúng như sách (2,4 mm ra ngoài) thì báo bare shaft lệch trái. Hai cách xử lý: dời điểm trung tính ra khoảng 2,4 mm phía ngoài, hoặc định nghĩa lại thông số là "lệch so với vị trí chuẩn". Đã sửa một phần ngày 2026-10-07: gợi ý tuning không còn đề xuất dời center shot để bù spine; nó chỉ gợi ý đưa center shot về lại vị trí mặc định khi đã bị dời. Điểm trung tính 0 mm thì chưa đổi.
 
 ### 4.3 Nocking point và tiller khởi đầu
 
@@ -100,7 +100,9 @@ Tiller cũng vậy: *Total Archery* ghi tiller trên lớn hơn tiller dưới 4
 
 ### 4.4 Định nghĩa "đã cân"
 
-Sách: setup tune tốt thường có bare shaft rơi hơi thấp và hơi cứng (hơi trái với tay phải), không trùng khít với cụm. Có khi bare shaft cao hơn cụm là dấu hiệu nocking point thấp, dễ ép cánh vào rest. Mô hình và phần gợi ý đang coi trùng khít là đích.
+Sách: setup tune tốt thường có bare shaft rơi hơi thấp và hơi cứng (hơi trái với tay phải), không trùng khít với cụm. Có khi bare shaft cao hơn cụm là dấu hiệu nocking point thấp, dễ ép cánh vào rest.
+
+Đã sửa ngày 2026-10-07: phần gợi ý coi setup là đã cân khi bare shaft trùng cụm, hoặc lệch nhẹ xuống dưới, hoặc lệch nhẹ về phía cứng. Lệch nhẹ về phía yếu hay lên trên thì chưa. Mức "nhẹ" là ước chừng (physics-and-calculations.md mục 11.1). Mô hình vẫn coi setup tham chiếu, nơi bare shaft trùng khít, là điểm cân; chỉ điều kiện dừng gợi ý được nới.
 
 ## 5. Quy trình và ngưỡng dùng được
 
@@ -112,7 +114,7 @@ Sách: setup tune tốt thường có bare shaft rơi hơi thấp và hơi cứn
 4. Clearance.
 5. Fine tuning và micro tuning theo cụm tên.
 
-Mỗi lần chỉ đổi một thông số. Phần đọc bia ở trang "Xem trước" đã theo thứ tự dọc trước ngang sau; phần gợi ý của engine thì chưa có thứ tự này.
+Mỗi lần chỉ đổi một thông số. Phần đọc bia ở trang "Xem trước" và phần gợi ý của engine đều theo thứ tự này. Từ 2026-10-07 gợi ý xếp theo bảy bước: lắp đặt, lên xuống, plunger, point, lực kéo, brace height, thân tên (physics-and-calculations.md mục 11.2).
 
 ### Bare shaft
 
@@ -324,8 +326,8 @@ Xếp theo độ chắc của nguồn. Chưa việc nào được làm; mỗi vi
 |---|---|---|
 | Phép thử xé giấy ảo: từ `verticalTendency` và `dynamicBehavior` ra hướng rách theo bảng 9.1; clearance cao thì ghi chú là rách trái hoặc rách trên có thể do chạm cung | Easton, A | Tính năng mới, không đổi hệ số |
 | Cảnh báo tên nhẹ theo bảng AMO ở 9.2, thay hoặc đặt cạnh mốc 5 gr/lb | Easton, A | `derivedMetrics.ts`, lời cảnh báo |
-| Gợi ý tuning theo thứ tự sách: dọc trước ngang; ngang thì plunger, rồi point, rồi lực kéo, rồi spine. Không gợi ý chỉnh center shot cho recurve, trừ khi clearance cao | Easton và *Total Archery* | `suggest.ts`: `cost` và danh sách thông số |
-| Đích của "đã cân": chấp nhận bare shaft hơi thấp và hơi cứng, không đòi trùng khít | Easton, A (mục 4.4) | Điều kiện "đã cân" ở physics mục 11.1 |
+| **Xong.** Gợi ý tuning theo thứ tự sách: dọc trước ngang; ngang thì plunger, rồi point, rồi lực kéo, rồi spine. Center shot chỉ được gợi ý đưa về vị trí mặc định | Easton và *Total Archery* | `suggest.ts` |
+| **Xong.** Đích của "đã cân": chấp nhận bare shaft hơi thấp và hơi cứng, không đòi trùng khít | Easton, A (mục 4.4) | `suggest.ts`, physics mục 11.1 |
 | Ngưỡng đọc bia: lệch quá 15 cm ở 18 m thì đổi thân tên (Easton); dưới 7,6 cm ở 30 m thì plunger là đủ (*Total Archery*) | A và A− | Phần đọc bia ở trang "Xem trước", đang dùng 6 cm |
 
 ### 10.2 Đủ nguồn về chiều, cần quyết định về con số

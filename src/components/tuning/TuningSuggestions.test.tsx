@@ -36,6 +36,12 @@ function renderFor(setup: TuningSetup, onTry = vi.fn()) {
 }
 
 describe('TuningSuggestions', () => {
+  it('explains a bare shaft that is a little off on a setup it calls tuned', () => {
+    renderFor(withDisplay(createDefaultSetup(), 'bow.plungerStiffness', 1.6))
+    expect(screen.getByText(/reads this setup as tuned/)).toBeTruthy()
+    expect(screen.getByText(/common on a well tuned bow/)).toBeTruthy()
+  })
+
   it('says so when the setup is tuned', () => {
     renderFor(createDefaultSetup())
     expect(screen.getByText(/reads this setup as tuned/)).toBeTruthy()

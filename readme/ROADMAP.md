@@ -280,6 +280,7 @@ Goal: cover more equipment detail and suggest what to try next.
 - [ ] Barebow support (§1)
 - [ ] Extra arrow detail: point length, fletching position (§6)
 - [x] Recommendation engine, labelled as model suggestions (§17) (done early: ranked single changes with a "Try it" button, shown in two groups: "Adjust directly" on the bow, and "Equipment")
+- [x] Suggestions in the order the tuning guides work in: set-up, up and down, plunger, point, draw weight, brace height, new shaft. Center shot is only suggested back to where it was set. A bare shaft a little low or a little stiff counts as tuned (§17.1)
 - [ ] Recommendations that plan a sequence of changes, not only the next single step
 
 ### Draw force curve

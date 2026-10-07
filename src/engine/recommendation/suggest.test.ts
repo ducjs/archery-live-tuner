@@ -40,7 +40,93 @@ describe('suggestionGroup', () => {
 
 describe('suggestTuning', () => {
   it('has nothing to suggest for the reference setup', () => {
-    expect(suggestTuning(heuristicModel, reference)).toEqual({ tuned: true, suggestions: [] })
+    expect(suggestTuning(heuristicModel, reference)).toEqual({
+      tuned: true,
+      bareShaftSlightlyOff: false,
+      suggestions: [],
+    })
+  })
+
+  // The order and the limits below follow the Easton guide and Total Archery;
+  // see readme/tuning-references.md §5 and §9.7.
+  describe('in the order the books tune in', () => {
+    const keys = (setup: TuningSetup) =>
+      suggestTuning(heuristicModel, setup, { limit: 20 }).suggestions.map(
+        (suggestion) => suggestion.parameterKey,
+      )
+
+    it('takes the nocking point first, however far off the spine is', () => {
+      const weakAndNockHigh = withDisplay(
+        withDisplay(reference, 'arrow.spine', 950),
+        'bow.nockingPointHeight',
+        6.5,
+      )
+      expect(keys(weakAndNockHigh)[0]).toBe('bow.nockingPointHeight')
+    })
+
+    it('goes from plunger to point to draw weight to a new shaft', () => {
+      const order = keys(withDisplay(reference, 'arrow.spine', 800))
+      const at = (key: string) => order.indexOf(key)
+      expect(at('bow.plungerStiffness')).toBeGreaterThanOrEqual(0)
+      expect(at('bow.plungerStiffness')).toBeLessThan(at('arrow.pointWeight'))
+      expect(at('arrow.pointWeight')).toBeLessThan(at('bow.drawWeight'))
+      expect(at('bow.drawWeight')).toBeLessThan(at('arrow.spine'))
+    })
+
+    it('does not move the center shot off its set-up position to make up for the spine', () => {
+      expect(keys(withDisplay(reference, 'arrow.spine', 800))).not.toContain('bow.centerShot')
+      expect(keys(withDisplay(reference, 'arrow.spine', 600))).not.toContain('bow.centerShot')
+    })
+
+    it('still puts back a center shot that was moved', () => {
+      const moved = withDisplay(reference, 'bow.centerShot', 3)
+      const { suggestions } = suggestTuning(heuristicModel, moved, { limit: 20 })
+      const centerShot = suggestions.find(
+        (suggestion) => suggestion.parameterKey === 'bow.centerShot',
+      )!
+      expect(centerShot.direction).toBe('decrease')
+      expect(centerShot.to).toBeGreaterThanOrEqual(0)
+    })
+  })
+
+  describe('what counts as tuned', () => {
+    it('accepts a bare shaft a little to the stiff side', () => {
+      const slightlyStiff = withDisplay(reference, 'bow.plungerStiffness', 1.6)
+      expect(heuristicModel.compareBareShaft(slightlyStiff).horizontal).toBe('LEFT')
+      expect(suggestTuning(heuristicModel, slightlyStiff)).toEqual({
+        tuned: true,
+        bareShaftSlightlyOff: true,
+        suggestions: [],
+      })
+    })
+
+    it('mirrors the stiff side for a left-handed archer', () => {
+      const leftHanded = { ...reference, bow: { ...reference.bow, handedness: 'LH' as const } }
+      const slightlyStiff = withDisplay(leftHanded, 'bow.plungerStiffness', 1.6)
+      expect(heuristicModel.compareBareShaft(slightlyStiff).horizontal).toBe('RIGHT')
+      expect(suggestTuning(heuristicModel, slightlyStiff).tuned).toBe(true)
+    })
+
+    it('does not accept the same distance to the weak side', () => {
+      const slightlyWeak = withDisplay(reference, 'bow.plungerStiffness', 0.4)
+      expect(heuristicModel.compareBareShaft(slightlyWeak).horizontal).toBe('RIGHT')
+      expect(suggestTuning(heuristicModel, slightlyWeak).tuned).toBe(false)
+    })
+
+    it('accepts a bare shaft a little low, not a little high', () => {
+      const low = withDisplay(reference, 'bow.nockingPointHeight', 4.5)
+      expect(heuristicModel.compareBareShaft(low).vertical).toBe('LOW')
+      expect(suggestTuning(heuristicModel, low).tuned).toBe(true)
+
+      const high = withDisplay(reference, 'bow.nockingPointHeight', 3.5)
+      expect(heuristicModel.compareBareShaft(high).vertical).toBe('HIGH')
+      expect(suggestTuning(heuristicModel, high).tuned).toBe(false)
+    })
+
+    it('does not accept a bare shaft that is clearly off', () => {
+      const stiff = withDisplay(reference, 'arrow.spine', 600)
+      expect(suggestTuning(heuristicModel, stiff).tuned).toBe(false)
+    })
   })
 
   it('suggests lowering a nocking point that is too high, first', () => {
