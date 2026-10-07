@@ -60,7 +60,7 @@ export const PINNED: PinnedTask[] = [
   },
   {
     text: 'Quyết định điểm cân của nocking point: giữ 4 mm hay nâng lên',
-    why: 'Các nguồn ghi từ 3 tới 13 mm; 4 mm nằm ở đầu thấp. Chi tiết ở tuning-references.md mục 4.3.',
+    why: 'Easton ghi 13 mm, Total Archery ghi 4,8 tới 9,5 mm; 4 mm nằm dưới cả hai. Tiller cũng vậy: sách ghi 4,8 tới 6,4 mm, mô hình coi 4 mm là cân. Chi tiết ở tuning-references.md mục 4.3.',
     done: false,
   },
   {
@@ -69,8 +69,13 @@ export const PINNED: PinnedTask[] = [
     done: false,
   },
   {
-    text: 'Tải bản PDF gốc sách Easton "Arrow Tuning and Maintenance Guide" (đủ 32 trang, có hình) và bản sạch sách của Murray Elliot, đặt vào docs/',
-    why: 'Bản lưu từ Scribd mất hết hình và thiếu trang; thiếu hình thì không làm được phần xé giấy.',
+    text: 'Tìm bài của Kooi và Sparenberg, "On the mechanics of the arrow: Archer\'s Paradox" (Journal of Engineering Mathematics, 1997), và bản sạch sách của Murray Elliot, đặt vào docs/',
+    why: 'Bài của Kooi là nguồn duy nhất đã biết có mô hình tên uốn quanh cung, cần để kiểm độ lớn của weak và stiff. Sách Easton đủ trang đã có, phần xé giấy không còn bị chặn.',
+    done: false,
+  },
+  {
+    text: 'Quyết định cảnh báo tên nhẹ: giữ mốc 5 gr/lb, đổi sang bảng AMO, hay hiện cả hai',
+    why: 'Mốc 5 gr/lb là quy tắc của compound; bảng AMO cho recurve chỉ đòi 150 gr tới 41 lb. Chi tiết ở tuning-references.md mục 9.2.',
     done: false,
   },
   {

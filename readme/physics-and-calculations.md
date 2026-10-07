@@ -324,9 +324,9 @@ FOC % = (điểm_cân_bằng − L/2) / L · 100
 ```
 
 - Setup tham chiếu: 308 gr trên cung 38 lb là 8,1 gr/lb; FOC 19,3 %.
-- Dưới 5 gr/lb thì bảng kết quả hiện cảnh báo tên quá nhẹ, ở cả Cơ bản và Nâng cao. 5 gr/lb là mức tối thiểu theo AMO mà các hãng cung hay dẫn; chưa đối chiếu được với trang 17–32 của sách Easton vì bản đang có thiếu các trang đó.
+- Dưới 5 gr/lb thì bảng kết quả hiện cảnh báo tên quá nhẹ, ở cả Cơ bản và Nâng cao. 5 gr/lb là quy tắc quen dùng, không phải của AMO: bảng AMO trong sách Easton chỉ đòi 150 gr cho recurve tới 41 lb ở draw length tới 31 in. Bảng và việc thay mốc này ghi ở tuning-references.md mục 9.2 và 10.1.
 - Ba con số chỉ hiện ở chế độ Nâng cao.
-- FOC chưa có cảnh báo. Sách Easton ghi 7 tới 16 %, nhưng cách tính ở đây đặt cả point lẫn insert ở đúng đầu thân tên và không tính chiều dài point, nên ra số cao hơn cách đo của sách: setup tham chiếu đã là 19,3 %. So với khoảng của sách thì sẽ báo sai.
+- FOC chưa có cảnh báo. Sách Easton ghi 7 tới 16 % tùy loại thân (tuning-references.md mục 9.3), nhưng cách tính ở đây đặt cả point lẫn insert ở đúng đầu thân tên và không tính chiều dài point, nên ra số cao hơn cách đo của sách: setup tham chiếu đã là 19,3 %. So với khoảng của sách thì sẽ báo sai.
 
 - `brace_chuẩn = 220 + (chiều_dài_cung − 68) · 3,175` mm: cung dài hơn thì brace height chuẩn cao hơn, theo đúng bước 1/8 in mỗi inch trong bảng của Easton. Chiều dài cung = số ghi trên cánh + (riser − 25), ví dụ H25 + 68 = 68 in. Khoảng brace height Easton khuyên là 8¼ tới 9½ in cho cung 68 in, dịch cùng bước đó; bảng kết quả báo khi brace height nằm ngoài khoảng. Cỡ cung không đổi weak / stiff.
 - 1,435 chu kỳ là con số của setup tham chiếu (`neutralCycles`). Mô hình coi đó là nhịp tốt, giống cách nó coi setup tham chiếu là đã cân. Lệch nửa chu kỳ là tệ nhất; lệch hơn nữa vẫn tính là tệ nhất, không quay vòng lại thành tốt.
@@ -495,7 +495,8 @@ Mô hình cho ra (chạy trực tiếp từ engine):
 - Độ trôi ngang và dọc tuyến tính theo khoảng cách và không có đơn vị thật.
 - Không mô hình hóa người bắn: release, tay cầm cung, collapse (§7, §37).
 - Chưa đối chiếu với bảng spine của nhà sản xuất (§25 Test 8).
-- Vài điểm còn lệch với tài liệu tuning (vị trí center shot trung tính, nocking point khởi đầu), ghi ở [tuning-references.md](tuning-references.md).
+- `limbVirtualMass` là hằng số. Luận án của Kooi cho thấy hiệu suất của cung đổi mạnh theo khối lượng tên, nên vận tốc sẽ lệch dần với tên rất nhẹ hoặc rất nặng. Ở setup tham chiếu hiệu suất ra 72 %, nằm trong vùng các nguồn ghi (tuning-references.md mục 10.3).
+- Vài điểm còn lệch với tài liệu tuning (vị trí center shot trung tính, nocking point và tiller khởi đầu), ghi ở [tuning-references.md](tuning-references.md).
 
 ## 14. Tính toán ở trang "Xem trước"
 
