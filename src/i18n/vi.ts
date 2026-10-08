@@ -8,6 +8,7 @@ export const vi: Messages = {
     simulator: 'Mô phỏng',
     roadmap: 'Lộ trình',
     previews: 'Xem trước',
+    how: 'Cách hoạt động',
     language: 'Ngôn ngữ',
     units: 'Đơn vị',
     level: 'Mức',

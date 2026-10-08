@@ -25,6 +25,7 @@ export const en = {
     simulator: 'Simulator',
     roadmap: 'Roadmap',
     previews: 'Previews',
+    how: 'How it works',
     language: 'Language',
     units: 'Units',
     level: 'Level',

@@ -5,6 +5,7 @@ import { useMessages } from './i18n/useMessages.ts'
 import { TIERS, type ParameterTier, type UnitSystem } from './models/parameters.ts'
 import { Demos } from './pages/demos/Demos.tsx'
 import { isDemoHash } from './pages/demos/demoTabs.ts'
+import { HowItWorks } from './pages/how/HowItWorks.tsx'
 import { Roadmap } from './pages/roadmap/Roadmap.tsx'
 import { Simulator } from './pages/Simulator.tsx'
 import { useTuningStore } from './state/tuningStore.ts'
@@ -15,6 +16,7 @@ function subscribeToHash(onChange: () => void) {
 }
 
 const ROADMAP_HASH = '#roadmap'
+const HOW_HASH = '#how'
 
 const LANGUAGES = [
   { value: 'en', label: 'English' },
@@ -34,6 +36,9 @@ function App() {
   // Anchors inside the roadmap page (#v0-1 and so on) keep that page open.
   const onRoadmap = hash === ROADMAP_HASH || /^#v\d/.test(hash)
   const onDemos = isDemoHash(hash)
+  const onHow = hash === HOW_HASH
+  // The pages beside the simulator are written in Vietnamese only, and have no levels.
+  const beside = onRoadmap || onDemos || onHow
 
   const m = useMessages()
   const language = useTuningStore((state) => state.language)
@@ -50,13 +55,12 @@ function App() {
   return (
     <>
       <div className="border-line flex flex-wrap items-center justify-between gap-x-6 border-b px-4 sm:px-6 lg:px-8">
-        <nav aria-label={m.nav.pages} className="flex gap-5">
-          <a
-            href="#"
-            aria-current={onRoadmap || onDemos ? undefined : 'page'}
-            className={linkClass}
-          >
+        <nav aria-label={m.nav.pages} className="flex flex-wrap gap-x-5">
+          <a href="#" aria-current={beside ? undefined : 'page'} className={linkClass}>
             {m.nav.simulator}
+          </a>
+          <a href={HOW_HASH} aria-current={onHow ? 'page' : undefined} className={linkClass}>
+            {m.nav.how}
           </a>
           <a
             href={ROADMAP_HASH}
@@ -69,8 +73,7 @@ function App() {
             {m.nav.previews}
           </a>
         </nav>
-        {/* The roadmap and the previews are written in Vietnamese only, and have no levels. */}
-        {!onRoadmap && !onDemos && (
+        {!beside && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 py-1">
             <SegmentedControl
               label={m.nav.level}
@@ -112,7 +115,15 @@ function App() {
           </div>
         )}
       </div>
-      {onDemos ? <Demos hash={hash} /> : onRoadmap ? <Roadmap /> : <Simulator />}
+      {onDemos ? (
+        <Demos hash={hash} />
+      ) : onRoadmap ? (
+        <Roadmap />
+      ) : onHow ? (
+        <HowItWorks />
+      ) : (
+        <Simulator />
+      )}
     </>
   )
 }

@@ -362,7 +362,8 @@ Goal: store the parameters of every setup per user, across devices (§35).
 - [ ] Accessibility pass (keyboard, screen reader, contrast)
 - [ ] Performance pass on low-end phones
 - [ ] Playwright end-to-end tests for the core flow
-- [ ] User guide and model explanation page
+- [x] Model explanation page: "How it works" (`#how`), a timeline of the ten steps from a setup to a suggestion. Each step says what it takes, what it does, what it gives, where to see it, and whether it stands on physics, on an estimate, on a drawing or on real arrows. Vietnamese only (done early, asked for by the owner on 2026-10-08)
+- [ ] User guide
 - [ ] Privacy policy (needed once accounts exist)
 - [ ] Feedback channel
 

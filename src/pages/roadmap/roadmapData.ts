@@ -617,7 +617,10 @@ export const ROADMAP: RoadmapPhase[] = [
           todo('Rà soát khả năng tiếp cận: bàn phím, trình đọc màn hình, độ tương phản'),
           todo('Rà soát tốc độ trên điện thoại yếu'),
           todo('Test tự động trọn luồng sử dụng chính'),
-          todo('Hướng dẫn sử dụng và trang giải thích mô hình'),
+          done(
+            'Trang giải thích mô hình: "Cách hoạt động", một dòng thời gian mười bước từ lúc nhập setup tới lúc có gợi ý. Mỗi bước ghi nó nhận gì, làm gì, trả ra gì, xem ở đâu, và dựa trên vật lý, ước chừng, minh họa hay mũi tên thật',
+          ),
+          todo('Hướng dẫn sử dụng'),
           todo('Chính sách quyền riêng tư'),
           todo('Kênh nhận góp ý'),
         ],
