@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useDeferredValue, useMemo } from 'react'
 import { SegmentedControl } from '../../components/common/SegmentedControl.tsx'
 import { buttonClass } from '../../components/common/styles.ts'
 import { AssumedValues, SetupGroups } from '../../components/setup/SetupGroups.tsx'
@@ -18,6 +18,7 @@ import { BowViewer, BowViewerControls } from '../../components/viewer3d/SetupVie
 import { useBowViewer } from '../../components/viewer3d/useBowViewer.ts'
 import { suggestTuning } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
+import type { TuningSetup } from '../../models/setup.ts'
 import { useTuningStore, type FlightPreview } from '../../state/tuningStore.ts'
 import { useFlight } from './useFlight.ts'
 
@@ -37,9 +38,13 @@ export function SetupWorkspace() {
   const pointTo = useTuningStore((state) => state.pointTo)
 
   const { setup, model, comparison, result } = useFlight(DEFAULT_DISTANCE)
+  // Finding the next step tries hundreds of setups. It follows a value a moment
+  // later, so the value itself and the reading answer at once.
+  // On the first drawing of the page it is left out altogether, and follows.
+  const settled = useDeferredValue<TuningSetup | null>(setup, null)
   const advice = useMemo(
-    () => suggestTuning(model, setup, { tier: mode, limit: 1 }),
-    [model, setup, mode],
+    () => settled && suggestTuning(model, settled, { tier: mode, limit: 1 }),
+    [model, settled, mode],
   )
   const viewer = useBowViewer(setup)
   const playback = usePlayback(clipSeconds(result), HOLD_SECONDS, DEFAULT_SPEED)

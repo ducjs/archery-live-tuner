@@ -1,16 +1,29 @@
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { Suspense, lazy, useEffect, useRef, useSyncExternalStore } from 'react'
 import { SegmentedControl } from './components/common/SegmentedControl.tsx'
 import type { Language } from './i18n/index.ts'
 import { useMessages } from './i18n/useMessages.ts'
 import { TIERS, type ParameterTier, type UnitSystem } from './models/parameters.ts'
-import { Demos } from './pages/demos/Demos.tsx'
 import { isDemoHash } from './pages/demos/demoTabs.ts'
-import { Guide } from './pages/guide/Guide.tsx'
-import { HowItWorks } from './pages/how/HowItWorks.tsx'
-import { Privacy } from './pages/privacy/Privacy.tsx'
-import { Roadmap } from './pages/roadmap/Roadmap.tsx'
 import { Simulator } from './pages/Simulator.tsx'
 import { useTuningStore } from './state/tuningStore.ts'
+
+// The pages beside the simulator are fetched when they are opened: most visits
+// never leave the simulator, and a slow phone should not pay for the rest.
+const Demos = lazy(() =>
+  import('./pages/demos/Demos.tsx').then((page) => ({ default: page.Demos })),
+)
+const Guide = lazy(() =>
+  import('./pages/guide/Guide.tsx').then((page) => ({ default: page.Guide })),
+)
+const HowItWorks = lazy(() =>
+  import('./pages/how/HowItWorks.tsx').then((page) => ({ default: page.HowItWorks })),
+)
+const Privacy = lazy(() =>
+  import('./pages/privacy/Privacy.tsx').then((page) => ({ default: page.Privacy })),
+)
+const Roadmap = lazy(() =>
+  import('./pages/roadmap/Roadmap.tsx').then((page) => ({ default: page.Roadmap })),
+)
 
 function subscribeToHash(onChange: () => void) {
   window.addEventListener('hashchange', onChange)
@@ -168,19 +181,23 @@ function App() {
           </div>
         )}
       </div>
-      {onDemos ? (
-        <Demos hash={hash} />
-      ) : onRoadmap ? (
-        <Roadmap />
-      ) : onHow ? (
-        <HowItWorks />
-      ) : onGuide ? (
-        <Guide />
-      ) : onPrivacy ? (
-        <Privacy />
-      ) : (
-        <Simulator />
-      )}
+      <Suspense
+        fallback={<p className="text-ink-muted px-4 py-6 sm:px-6 lg:px-8">{m.nav.loading}</p>}
+      >
+        {onDemos ? (
+          <Demos hash={hash} />
+        ) : onRoadmap ? (
+          <Roadmap />
+        ) : onHow ? (
+          <HowItWorks />
+        ) : onGuide ? (
+          <Guide />
+        ) : onPrivacy ? (
+          <Privacy />
+        ) : (
+          <Simulator />
+        )}
+      </Suspense>
       {/* On a phone the simulator has its workspaces at the foot of the screen: stay clear of them. */}
       <footer className="border-line text-ink-muted flex flex-wrap gap-x-5 border-t px-4 pb-24 text-sm sm:px-6 lg:px-8 lg:pb-2">
         <a

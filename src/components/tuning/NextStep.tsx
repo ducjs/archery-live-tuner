@@ -4,8 +4,8 @@ import { useTuningStore } from '../../state/tuningStore.ts'
 import { describeSuggestion, type Reading } from './suggestionText.ts'
 
 type Props = {
-  /** Every suggestion the model has, best first. */
-  advice: TuningAdvice
+  /** Every suggestion the model has, best first. Null while they are being worked out. */
+  advice: TuningAdvice | null
   /** What the model reports for the current setup. */
   before: Reading
   /** Applies a suggested value to the setup. */
@@ -17,7 +17,7 @@ export function NextStep({ advice, before, onTry }: Props) {
   const m = useMessages()
   const units = useTuningStore((state) => state.units)
   const text = m.suggestions
-  const first = advice.suggestions[0]
+  const first = advice?.suggestions[0]
   const item = first && describeSuggestion(first, before, m, units)
 
   return (
@@ -45,7 +45,10 @@ export function NextStep({ advice, before, onTry }: Props) {
           </button>
         </div>
       ) : (
-        <p className="mt-1">{advice.tuned ? text.tuned : text.none}</p>
+        // The room is kept while the step is worked out, so nothing below jumps.
+        <p className="mt-1" aria-busy={!advice}>
+          {advice ? (advice.tuned ? text.tuned : text.none) : ' '}
+        </p>
       )}
     </section>
   )

@@ -1,14 +1,26 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { SavedSetups } from '../components/setups/SavedSetups.tsx'
 import { SharedSetupNotice } from '../components/setups/SetupTransfer.tsx'
 import { useMessages } from '../i18n/useMessages.ts'
 import { tierShows } from '../models/parameters.ts'
 import { useLibraryStore } from '../state/libraryStore.ts'
 import { WORKSPACES, WORKSPACE_TIER, useTuningStore, type Workspace } from '../state/tuningStore.ts'
-import { AnalysisWorkspace } from './workspaces/AnalysisWorkspace.tsx'
 import { SetupWorkspace } from './workspaces/SetupWorkspace.tsx'
-import { SimulateWorkspace } from './workspaces/SimulateWorkspace.tsx'
-import { TargetWorkspace } from './workspaces/TargetWorkspace.tsx'
+
+// Setup is what a visit opens on. The other workspaces are fetched when they are opened.
+const AnalysisWorkspace = lazy(() =>
+  import('./workspaces/AnalysisWorkspace.tsx').then((file) => ({
+    default: file.AnalysisWorkspace,
+  })),
+)
+const SimulateWorkspace = lazy(() =>
+  import('./workspaces/SimulateWorkspace.tsx').then((file) => ({
+    default: file.SimulateWorkspace,
+  })),
+)
+const TargetWorkspace = lazy(() =>
+  import('./workspaces/TargetWorkspace.tsx').then((file) => ({ default: file.TargetWorkspace })),
+)
 
 /** The workspace an address asks for. `#3d` is the older address of the 3D bow, now part of Setup. */
 function workspaceOf(hash: string): Workspace | null {
@@ -87,15 +99,17 @@ export function Simulator() {
       <SharedSetupNotice />
 
       <div className="mt-4">
-        {workspace === 'setup' ? (
-          <SetupWorkspace />
-        ) : workspace === 'fly' ? (
-          <SimulateWorkspace />
-        ) : workspace === 'target' ? (
-          <TargetWorkspace />
-        ) : (
-          <AnalysisWorkspace chosenIds={chosenIds} onChosenIdsChange={setChosenIds} />
-        )}
+        <Suspense fallback={<p className="text-ink-muted">{m.nav.loading}</p>}>
+          {workspace === 'setup' ? (
+            <SetupWorkspace />
+          ) : workspace === 'fly' ? (
+            <SimulateWorkspace />
+          ) : workspace === 'target' ? (
+            <TargetWorkspace />
+          ) : (
+            <AnalysisWorkspace chosenIds={chosenIds} onChosenIdsChange={setChosenIds} />
+          )}
+        </Suspense>
       </div>
 
       <footer className="border-line text-ink-muted mt-10 grid max-w-prose gap-1 border-t pt-4 text-sm">

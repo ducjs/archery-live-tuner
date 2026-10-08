@@ -30,6 +30,17 @@ const FLIGHT_PREVIEWS: readonly FlightPreview[] = ['top', 'side', 'off']
 const wideScreen = () =>
   typeof window !== 'undefined' && (window.matchMedia?.('(min-width: 64rem)').matches ?? false)
 
+/**
+ * Whether this looks like a device that the 3D bow would weigh on: few
+ * processor cores or little memory. Such a device starts without it; the
+ * switch is one press away either way.
+ */
+const weakDevice = () => {
+  if (typeof navigator === 'undefined') return false
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory
+  return (navigator.hardwareConcurrency ?? 8) <= 4 || (memory !== undefined && memory <= 2)
+}
+
 type TuningState = {
   /** The setup on screen. Saved copies live in the library store. */
   setup: TuningSetup
@@ -76,7 +87,7 @@ export const useTuningStore = create<TuningState>()(
       language: detectLanguage(),
       units: 'archery',
       workspace: 'setup',
-      bow3d: true,
+      bow3d: !weakDevice(),
       // A phone has no room for two drawings above the values.
       flightPreview: wideScreen() ? 'top' : 'off',
       // A workspace above the level raises the level: nothing is opened that is then hidden.

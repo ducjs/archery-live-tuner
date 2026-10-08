@@ -26,6 +26,7 @@ export const en = {
     roadmap: 'Roadmap',
     previews: 'Previews',
     how: 'How it works',
+    loading: 'Loading.',
     guide: 'Guide',
     privacy: 'Privacy',
     skip: 'Skip to the content',

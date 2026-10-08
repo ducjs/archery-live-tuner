@@ -109,6 +109,21 @@ export const PINNED: PinnedTask[] = [
     done: false,
   },
   {
+    text: 'Chọn kênh nhận góp ý cho V1.0: email, GitHub Issues, hay một biểu mẫu',
+    why: 'Repo sắp chuyển sang private thì Issues không còn công khai; để email thì địa chỉ của bạn lộ ra trên trang. Việc này Claude không tự quyết được.',
+    done: false,
+  },
+  {
+    text: 'Mở site trên một điện thoại yếu và xem có chậm không, nhất là lúc mới mở và khi bật cung 3D',
+    why: 'Tốc độ mới đo trên máy tính bị hãm chậm sáu lần.',
+    done: false,
+  },
+  {
+    text: 'Thử trọn luồng chính với trình đọc màn hình (NVDA trên Windows hoặc VoiceOver trên iPhone)',
+    why: 'Máy đã kiểm cấu trúc và độ tương phản; nghe có hiểu không thì phải người thử.',
+    done: false,
+  },
+  {
     text: 'Đọc lại trang Quyền riêng tư (`#privacy`) và trang Hướng dẫn (`#guide`)',
     why: 'Nội dung do Claude viết từ code, chưa ai đọc lại. Trang quyền riêng tư là lời cam kết của bạn với người dùng, nên bạn cần đồng ý với từng câu.',
     done: false,
@@ -625,9 +640,14 @@ export const ROADMAP: RoadmapPhase[] = [
           todo(
             'Khả năng tiếp cận bằng tai: thử trọn luồng chính với trình đọc màn hình (NVDA hoặc VoiceOver). Không phép kiểm bằng máy nào thay được việc này',
           ),
-          todo('Rà soát tốc độ trên điện thoại yếu'),
           done(
-            'Test tự động trọn luồng sử dụng chính bằng Playwright: 13 test chạy trên bản build trong Chrome, từ lúc nhập một giá trị tới lúc so sánh setup đã lưu sau khi tải lại trang, cộng 24 phép kiểm khả năng tiếp cận. Có workflow riêng chạy mỗi lần push, tách khỏi bước deploy; workflow này chưa chạy lần nào',
+            'Rà soát tốc độ, đo trong Chrome với bộ xử lý bị hãm chậm sáu lần ở bề rộng 400 px, không phải trên điện thoại. Các trang phụ và các màn hình ngoài Setup chỉ tải khi mở: phần script lúc đầu giảm từ 630 xuống 470 kB. Gợi ý tính sau một nhịp, nên một lần bấm đổi giá trị vẽ xong trong khoảng 80 ms thay vì 160 ms. Máy có từ bốn nhân xử lý trở xuống, hoặc từ 2 GB bộ nhớ trở xuống, khởi đầu không bật cung 3D',
+          ),
+          todo(
+            'Tốc độ trên điện thoại yếu thật: các con số trên đo từ máy tính bị hãm chậm, và cung 3D ở đó được vẽ bằng phần mềm',
+          ),
+          done(
+            'Test tự động trọn luồng sử dụng chính bằng Playwright: 14 test chạy trên bản build trong Chrome, từ lúc nhập một giá trị tới lúc so sánh setup đã lưu sau khi tải lại trang, cộng 32 phép kiểm khả năng tiếp cận. Có workflow riêng chạy mỗi lần push, tách khỏi bước deploy; workflow này chưa chạy lần nào',
           ),
           done(
             'Trang giải thích mô hình: "Cách hoạt động", một dòng thời gian mười bước từ lúc nhập setup tới lúc có gợi ý. Mỗi bước ghi nó nhận gì, làm gì, trả ra gì, xem ở đâu, và dựa trên vật lý, ước chừng, minh họa hay mũi tên thật',

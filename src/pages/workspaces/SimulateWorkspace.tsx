@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useDeferredValue, useMemo, useState } from 'react'
 import { AssumedValues } from '../../components/setup/SetupGroups.tsx'
 import {
   FlightView,
@@ -58,12 +58,15 @@ export function SimulateWorkspace() {
   const { setup, model, comparison, result } = useFlight(view.distance)
   // Only suggestions about values the level shows. All of them are asked for:
   // the panel sorts them into its two groups and trims each.
+  // They take hundreds of setups to find, so they follow a change a moment
+  // later and the reading answers at once.
+  const settled = useDeferredValue(setup)
   const advice = useMemo(
-    () => suggestTuning(model, setup, { tier: mode, limit: Infinity }),
-    [model, setup, mode],
+    () => suggestTuning(model, settled, { tier: mode, limit: Infinity }),
+    [model, settled, mode],
   )
   // The same suggestions, taken one after the other as a whole session.
-  const plan = useMemo(() => planTuning(model, setup, { tier: mode }), [model, setup, mode])
+  const plan = useMemo(() => planTuning(model, settled, { tier: mode }), [model, settled, mode])
   const before = {
     classification: result.classification,
     horizontal: comparison.horizontal,

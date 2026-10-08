@@ -22,6 +22,9 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 - [x] Duyệt thiết kế ba mức tune và màn hình setup bấm vào bộ phận cung ở spec §40. *Bạn đã bảo cứ làm; đã làm xong.*
 - [ ] Dùng thử màn hình mới (ba mức, bốn màn hình làm việc, Setup có cung 3D) trên máy tính và điện thoại thật, rồi báo chỗ nào chưa vừa ý. *Mới xem bằng Chrome không giao diện ở 1440 px và 400 px. Chưa ai dùng thử bằng tay, và cảm ứng trên cảnh 3D chưa kiểm được.*
 - [ ] Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có. *Để các commit mới gắn với tài khoản ducjs.*
+- [ ] Chọn kênh nhận góp ý cho V1.0: email, GitHub Issues, hay một biểu mẫu. *Repo sắp chuyển sang private thì Issues không còn công khai; để email thì địa chỉ của bạn lộ ra trên trang. Việc này Claude không tự quyết được.*
+- [ ] Mở site trên một điện thoại yếu và xem có chậm không, nhất là lúc mới mở và khi bật cung 3D. *Tốc độ mới đo trên máy tính bị hãm chậm sáu lần.*
+- [ ] Thử trọn luồng chính với trình đọc màn hình (NVDA trên Windows hoặc VoiceOver trên iPhone). *Máy đã kiểm cấu trúc và độ tương phản; nghe có hiểu không thì phải người thử.*
 - [ ] Đọc lại trang Quyền riêng tư (`#privacy`) và trang Hướng dẫn (`#guide`). *Nội dung do Claude viết từ code, chưa ai đọc lại. Trang quyền riêng tư là lời cam kết của bạn với người dùng, nên bạn cần đồng ý với từng câu.*
 
 ## How to use this file
@@ -44,7 +47,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 | V0.4 | Real-world calibration | All items done. Open: the exit criterion, which waits for real observations; the fit has only been tested on made-up ones |
 | V0.5 | Advanced parameters and recommendations | In progress (the draw force curve and the items done ahead of the phase are built) |
 | V0.6 | Backend: setup storage | Not started |
-| V1.0 | Stable public release | Not started |
+| V1.0 | Stable public release | In progress (6 of 9 done ahead: accessibility by machine, speed on a slowed desktop, end-to-end tests, the guide, the model explanation and the privacy page. Open: a screen reader, a real low-end phone, the feedback channel, all three waiting for the owner) |
 
 **Current phase:** V0.1
 
@@ -362,8 +365,9 @@ Goal: store the parameters of every setup per user, across devices (§35).
 
 - [x] Accessibility pass, by machine and by keyboard: every screen is checked by axe against WCAG 2.2 A and AA, in light and in dark, on a wide screen and at 400 px, with nothing left to object to. A "skip to the content" button, settings that close on Escape, choices 44 px tall, and the gauges as a proper list
 - [ ] Accessibility by ear: the core flow tried with a screen reader (NVDA or VoiceOver). No machine check stands in for this
-- [ ] Performance pass on low-end phones
-- [x] Playwright end-to-end tests for the core flow: 13 tests on the built site in Chrome, from entering a value to comparing a saved setup after a reload, plus the 24 accessibility checks. `npm run e2e`; a workflow of its own runs them on every push, apart from the deploy. That workflow has not run yet
+- [x] Performance pass, measured in Chrome with the processor slowed six times at 400 px wide (`node e2e/measure.mjs`), not on a phone. The pages beside the simulator and the workspaces other than Setup are fetched when opened: the script a visit starts with went from 630 to 470 kB. The suggestions follow a change a moment later, so a step of a value is drawn in about 80 ms where it took about 160. A device with four processor cores or fewer, or 2 GB of memory or less, starts without the 3D bow
+- [ ] Speed on a real low-end phone: the numbers above are from a slowed desktop, and the 3D bow was drawn in software there
+- [x] Playwright end-to-end tests for the core flow: 14 tests on the built site in Chrome, from entering a value to comparing a saved setup after a reload, plus 32 accessibility checks. `npm run e2e`; a workflow of its own runs them on every push, apart from the deploy. That workflow has not run yet
 - [x] Model explanation page: "How it works" (`#how`), a timeline of the ten steps from a setup to a suggestion. Each step says what it takes, what it does, what it gives, where to see it, and whether it stands on physics, on an estimate, on a drawing or on real arrows. Vietnamese only (done early, asked for by the owner on 2026-10-08)
 - [x] User guide: "Guide" (`#guide`), what to do on each screen in the order of a tuning session, with links into the simulator. Vietnamese only
 - [x] Privacy page (`#privacy`, linked at the foot of every page): what is kept in the browser and under which key, what does not exist (accounts, cookies, measuring), when data leaves the machine, and how to delete it. It describes the site as it is, without accounts, and has to be rewritten with V0.6. A test checks that every key the browser holds is named on the page
