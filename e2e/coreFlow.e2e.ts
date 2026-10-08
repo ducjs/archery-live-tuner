@@ -196,3 +196,18 @@ test('a keyboard can skip the bars, and Escape closes the settings', async ({ pa
   await page.keyboard.press('Escape')
   await expect(page.getByRole('radio', { name: 'kg, cm, g' })).toBeHidden()
 })
+
+test('the guide and the privacy page open, and the guide leads into the simulator', async ({
+  page,
+}) => {
+  await page.getByRole('navigation', { name: 'Pages' }).getByRole('link', { name: 'Guide' }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hướng dẫn sử dụng')
+  await page.getByRole('link', { name: 'Mở Tên bay' }).first().click()
+  await expect(page.getByRole('heading', { name: 'Model result' })).toBeVisible()
+
+  await page.getByRole('contentinfo').last().getByRole('link', { name: 'Privacy' }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Quyền riêng tư')
+  // What the page says is kept is what is kept.
+  const keys = await page.evaluate(() => Object.keys(localStorage))
+  for (const key of keys) await expect(page.getByRole('table')).toContainText(key)
+})

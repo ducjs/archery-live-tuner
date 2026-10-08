@@ -9,6 +9,8 @@ export const vi: Messages = {
     roadmap: 'Lộ trình',
     previews: 'Xem trước',
     how: 'Cách hoạt động',
+    guide: 'Hướng dẫn',
+    privacy: 'Quyền riêng tư',
     skip: 'Tới thẳng nội dung',
     language: 'Ngôn ngữ',
     units: 'Đơn vị',

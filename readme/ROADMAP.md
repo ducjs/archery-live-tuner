@@ -22,6 +22,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 - [x] Duyệt thiết kế ba mức tune và màn hình setup bấm vào bộ phận cung ở spec §40. *Bạn đã bảo cứ làm; đã làm xong.*
 - [ ] Dùng thử màn hình mới (ba mức, bốn màn hình làm việc, Setup có cung 3D) trên máy tính và điện thoại thật, rồi báo chỗ nào chưa vừa ý. *Mới xem bằng Chrome không giao diện ở 1440 px và 400 px. Chưa ai dùng thử bằng tay, và cảm ứng trên cảnh 3D chưa kiểm được.*
 - [ ] Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có. *Để các commit mới gắn với tài khoản ducjs.*
+- [ ] Đọc lại trang Quyền riêng tư (`#privacy`) và trang Hướng dẫn (`#guide`). *Nội dung do Claude viết từ code, chưa ai đọc lại. Trang quyền riêng tư là lời cam kết của bạn với người dùng, nên bạn cần đồng ý với từng câu.*
 
 ## How to use this file
 
@@ -364,8 +365,8 @@ Goal: store the parameters of every setup per user, across devices (§35).
 - [ ] Performance pass on low-end phones
 - [x] Playwright end-to-end tests for the core flow: 13 tests on the built site in Chrome, from entering a value to comparing a saved setup after a reload, plus the 24 accessibility checks. `npm run e2e`; a workflow of its own runs them on every push, apart from the deploy. That workflow has not run yet
 - [x] Model explanation page: "How it works" (`#how`), a timeline of the ten steps from a setup to a suggestion. Each step says what it takes, what it does, what it gives, where to see it, and whether it stands on physics, on an estimate, on a drawing or on real arrows. Vietnamese only (done early, asked for by the owner on 2026-10-08)
-- [ ] User guide
-- [ ] Privacy policy (needed once accounts exist)
+- [x] User guide: "Guide" (`#guide`), what to do on each screen in the order of a tuning session, with links into the simulator. Vietnamese only
+- [x] Privacy page (`#privacy`, linked at the foot of every page): what is kept in the browser and under which key, what does not exist (accounts, cookies, measuring), when data leaves the machine, and how to delete it. It describes the site as it is, without accounts, and has to be rewritten with V0.6. A test checks that every key the browser holds is named on the page
 - [ ] Feedback channel
 
 **Exit criteria:** no known blocking bugs, and the model limitations are documented where users will read them.

@@ -108,6 +108,11 @@ export const PINNED: PinnedTask[] = [
     why: 'Để các commit mới gắn với tài khoản ducjs.',
     done: false,
   },
+  {
+    text: 'Đọc lại trang Quyền riêng tư (`#privacy`) và trang Hướng dẫn (`#guide`)',
+    why: 'Nội dung do Claude viết từ code, chưa ai đọc lại. Trang quyền riêng tư là lời cam kết của bạn với người dùng, nên bạn cần đồng ý với từng câu.',
+    done: false,
+  },
 ]
 
 const done = (text: string): RoadmapItem => ({ text, done: true })
@@ -627,8 +632,12 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Trang giải thích mô hình: "Cách hoạt động", một dòng thời gian mười bước từ lúc nhập setup tới lúc có gợi ý. Mỗi bước ghi nó nhận gì, làm gì, trả ra gì, xem ở đâu, và dựa trên vật lý, ước chừng, minh họa hay mũi tên thật',
           ),
-          todo('Hướng dẫn sử dụng'),
-          todo('Chính sách quyền riêng tư'),
+          done(
+            'Hướng dẫn sử dụng: trang "Hướng dẫn", làm gì trên từng màn hình theo thứ tự của một buổi tune, có link mở thẳng màn hình tương ứng',
+          ),
+          done(
+            'Trang quyền riêng tư, có link ở chân mọi trang: cái gì được lưu trong trình duyệt và dưới tên khóa nào, cái gì không có (tài khoản, cookie, đo lường), khi nào dữ liệu rời máy, và cách xóa. Trang mô tả đúng hiện trạng chưa có tài khoản, và phải viết lại khi làm V0.6',
+          ),
           todo('Kênh nhận góp ý'),
         ],
       },

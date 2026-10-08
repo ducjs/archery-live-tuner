@@ -5,7 +5,9 @@ import { useMessages } from './i18n/useMessages.ts'
 import { TIERS, type ParameterTier, type UnitSystem } from './models/parameters.ts'
 import { Demos } from './pages/demos/Demos.tsx'
 import { isDemoHash } from './pages/demos/demoTabs.ts'
+import { Guide } from './pages/guide/Guide.tsx'
 import { HowItWorks } from './pages/how/HowItWorks.tsx'
+import { Privacy } from './pages/privacy/Privacy.tsx'
 import { Roadmap } from './pages/roadmap/Roadmap.tsx'
 import { Simulator } from './pages/Simulator.tsx'
 import { useTuningStore } from './state/tuningStore.ts'
@@ -17,6 +19,8 @@ function subscribeToHash(onChange: () => void) {
 
 const ROADMAP_HASH = '#roadmap'
 const HOW_HASH = '#how'
+const GUIDE_HASH = '#guide'
+const PRIVACY_HASH = '#privacy'
 
 const LANGUAGES = [
   { value: 'en', label: 'English' },
@@ -31,6 +35,9 @@ const UNITS = [
 const linkClass =
   'focus-visible:outline-accent aria-[current=page]:border-ink text-ink-muted aria-[current=page]:text-ink flex min-h-11 items-center border-b-2 border-transparent px-1 font-medium focus-visible:outline-2'
 
+const footerLinkClass =
+  'focus-visible:outline-accent aria-[current=page]:text-ink flex min-h-11 items-center underline underline-offset-4 focus-visible:outline-2'
+
 function App() {
   const hash = useSyncExternalStore(subscribeToHash, () => window.location.hash)
   // Anchors inside the roadmap page (#v0-1 and so on) keep that page open.
@@ -38,7 +45,9 @@ function App() {
   const onDemos = isDemoHash(hash)
   const onHow = hash === HOW_HASH
   // The pages beside the simulator are written in Vietnamese only, and have no levels.
-  const beside = onRoadmap || onDemos || onHow
+  const onGuide = hash === GUIDE_HASH
+  const onPrivacy = hash === PRIVACY_HASH
+  const beside = onRoadmap || onDemos || onHow || onGuide || onPrivacy
 
   const m = useMessages()
   const language = useTuningStore((state) => state.language)
@@ -93,9 +102,15 @@ function App() {
         {m.nav.skip}
       </button>
       <div className="border-line flex flex-wrap items-center justify-between gap-x-6 border-b px-4 sm:px-6 lg:px-8">
-        <nav aria-label={m.nav.pages} className="flex flex-wrap gap-x-5">
+        <nav
+          aria-label={m.nav.pages}
+          className="flex max-w-full gap-x-5 overflow-x-auto whitespace-nowrap"
+        >
           <a href="#" aria-current={beside ? undefined : 'page'} className={linkClass}>
             {m.nav.simulator}
+          </a>
+          <a href={GUIDE_HASH} aria-current={onGuide ? 'page' : undefined} className={linkClass}>
+            {m.nav.guide}
           </a>
           <a href={HOW_HASH} aria-current={onHow ? 'page' : undefined} className={linkClass}>
             {m.nav.how}
@@ -159,9 +174,23 @@ function App() {
         <Roadmap />
       ) : onHow ? (
         <HowItWorks />
+      ) : onGuide ? (
+        <Guide />
+      ) : onPrivacy ? (
+        <Privacy />
       ) : (
         <Simulator />
       )}
+      {/* On a phone the simulator has its workspaces at the foot of the screen: stay clear of them. */}
+      <footer className="border-line text-ink-muted flex flex-wrap gap-x-5 border-t px-4 pb-24 text-sm sm:px-6 lg:px-8 lg:pb-2">
+        <a
+          href={PRIVACY_HASH}
+          aria-current={onPrivacy ? 'page' : undefined}
+          className={footerLinkClass}
+        >
+          {m.nav.privacy}
+        </a>
+      </footer>
     </>
   )
 }

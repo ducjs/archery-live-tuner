@@ -11,6 +11,8 @@ const SCREENS = [
   ['Target', '/#target'],
   ['Analysis', '/#analysis'],
   ['How it works', '/#how'],
+  ['Guide', '/#guide'],
+  ['Privacy', '/#privacy'],
   ['Roadmap', '/#roadmap'],
 ] as const
 
