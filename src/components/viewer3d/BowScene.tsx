@@ -1,7 +1,16 @@
 import { Line, OrbitControls, RoundedBox } from '@react-three/drei'
-import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
+import { Canvas, useFrame, useThree, type ThreeElements, type ThreeEvent } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { CatmullRomCurve3, Quaternion, TubeGeometry, Vector3 } from 'three'
+import {
+  CatmullRomCurve3,
+  Quaternion,
+  TubeGeometry,
+  Vector3,
+  type Color,
+  type Group,
+  type Material,
+  type Mesh,
+} from 'three'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { ArrowSetup } from '../../models/arrow.ts'
 import { bowLength, type BowSetup } from '../../models/bow.ts'
@@ -22,6 +31,7 @@ import {
   marks,
   type Focus,
   type Mark,
+  type PartName,
 } from './cameraShots.ts'
 import { PartIcon } from './PartIcon.tsx'
 
@@ -460,7 +470,60 @@ function CalloutPins({ callouts, layer, held, onSettle }: CalloutPinsProps) {
   return null
 }
 
+/** How a part is drawn while one of them is pointed at: that one bright, the others faint. */
+type Look = 'plain' | 'lit' | 'dim'
+
+/** The part of the bow that the value under the pointer is set on. */
+const PART_OF: Record<string, PartName> = {
+  'bow.riserSize': 'riser',
+  'bow.tiller': 'limbs',
+  'bow.limbSize': 'limbs',
+  'bow.braceHeight': 'string',
+  'bow.stabilizerPosition': 'stabilizer',
+  'bow.stabilizerMass': 'stabilizer',
+  'bow.plungerStiffness': 'plunger',
+  'bow.centerShot': 'rest',
+  'arrow.length': 'arrow',
+  'bow.nockingPointHeight': 'nockingPoint',
+}
+
+/** Opacity of the parts that are not the one pointed at. */
+const DIMMED = 0.22
+
+type Shaded = Material & { emissive?: Color; emissiveIntensity?: number }
+
+/** A part of the bow, as a group that can be made bright or faint as a whole. */
+function Part({ look, children, ...events }: { look: Look } & ThreeElements['group']) {
+  const group = useRef<Group>(null)
+  const invalidate = useThree((state) => state.invalidate)
+  const accent = useMemo(() => readPalette().accent, [])
+  // After every render: the meshes inside are rebuilt when a value of the setup changes.
+  useEffect(() => {
+    group.current?.traverse((object) => {
+      const material = (object as Mesh).material as Shaded | Shaded[] | undefined
+      if (!material || Array.isArray(material)) return
+      // The areas that only answer a press are never drawn.
+      if (material.type === 'MeshBasicMaterial') return
+      material.transparent = look === 'dim'
+      material.opacity = look === 'dim' ? DIMMED : 1
+      if (material.emissive) {
+        material.emissive.set(look === 'lit' ? accent : '#000000')
+        material.emissiveIntensity = look === 'lit' ? 0.55 : 0
+      }
+      material.needsUpdate = true
+    })
+    invalidate()
+  })
+  return (
+    <group ref={group} {...events}>
+      {children}
+    </group>
+  )
+}
+
 type BowProps = {
+  /** The part to draw bright, with the others faint. Null draws all of them as they are. */
+  lit: PartName | null
   geometry: BowGeometry
   measured: Mark[]
   /** Called with the key of the value a pressed part stands for. */
@@ -471,7 +534,8 @@ type BowProps = {
   onLeave: (parameterKey: string) => void
 }
 
-function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
+function Bow({ geometry, measured, lit, onPick, onHover, onLeave }: BowProps) {
+  const look = (part: PartName): Look => (lit === null ? 'plain' : lit === part ? 'lit' : 'dim')
   // A part answers a press, not the end of a drag that turned the bow.
   const pick = (parameterKey: string) => ({
     onClick: (event: ThreeEvent<MouseEvent>) => {
@@ -513,7 +577,7 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
 
   return (
     <group>
-      <group {...pick('bow.riserSize')}>
+      <Part look={look('riser')} {...pick('bow.riserSize')}>
         {/* Riser, with the grip on the archer's side and a pocket for each limb. */}
         <RiserPart points={riser.lower} halfWidth={RISER_HALF_WIDTH} color={palette.muted} />
         <RiserPart points={riser.upper} halfWidth={RISER_HALF_WIDTH} color={palette.muted} />
@@ -538,8 +602,8 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
             <meshStandardMaterial color={palette.ink} roughness={0.85} />
           </RoundedBox>
         </group>
-      </group>
-      <group {...pick('bow.tiller')}>
+      </Part>
+      <Part look={look('limbs')} {...pick('bow.tiller')}>
         {pockets.map((pocket, index) => (
           <group key={index} position={pocket} rotation={[0, 0, index === 0 ? -0.36 : 0.36]}>
             <RoundedBox args={[30, 62, 42]} radius={6}>
@@ -552,8 +616,8 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
             </mesh>
           </group>
         ))}
-      </group>
-      <group {...pick('bow.limbSize')}>
+      </Part>
+      <Part look={look('limbs')} {...pick('bow.limbSize')}>
         <Limb points={upperLimb} color={palette.ink} />
         <Limb points={lowerLimb} color={palette.ink} />
         {/* Seen from the side a limb is a line; this gives it some width to press. */}
@@ -564,8 +628,8 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
               <PressArea key={`${limb}-${index}`} from={points[index]!} to={end} radius={PRESS} />
             )),
         )}
-      </group>
-      <group {...pick('bow.braceHeight')}>
+      </Part>
+      <Part look={look('string')} {...pick('bow.braceHeight')}>
         {/* The string, strand count and all, with the thicker center serving around the nock. */}
         {string.slice(1).map((end, index) => (
           <Rod
@@ -591,8 +655,8 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
         {/* Clear of the nock, which belongs to the nocking point. */}
         <PressArea from={string[1]!} to={along(nock, string[1]!, 0.1)} radius={PRESS} />
         <PressArea from={along(nock, string[3]!, 0.1)} to={string[3]!} radius={PRESS} />
-      </group>
-      <group {...pick('bow.stabilizerPosition')}>
+      </Part>
+      <Part look={look('stabilizer')} {...pick('bow.stabilizerPosition')}>
         {/* Long rod, with a damper and its weight at the far end. */}
         <Rod from={longRod.from} to={longRod.to} radius={7} color={palette.ink} />
         <PressArea from={longRod.from} to={longRod.to} radius={PRESS} />
@@ -609,8 +673,8 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
           radius={13}
           color={palette.muted}
         />
-      </group>
-      <group {...pick('bow.stabilizerMass')}>
+      </Part>
+      <Part look={look('stabilizer')} {...pick('bow.stabilizerMass')}>
         {/* V-bar on the long rod mount, and the two side rods with their weights. */}
         <RoundedBox
           args={[22, 20, 46]}
@@ -632,8 +696,8 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
             />
           </group>
         ))}
-      </group>
-      <group {...pick('bow.plungerStiffness')}>
+      </Part>
+      <Part look={look('plunger')} {...pick('bow.plungerStiffness')}>
         {/* Plunger through the riser, touching the shaft. Rest wire under it. */}
         <Rod
           from={[plungerX, 0, outerZ + side * 8]}
@@ -659,8 +723,8 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
           radius={8.5}
           color={palette.gold}
         />
-      </group>
-      <group {...pick('bow.centerShot')}>
+      </Part>
+      <Part look={look('rest')} {...pick('bow.centerShot')}>
         {/* The rest: a wire out of the window wall, bent up under the shaft. */}
         <PressArea
           from={[plungerX + 8, -radius - 14, windowZ]}
@@ -679,7 +743,7 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
           radius={1.1}
           color={palette.ink}
         />
-      </group>
+      </Part>
       {/* The reference: string line seen from above, square to the string seen from the side. */}
       <Line
         points={[
@@ -693,7 +757,7 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
         gapSize={12}
       />
 
-      <group {...pick('arrow.length')}>
+      <Part look={look('arrow')} {...pick('arrow.length')}>
         {/* Arrow: shaft, point, nock, three vanes. */}
         <Rod from={nock} to={point} radius={radius} color={palette.ink} />
         {/* From ahead of the string to the point: the nock end belongs to the nocking point. */}
@@ -718,8 +782,8 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
           radius={radius}
           color={palette.accent}
         />
-      </group>
-      <group {...pick('bow.nockingPointHeight')}>
+      </Part>
+      <Part look={look('nockingPoint')} {...pick('bow.nockingPointHeight')}>
         {/* Nocking point locators on the string. */}
         <NockPressArea at={nock} />
 
@@ -732,7 +796,7 @@ function Bow({ geometry, measured, onPick, onHover, onLeave }: BowProps) {
             color={palette.gold}
           />
         ))}
-      </group>
+      </Part>
       {/* What this view measures, drawn where it is measured. */}
       {measured.map(
         (mark, index) =>
@@ -772,6 +836,9 @@ export default function BowScene({
   const measured = useMemo(() => marks(focus, geometry), [focus, geometry])
   // The value the part under the pointer stands for: said before it is pressed.
   const [hovered, setHovered] = useState<string | null>(null)
+  // The part whose callout is under the pointer, or has the focus.
+  const [pointed, setPointed] = useState<PartName | null>(null)
+  const lit = pointed ?? (hovered ? (PART_OF[hovered] ?? null) : null)
 
   // One label per thing measured. Two marks may share a label: it is written once.
   // The length of the bow is left out: with the whole bow in view the callouts need the room.
@@ -850,6 +917,7 @@ export default function BowScene({
         <Bow
           geometry={geometry}
           measured={measured}
+          lit={lit}
           onPick={onPick}
           onHover={setHovered}
           // Going from one part straight to the next, the new one is entered before
@@ -919,6 +987,10 @@ export default function BowScene({
                 boxes.current[index] = element
               }}
               onClick={() => onPick(parameter)}
+              onPointerEnter={() => setPointed(name)}
+              onPointerLeave={() => setPointed((current) => (current === name ? null : current))}
+              onFocus={() => setPointed(name)}
+              onBlur={() => setPointed((current) => (current === name ? null : current))}
               aria-label={m.viewer.goTo(m.viewer.part[name])}
               className="border-line bg-surface/90 text-ink hover:border-accent focus-visible:outline-accent pointer-events-auto invisible absolute top-0 left-0 flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md border px-1.5 py-1 text-left leading-tight shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 @md:gap-2 @md:px-2"
             >
