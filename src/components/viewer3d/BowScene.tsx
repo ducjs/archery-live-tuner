@@ -269,56 +269,166 @@ type Callout = {
   position: Vec3
 }
 
-/** px, the gap between a callout box and the edge of the view */
-const CALLOUT_MARGIN = 6
+/** px, the gap kept between callout boxes, and between a box and the edge of the view */
+const CALLOUT_GAP = 6
+/** s, how long the view has to stand still before the callouts are drawn again */
+const CALLOUT_SETTLE = 0.2
+
+type CalloutPinsProps = {
+  callouts: Callout[]
+  /** What holds the boxes and the lines: faded out while the view moves. */
+  layer: () => HTMLElement | null
+}
 
 /**
- * Lays the callouts out around the bow: a box for each part down the two sides
- * of the view, and a line from the box to the part. The half of the parts that
- * is further left gets the left side, so the lines seldom cross.
+ * Puts a box next to each part, a short way out from the middle of the bow,
+ * with a line from the box to the part. Boxes that would cover each other are
+ * pushed apart. While the bow is turned or a value moves it, the callouts are
+ * put away, and they are drawn again once the view stands still: lines that
+ * follow every frame are restless to look at.
  */
-function CalloutPins({ callouts }: { callouts: Callout[] }) {
-  const projected = useMemo(() => new Vector3(), [])
-  useFrame(({ camera, size }) => {
-    const seen: { callout: Callout; x: number; y: number }[] = []
-    for (const callout of callouts) {
-      projected.set(...callout.position).project(camera)
-      const x = (projected.x * 0.5 + 0.5) * size.width
-      const y = (-projected.y * 0.5 + 0.5) * size.height
-      const inView = projected.z < 1 && x > 0 && x < size.width && y > 0 && y < size.height
+function CalloutPins({ callouts, layer }: CalloutPinsProps) {
+  const { camera, size } = useThree()
+  const latest = useRef(callouts)
+  const seenView = useRef('')
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  const layout = () => {
+    const projected = new Vector3()
+    const far = size.width < 480 ? 40 : 72
+    const placed: {
+      callout: Callout
+      x: number
+      y: number
+      cx: number
+      cy: number
+      width: number
+      height: number
+    }[] = []
+    for (const callout of latest.current) {
       const box = callout.box()
       const line = callout.line()
       const dot = callout.dot()
       if (!box || !line || !dot) continue
-      if (inView) seen.push({ callout, x, y })
-      // Written straight to the DOM: this runs every frame, outside React rendering.
-      // oxlint-disable-next-line react/immutability
-      box.style.visibility = inView ? 'visible' : 'hidden'
-      line.style.visibility = inView ? 'visible' : 'hidden'
-      dot.style.visibility = inView ? 'visible' : 'hidden'
+      projected.set(...callout.position).project(camera)
+      const x = (projected.x * 0.5 + 0.5) * size.width
+      const y = (-projected.y * 0.5 + 0.5) * size.height
+      const inView = projected.z < 1 && x > 0 && x < size.width && y > 0 && y < size.height
+      for (const element of [box, line, dot]) {
+        element.style.visibility = inView ? 'visible' : 'hidden'
+      }
+      if (inView) {
+        placed.push({
+          callout,
+          x,
+          y,
+          cx: x,
+          cy: y,
+          width: box.offsetWidth,
+          height: box.offsetHeight,
+        })
+      }
     }
-    seen.sort((a, b) => a.x - b.x)
-    const half = Math.ceil(seen.length / 2)
-    for (const [side, column] of [seen.slice(0, half), seen.slice(half)].entries()) {
-      column.sort((a, b) => a.y - b.y)
-      column.forEach(({ callout, x, y }, index) => {
-        const box = callout.box()!
-        const width = box.offsetWidth
-        const height = box.offsetHeight
-        const left = side === 0 ? CALLOUT_MARGIN : size.width - CALLOUT_MARGIN - width
-        const room = size.height - 2 * CALLOUT_MARGIN
-        const top = CALLOUT_MARGIN + ((index + 0.5) * room) / column.length - height / 2
-        box.style.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`
-        const line = callout.line()!
-        line.setAttribute('x1', (side === 0 ? left + width : left).toFixed(1))
-        line.setAttribute('y1', (top + height / 2).toFixed(1))
-        line.setAttribute('x2', x.toFixed(1))
-        line.setAttribute('y2', y.toFixed(1))
-        const dot = callout.dot()!
-        dot.setAttribute('cx', x.toFixed(1))
-        dot.setAttribute('cy', y.toFixed(1))
-      })
+    if (placed.length === 0) return
+
+    // Each box goes outward from the middle of the parts in view, so it lands
+    // on the open side of its part.
+    const middleX = placed.reduce((sum, item) => sum + item.x, 0) / placed.length
+    const middleY = placed.reduce((sum, item) => sum + item.y, 0) / placed.length
+    placed.forEach((item, index) => {
+      let dx = item.x - middleX
+      let dy = item.y - middleY
+      const length = Math.hypot(dx, dy)
+      if (length < 12) {
+        // In the middle there is no outward: spread such parts around the clock.
+        const angle = (index / placed.length) * 2 * Math.PI
+        dx = Math.cos(angle)
+        dy = Math.sin(angle)
+      } else {
+        dx /= length
+        dy /= length
+      }
+      const reach = far + (Math.abs(dx) * item.width + Math.abs(dy) * item.height) / 2
+      item.cx = item.x + dx * reach
+      item.cy = item.y + dy * reach
+    })
+
+    const keepInView = (item: (typeof placed)[number]) => {
+      const halfWidth = item.width / 2 + CALLOUT_GAP
+      const halfHeight = item.height / 2 + CALLOUT_GAP
+      item.cx = Math.min(size.width - halfWidth, Math.max(halfWidth, item.cx))
+      item.cy = Math.min(size.height - halfHeight, Math.max(halfHeight, item.cy))
     }
+    // Boxes that overlap are pushed apart the short way, a few rounds over.
+    for (let round = 0; round < 24; round++) {
+      placed.forEach(keepInView)
+      let moved = false
+      for (let i = 0; i < placed.length; i++) {
+        for (let j = i + 1; j < placed.length; j++) {
+          const a = placed[i]!
+          const b = placed[j]!
+          const overX = (a.width + b.width) / 2 + CALLOUT_GAP - Math.abs(a.cx - b.cx)
+          const overY = (a.height + b.height) / 2 + CALLOUT_GAP - Math.abs(a.cy - b.cy)
+          if (overX <= 0 || overY <= 0) continue
+          moved = true
+          if (overY <= overX) {
+            const sign = a.cy <= b.cy ? -1 : 1
+            a.cy += (sign * overY) / 2
+            b.cy -= (sign * overY) / 2
+          } else {
+            const sign = a.cx <= b.cx ? -1 : 1
+            a.cx += (sign * overX) / 2
+            b.cx -= (sign * overX) / 2
+          }
+        }
+      }
+      if (!moved) break
+    }
+    placed.forEach(keepInView)
+
+    for (const { callout, x, y, cx, cy, width, height } of placed) {
+      const left = cx - width / 2
+      const top = cy - height / 2
+      callout.box()!.style.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`
+      // The line leaves the box at the point of its edge nearest to the part.
+      const line = callout.line()!
+      line.setAttribute('x1', Math.min(left + width, Math.max(left, x)).toFixed(1))
+      line.setAttribute('y1', Math.min(top + height, Math.max(top, y)).toFixed(1))
+      line.setAttribute('x2', x.toFixed(1))
+      line.setAttribute('y2', y.toFixed(1))
+      const dot = callout.dot()!
+      dot.setAttribute('cx', x.toFixed(1))
+      dot.setAttribute('cy', y.toFixed(1))
+    }
+  }
+
+  const settle = useRef(() => {})
+  useEffect(() => {
+    latest.current = callouts
+    settle.current = () => {
+      const element = layer()
+      if (element) element.style.opacity = '0'
+      clearTimeout(timer.current)
+      timer.current = setTimeout(() => {
+        layout()
+        const shown = layer()
+        if (shown) shown.style.opacity = '1'
+      }, CALLOUT_SETTLE * 1000)
+    }
+  })
+  useEffect(() => () => clearTimeout(timer.current), [])
+
+  // A part moved, because a value did: the callouts wait for it to stop too.
+  const places = JSON.stringify(callouts.map((callout) => callout.position))
+  useEffect(() => {
+    settle.current()
+  }, [places])
+
+  useFrame(() => {
+    const view = `${camera.matrixWorld.elements.map((value) => value.toFixed(2)).join()} ${size.width} ${size.height}`
+    if (view === seenView.current) return
+    seenView.current = view
+    settle.current()
   })
   return null
 }
@@ -636,10 +746,12 @@ export default function BowScene({
   const [hovered, setHovered] = useState<string | null>(null)
 
   // One label per thing measured. Two marks may share a label: it is written once.
+  // The length of the bow is left out: with the whole bow in view the callouts need the room.
   const labels = measured.filter(
     (mark, index) =>
+      mark.shows !== 'bowLength' &&
       measured.findIndex((other) => JSON.stringify(other.shows) === JSON.stringify(mark.shows)) ===
-      index,
+        index,
   )
   const elements = useRef<(HTMLSpanElement | null)[]>([])
   const anchors: Anchor[] = labels.map((mark, index) => ({
@@ -648,6 +760,7 @@ export default function BowScene({
   }))
 
   // A box for every part, with a line to it: the bow is its own menu.
+  const calloutLayer = useRef<HTMLDivElement | null>(null)
   const boxes = useRef<(HTMLButtonElement | null)[]>([])
   const lines = useRef<(SVGLineElement | null)[]>([])
   const dots = useRef<(SVGCircleElement | null)[]>([])
@@ -708,7 +821,7 @@ export default function BowScene({
         />
         <CameraRig focus={focus} focusRequest={focusRequest} geometry={geometry} />
         <LabelPins anchors={anchors} />
-        <CalloutPins callouts={callouts} />
+        <CalloutPins callouts={callouts} layer={() => calloutLayer.current} />
       </Canvas>
 
       {hovered && (
@@ -716,49 +829,58 @@ export default function BowScene({
           {m.viewer.goTo(parameterText(m, getParameter(hovered)).label)}
         </p>
       )}
-      <svg
-        className="text-ink-muted pointer-events-none absolute inset-0 h-full w-full"
-        aria-hidden="true"
+      <div
+        ref={calloutLayer}
+        className="pointer-events-none absolute inset-0 transition-opacity duration-150 motion-reduce:transition-none"
       >
-        {EQUIPMENT.map(({ name }, index) => (
-          <g key={name}>
-            <line
+        <svg
+          className="text-ink-muted pointer-events-none absolute inset-0 h-full w-full"
+          aria-hidden="true"
+        >
+          {EQUIPMENT.map(({ name }, index) => (
+            <g key={name}>
+              <line
+                ref={(element) => {
+                  lines.current[index] = element
+                }}
+                stroke="currentColor"
+                strokeWidth="1"
+                opacity="0.7"
+              />
+              <circle
+                ref={(element) => {
+                  dots.current[index] = element
+                }}
+                r="3"
+                fill="currentColor"
+              />
+            </g>
+          ))}
+        </svg>
+        <div className="pointer-events-none absolute inset-0">
+          {EQUIPMENT.map(({ name, parameter }, index) => (
+            <button
+              key={name}
+              type="button"
               ref={(element) => {
-                lines.current[index] = element
+                boxes.current[index] = element
               }}
-              stroke="currentColor"
-              strokeWidth="1"
-              opacity="0.7"
-            />
-            <circle
-              ref={(element) => {
-                dots.current[index] = element
-              }}
-              r="3"
-              fill="currentColor"
-            />
-          </g>
-        ))}
-      </svg>
+              onClick={() => onPick(parameter)}
+              aria-label={m.viewer.goTo(m.viewer.part[name])}
+              className="border-line bg-surface/90 text-ink hover:border-accent focus-visible:outline-accent pointer-events-auto invisible absolute top-0 left-0 flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md border px-1.5 py-1 text-left leading-tight shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 @md:gap-2 @md:px-2"
+            >
+              <PartIcon part={name} className="text-ink-muted size-6 shrink-0 @md:size-8" />
+              <span className="grid">
+                <span className="text-xs font-medium @md:text-sm">{m.viewer.part[name]}</span>
+                <span className="text-ink-muted hidden text-xs @md:block">
+                  {valueOf(parameter)}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
       <div className="pointer-events-none absolute inset-0">
-        {EQUIPMENT.map(({ name, parameter }, index) => (
-          <button
-            key={name}
-            type="button"
-            ref={(element) => {
-              boxes.current[index] = element
-            }}
-            onClick={() => onPick(parameter)}
-            aria-label={m.viewer.goTo(m.viewer.part[name])}
-            className="border-line bg-surface/90 text-ink hover:border-accent focus-visible:outline-accent pointer-events-auto invisible absolute top-0 left-0 flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md border px-1.5 py-1 text-left leading-tight shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 @md:gap-2 @md:px-2"
-          >
-            <PartIcon part={name} className="text-ink-muted size-6 shrink-0 @md:size-8" />
-            <span className="grid">
-              <span className="text-xs font-medium @md:text-sm">{m.viewer.part[name]}</span>
-              <span className="text-ink-muted hidden text-xs @md:block">{valueOf(parameter)}</span>
-            </span>
-          </button>
-        ))}
         {labels.map((mark, index) => (
           <span
             key={JSON.stringify(mark.shows)}

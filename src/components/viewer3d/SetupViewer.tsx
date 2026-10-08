@@ -3,7 +3,7 @@ import { useMessages } from '../../i18n/useMessages.ts'
 import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
 import type { UnitSystem } from '../../models/parameters.ts'
-import { EQUIPMENT, VIEWS } from './cameraShots.ts'
+import { EQUIPMENT, VIEWS, focusOf } from './cameraShots.ts'
 import type { BowViewerState } from './useBowViewer.ts'
 
 // three.js is large, so it is fetched only when the viewer is shown.
@@ -65,6 +65,13 @@ export function BowViewer({
   compact = false,
 }: BowViewerProps) {
   const m = useMessages()
+  // A pressed part is looked at as well as set: the camera goes to it.
+  const pick = (parameterKey: string) => {
+    const focus =
+      EQUIPMENT.find((piece) => piece.parameter === parameterKey)?.focus ?? focusOf(parameterKey)
+    if (focus) viewer.lookAt(focus)
+    onPick(parameterKey)
+  }
   const flat = (
     <div className="grid gap-2">
       <p role="status" className="border-gold bg-gold/10 rounded-md border-l-4 px-3 py-2">
@@ -76,7 +83,7 @@ export function BowViewer({
   if (!hasWebGL()) return flat
   return (
     <div
-      className={`border-line bg-surface overflow-hidden rounded-lg border ${compact ? 'h-[34vh] min-h-48 lg:h-[48vh]' : 'h-[46vh] min-h-64 lg:h-[54vh]'}`}
+      className={`border-line bg-surface relative overflow-hidden rounded-lg border ${compact ? 'h-[34vh] min-h-48 lg:h-[48vh]' : 'h-[46vh] min-h-64 lg:h-[54vh]'}`}
     >
       <SceneBoundary fallback={<div className="p-3">{flat}</div>}>
         <Suspense fallback={<p className="text-ink-muted p-4">{m.viewer.loading}</p>}>
@@ -88,10 +95,20 @@ export function BowViewer({
             focus={viewer.focus}
             focusRequest={viewer.focusRequest}
             units={units}
-            onPick={onPick}
+            onPick={pick}
           />
         </Suspense>
       </SceneBoundary>
+      {/* After a close look at a part, the way back to all of them. */}
+      {viewer.focus !== 'bow' && (
+        <button
+          type="button"
+          onClick={() => viewer.lookAt('bow')}
+          className="border-line bg-surface text-ink focus-visible:outline-accent absolute top-2 right-2 z-10 min-h-11 cursor-pointer rounded-md border px-3 font-medium shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+        >
+          {m.viewer.focus.bow}
+        </button>
+      )}
     </div>
   )
 }
