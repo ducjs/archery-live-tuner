@@ -107,6 +107,11 @@
     padding-left: 0.625rem;
   }
 
+  /* Focus sent to the page by "skip to the content" needs no ring around all of it. */
+  main:focus {
+    outline: none;
+  }
+
   body {
     background: var(--color-paper);
     color: var(--color-ink);

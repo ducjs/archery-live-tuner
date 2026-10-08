@@ -614,9 +614,16 @@ export const ROADMAP: RoadmapPhase[] = [
     groups: [
       {
         items: [
-          todo('Rà soát khả năng tiếp cận: bàn phím, trình đọc màn hình, độ tương phản'),
+          done(
+            'Rà soát khả năng tiếp cận bằng máy và bằng bàn phím: mọi màn hình được axe kiểm theo WCAG 2.2 mức A và AA, nền sáng và nền tối, màn rộng và 400 px, không còn lỗi nào. Thêm nút "Tới thẳng nội dung", phần cài đặt đóng bằng Escape, các ô chọn cao 44 px, và các thước đo thành danh sách đúng chuẩn',
+          ),
+          todo(
+            'Khả năng tiếp cận bằng tai: thử trọn luồng chính với trình đọc màn hình (NVDA hoặc VoiceOver). Không phép kiểm bằng máy nào thay được việc này',
+          ),
           todo('Rà soát tốc độ trên điện thoại yếu'),
-          todo('Test tự động trọn luồng sử dụng chính'),
+          done(
+            'Test tự động trọn luồng sử dụng chính bằng Playwright: 13 test chạy trên bản build trong Chrome, từ lúc nhập một giá trị tới lúc so sánh setup đã lưu sau khi tải lại trang, cộng 24 phép kiểm khả năng tiếp cận. Có workflow riêng chạy mỗi lần push, tách khỏi bước deploy; workflow này chưa chạy lần nào',
+          ),
           done(
             'Trang giải thích mô hình: "Cách hoạt động", một dòng thời gian mười bước từ lúc nhập setup tới lúc có gợi ý. Mỗi bước ghi nó nhận gì, làm gì, trả ra gì, xem ở đâu, và dựa trên vật lý, ước chừng, minh họa hay mũi tên thật',
           ),

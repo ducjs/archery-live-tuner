@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { SegmentedControl } from './components/common/SegmentedControl.tsx'
 import type { Language } from './i18n/index.ts'
 import { useMessages } from './i18n/useMessages.ts'
@@ -52,8 +52,46 @@ function App() {
     document.documentElement.lang = language
   }, [language])
 
+  // The settings close like a menu: on Escape, and on a press anywhere else.
+  const settings = useRef<HTMLDetailsElement>(null)
+  useEffect(() => {
+    const close = (refocus: boolean) => {
+      const menu = settings.current
+      if (!menu?.open) return
+      menu.open = false
+      if (refocus) menu.querySelector('summary')?.focus()
+    }
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close(true)
+    }
+    const onPress = (event: PointerEvent) => {
+      if (!settings.current?.contains(event.target as Node)) close(false)
+    }
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('pointerdown', onPress)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('pointerdown', onPress)
+    }
+  }, [])
+
+  /** Takes a keyboard past the bars at the top, straight to the page. */
+  const skipToContent = () => {
+    const main = document.querySelector('main')
+    if (!main) return
+    main.tabIndex = -1
+    main.focus()
+  }
+
   return (
     <>
+      <button
+        type="button"
+        onClick={skipToContent}
+        className="bg-ink text-surface focus-visible:outline-accent sr-only z-50 rounded-md px-4 py-2 font-medium focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2 focus-visible:left-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+      >
+        {m.nav.skip}
+      </button>
       <div className="border-line flex flex-wrap items-center justify-between gap-x-6 border-b px-4 sm:px-6 lg:px-8">
         <nav aria-label={m.nav.pages} className="flex flex-wrap gap-x-5">
           <a href="#" aria-current={beside ? undefined : 'page'} className={linkClass}>
@@ -83,7 +121,7 @@ function App() {
               onChange={(next) => setMode(next as ParameterTier)}
             />
             {/* Language and units are set once, so they wait behind one button. */}
-            <details className="group relative">
+            <details ref={settings} className="group relative">
               <summary className="border-line bg-surface focus-visible:outline-accent flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-md border px-3 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
                 <svg viewBox="0 0 20 20" className="size-5" fill="none" aria-hidden="true">
                   <path

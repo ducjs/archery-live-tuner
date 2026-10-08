@@ -35,26 +35,28 @@ function DivergingGauge({
   const neutralWidth = neutral * 100
   const sideClass = (tuning: string) => (tuningScale ? tuning : 'bg-ink-muted/25')
   return (
-    <div>
-      <div className="flex items-baseline justify-between gap-3">
-        <dt className="text-ink-muted">{title}</dt>
-        <dd className="text-lg font-semibold">{word}</dd>
-      </div>
-      <div className="relative mt-2 pb-1" aria-hidden="true">
-        <div className="flex h-2.5 overflow-hidden rounded-full">
-          <div className={`flex-1 ${sideClass('bg-weak/60')}`} />
-          <div className="bg-gold" style={{ width: `${neutralWidth}%` }} />
-          <div className={`flex-1 ${sideClass('bg-stiff/60')}`} />
+    // The bar belongs to the value, so it sits inside the <dd>: a group of a
+    // definition list may hold nothing but its term and its description.
+    <div className="grid grid-cols-[1fr_auto] items-baseline gap-x-3">
+      <dt className="text-ink-muted">{title}</dt>
+      <dd className="contents">
+        <span className="text-lg font-semibold">{word}</span>
+        <div className="relative col-span-2 mt-2 pb-1" aria-hidden="true">
+          <div className="flex h-2.5 overflow-hidden rounded-full">
+            <div className={`flex-1 ${sideClass('bg-weak/60')}`} />
+            <div className="bg-gold" style={{ width: `${neutralWidth}%` }} />
+            <div className={`flex-1 ${sideClass('bg-stiff/60')}`} />
+          </div>
+          <div
+            className="bg-ink ring-surface absolute -top-1 h-4.5 w-1 -translate-x-1/2 rounded-full ring-2 transition-[left] duration-150 ease-out motion-reduce:transition-none"
+            style={{ left: `${((value + 1) / 2) * 100}%` }}
+          />
         </div>
-        <div
-          className="bg-ink ring-surface absolute -top-1 h-4.5 w-1 -translate-x-1/2 rounded-full ring-2 transition-[left] duration-150 ease-out motion-reduce:transition-none"
-          style={{ left: `${((value + 1) / 2) * 100}%` }}
-        />
-      </div>
-      <div className="text-ink-muted flex justify-between text-sm" aria-hidden="true">
-        <span>{lowLabel}</span>
-        <span>{highLabel}</span>
-      </div>
+        <div className="text-ink-muted col-span-2 flex justify-between text-sm" aria-hidden="true">
+          <span>{lowLabel}</span>
+          <span>{highLabel}</span>
+        </div>
+      </dd>
     </div>
   )
 }
@@ -68,17 +70,20 @@ type MeterProps = {
 
 function LevelMeter({ title, word, value }: MeterProps) {
   return (
-    <div>
-      <div className="flex items-baseline justify-between gap-3">
-        <dt className="text-ink-muted">{title}</dt>
-        <dd className="text-lg font-semibold">{word}</dd>
-      </div>
-      <div className="bg-ink-muted/25 mt-2 h-2.5 overflow-hidden rounded-full" aria-hidden="true">
+    <div className="grid grid-cols-[1fr_auto] items-baseline gap-x-3">
+      <dt className="text-ink-muted">{title}</dt>
+      <dd className="contents">
+        <span className="text-lg font-semibold">{word}</span>
         <div
-          className="bg-ink h-full origin-left transition-transform duration-150 ease-out motion-reduce:transition-none"
-          style={{ transform: `scaleX(${value})` }}
-        />
-      </div>
+          className="bg-ink-muted/25 col-span-2 mt-2 h-2.5 overflow-hidden rounded-full"
+          aria-hidden="true"
+        >
+          <div
+            className="bg-ink h-full origin-left transition-transform duration-150 ease-out motion-reduce:transition-none"
+            style={{ transform: `scaleX(${value})` }}
+          />
+        </div>
+      </dd>
     </div>
   )
 }

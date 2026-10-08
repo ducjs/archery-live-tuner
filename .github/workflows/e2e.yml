@@ -1,0 +1,30 @@
+name: End-to-end tests
+
+# Apart from the deploy on purpose: these tests drive a real Chrome, and a
+# hiccup there should not keep a good build off the site.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # The runner comes with Chrome, which is the browser the tests ask for.
+      - run: npm run e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: test-results
+          retention-days: 7

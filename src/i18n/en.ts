@@ -26,6 +26,7 @@ export const en = {
     roadmap: 'Roadmap',
     previews: 'Previews',
     how: 'How it works',
+    skip: 'Skip to the content',
     language: 'Language',
     units: 'Units',
     level: 'Level',

@@ -359,9 +359,10 @@ Goal: store the parameters of every setup per user, across devices (§35).
 
 > **Nói đơn giản:** Bản chính thức cho cộng đồng. Không thêm tính năng lớn; tập trung vào độ ổn định, tốc độ trên máy yếu, dễ dùng cho mọi người, và tài liệu giải thích rõ mô hình làm được gì, không làm được gì.
 
-- [ ] Accessibility pass (keyboard, screen reader, contrast)
+- [x] Accessibility pass, by machine and by keyboard: every screen is checked by axe against WCAG 2.2 A and AA, in light and in dark, on a wide screen and at 400 px, with nothing left to object to. A "skip to the content" button, settings that close on Escape, choices 44 px tall, and the gauges as a proper list
+- [ ] Accessibility by ear: the core flow tried with a screen reader (NVDA or VoiceOver). No machine check stands in for this
 - [ ] Performance pass on low-end phones
-- [ ] Playwright end-to-end tests for the core flow
+- [x] Playwright end-to-end tests for the core flow: 13 tests on the built site in Chrome, from entering a value to comparing a saved setup after a reload, plus the 24 accessibility checks. `npm run e2e`; a workflow of its own runs them on every push, apart from the deploy. That workflow has not run yet
 - [x] Model explanation page: "How it works" (`#how`), a timeline of the ten steps from a setup to a suggestion. Each step says what it takes, what it does, what it gives, where to see it, and whether it stands on physics, on an estimate, on a drawing or on real arrows. Vietnamese only (done early, asked for by the owner on 2026-10-08)
 - [ ] User guide
 - [ ] Privacy policy (needed once accounts exist)

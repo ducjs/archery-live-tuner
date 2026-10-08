@@ -18,7 +18,7 @@ export function SegmentedControl({ label, hideLabel = false, options, value, onC
         {options.map((option) => (
           <label
             key={option.value}
-            className="has-checked:bg-ink has-checked:text-surface has-focus-visible:outline-accent flex min-h-10 cursor-pointer items-center rounded px-1.5 text-sm font-medium whitespace-nowrap sm:px-3 sm:text-base has-focus-visible:outline-2 has-focus-visible:outline-offset-2"
+            className="has-checked:bg-ink has-checked:text-surface has-focus-visible:outline-accent flex min-h-11 cursor-pointer items-center rounded px-1.5 text-sm font-medium whitespace-nowrap sm:px-3 sm:text-base has-focus-visible:outline-2 has-focus-visible:outline-offset-2"
           >
             <input
               type="radio"

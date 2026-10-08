@@ -227,7 +227,7 @@ function BasisTag({ basis }: { basis: Basis }) {
 
 export function HowItWorks() {
   return (
-    <main className="mx-auto max-w-4xl px-4 pt-6 pb-16 sm:px-6 lg:px-8">
+    <main lang="vi" className="mx-auto max-w-4xl px-4 pt-6 pb-16 sm:px-6 lg:px-8">
       <h1 className="font-display text-3xl leading-tight font-semibold">
         Tool này hoạt động thế nào
       </h1>
