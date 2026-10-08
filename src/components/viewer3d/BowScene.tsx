@@ -38,6 +38,8 @@ type Props = {
   units: UnitSystem
   /** Called with the key of the value a pressed part stands for. */
   onPick: (parameterKey: string) => void
+  /** Called when the close look at a part ends: a press beside the bow, or zooming back out. */
+  onLeave: () => void
 }
 
 /** The nocking point locators are a few millimetres long; this is what answers a press on them. */
@@ -185,9 +187,16 @@ function RiserPart({ points, halfWidth, color }: RiserPartProps) {
 
 type ControlsHandle = { target: Vector3; update: () => void }
 
-type RigProps = Pick<Props, 'focus' | 'focusRequest'> & { geometry: BowGeometry }
+type RigProps = Pick<Props, 'focus' | 'focusRequest' | 'onLeave'> & {
+  geometry: BowGeometry
+  /** Called when the view is taken hold of, and again when it is let go. */
+  onHold: (held: boolean) => void
+}
 
-function CameraRig({ focus, focusRequest, geometry }: RigProps) {
+/** Zoomed out to this many times the distance of a close look, the close look is over. */
+const LEAVE_AT = 1.6
+
+function CameraRig({ focus, focusRequest, geometry, onLeave, onHold }: RigProps) {
   const controls = useRef<ControlsHandle | null>(null)
   const flying = useRef(true)
   const first = useRef(true)
@@ -235,6 +244,14 @@ function CameraRig({ focus, focusRequest, geometry }: RigProps) {
       onStart={() => {
         // The user took over; stop steering the camera.
         flying.current = false
+        onHold(true)
+      }}
+      onEnd={() => {
+        onHold(false)
+        // Zooming well back out of a close look at a part ends it.
+        if (focus === 'bow' || !goal.current || !controls.current) return
+        const close = goal.current.position.distanceTo(goal.current.target)
+        if (camera.position.distanceTo(controls.current.target) > close * LEAVE_AT) onLeave()
       }}
     />
   )
@@ -263,6 +280,8 @@ function LabelPins({ anchors }: { anchors: Anchor[] }) {
 }
 
 type Callout = {
+  /** False for the other parts while one part is looked at closely. */
+  shown: boolean
   box: () => HTMLElement | null | undefined
   line: () => SVGLineElement | null | undefined
   dot: () => SVGCircleElement | null | undefined
@@ -278,16 +297,20 @@ type CalloutPinsProps = {
   callouts: Callout[]
   /** What holds the boxes and the lines: faded out while the view moves. */
   layer: () => HTMLElement | null
+  /** Whether a hand is on the view, turning it. */
+  held: () => boolean
+  /** Called with the way to draw the callouts again, for when the view is let go. */
+  onSettle: (settle: () => void) => void
 }
 
 /**
  * Puts a box next to each part, a short way out from the middle of the bow,
  * with a line from the box to the part. Boxes that would cover each other are
  * pushed apart. While the bow is turned or a value moves it, the callouts are
- * put away, and they are drawn again once the view stands still: lines that
- * follow every frame are restless to look at.
+ * put away, and they are drawn again a moment after the view is let go and
+ * stands still: lines that follow every frame are restless to look at.
  */
-function CalloutPins({ callouts, layer }: CalloutPinsProps) {
+function CalloutPins({ callouts, layer, held, onSettle }: CalloutPinsProps) {
   const { camera, size } = useThree()
   const latest = useRef(callouts)
   const seenView = useRef('')
@@ -313,7 +336,8 @@ function CalloutPins({ callouts, layer }: CalloutPinsProps) {
       projected.set(...callout.position).project(camera)
       const x = (projected.x * 0.5 + 0.5) * size.width
       const y = (-projected.y * 0.5 + 0.5) * size.height
-      const inView = projected.z < 1 && x > 0 && x < size.width && y > 0 && y < size.height
+      const inView =
+        callout.shown && projected.z < 1 && x > 0 && x < size.width && y > 0 && y < size.height
       for (const element of [box, line, dot]) {
         element.style.visibility = inView ? 'visible' : 'hidden'
       }
@@ -409,17 +433,20 @@ function CalloutPins({ callouts, layer }: CalloutPinsProps) {
       const element = layer()
       if (element) element.style.opacity = '0'
       clearTimeout(timer.current)
+      // A hand still on the view may go on turning it: wait for it to let go.
+      if (held()) return
       timer.current = setTimeout(() => {
         layout()
         const shown = layer()
         if (shown) shown.style.opacity = '1'
       }, CALLOUT_SETTLE * 1000)
     }
+    onSettle(settle.current)
   })
   useEffect(() => () => clearTimeout(timer.current), [])
 
   // A part moved, because a value did: the callouts wait for it to stop too.
-  const places = JSON.stringify(callouts.map((callout) => callout.position))
+  const places = JSON.stringify(callouts.map((callout) => [callout.shown, callout.position]))
   useEffect(() => {
     settle.current()
   }, [places])
@@ -734,6 +761,7 @@ export default function BowScene({
   focusRequest,
   units,
   onPick,
+  onLeave,
 }: Props) {
   const m = useMessages()
   const geometry = useMemo(
@@ -761,10 +789,15 @@ export default function BowScene({
 
   // A box for every part, with a line to it: the bow is its own menu.
   const calloutLayer = useRef<HTMLDivElement | null>(null)
+  // What the hand is doing to the view: the callouts wait until it lets go.
+  const handling = useRef({ held: false, released: () => {} })
   const boxes = useRef<(HTMLButtonElement | null)[]>([])
   const lines = useRef<(SVGLineElement | null)[]>([])
   const dots = useRef<(SVGCircleElement | null)[]>([])
-  const callouts: Callout[] = EQUIPMENT.map(({ name }, index) => ({
+  // While one part is looked at closely, only its own callout stays.
+  const closeUp = focus !== 'bow' && EQUIPMENT.some((piece) => piece.focus === focus)
+  const callouts: Callout[] = EQUIPMENT.map(({ name, focus: own }, index) => ({
+    shown: !closeUp || own === focus,
     box: () => boxes.current[index],
     line: () => lines.current[index],
     dot: () => dots.current[index],
@@ -804,6 +837,10 @@ export default function BowScene({
         dpr={[1, 2]}
         camera={{ fov: 32, near: 20, far: 20000, position: [900, 250, -2900 * side] }}
         aria-label={m.viewer.sceneLabel}
+        // A press beside the bow ends the close look at a part.
+        onPointerMissed={() => {
+          if (focus !== 'bow') onLeave()
+        }}
         role="img"
       >
         <ambientLight intensity={1.1} />
@@ -819,9 +856,25 @@ export default function BowScene({
           // the old one is left: leaving must not wipe out what was just entered.
           onLeave={(key) => setHovered((current) => (current === key ? null : current))}
         />
-        <CameraRig focus={focus} focusRequest={focusRequest} geometry={geometry} />
+        <CameraRig
+          focus={focus}
+          focusRequest={focusRequest}
+          geometry={geometry}
+          onLeave={onLeave}
+          onHold={(held) => {
+            handling.current.held = held
+            if (!held) handling.current.released()
+          }}
+        />
         <LabelPins anchors={anchors} />
-        <CalloutPins callouts={callouts} layer={() => calloutLayer.current} />
+        <CalloutPins
+          callouts={callouts}
+          layer={() => calloutLayer.current}
+          held={() => handling.current.held}
+          onSettle={(settle) => {
+            handling.current.released = settle
+          }}
+        />
       </Canvas>
 
       {hovered && (

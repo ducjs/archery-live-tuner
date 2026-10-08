@@ -96,6 +96,7 @@ export function BowViewer({
             focusRequest={viewer.focusRequest}
             units={units}
             onPick={pick}
+            onLeave={() => viewer.lookAt('bow')}
           />
         </Suspense>
       </SceneBoundary>
