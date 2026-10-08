@@ -80,7 +80,10 @@ export function SavedSetups({ onCompare }: Props) {
   )
 
   return (
-    <section aria-labelledby={`${nameId}-heading`} className="border-line border-b pb-3">
+    <section
+      aria-labelledby={`${nameId}-heading`}
+      className="border-line bg-panel rounded-xl border p-2 sm:p-3"
+    >
       <h2 id={`${nameId}-heading`} className="sr-only">
         {text.heading}
       </h2>

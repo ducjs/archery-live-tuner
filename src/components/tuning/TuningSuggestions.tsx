@@ -21,7 +21,10 @@ export function TuningSuggestions({ advice, before, onTry, perGroup = 3 }: Props
   const units = useTuningStore((state) => state.units)
   const text = m.suggestions
   return (
-    <section aria-labelledby="suggestions-heading" className="border-line border-t pt-4">
+    <section
+      aria-labelledby="suggestions-heading"
+      className="border-line bg-panel rounded-xl border p-4"
+    >
       <h2 id="suggestions-heading" className="font-display text-xl font-semibold">
         {text.heading}
       </h2>

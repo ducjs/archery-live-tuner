@@ -33,7 +33,10 @@ export function CalibrationPanel() {
   const shifts = fit ? describeShifts(fit.personal, m) : []
 
   return (
-    <section aria-labelledby="calibration-heading" className="border-line border-t pt-4">
+    <section
+      aria-labelledby="calibration-heading"
+      className="border-line bg-panel rounded-xl border p-4"
+    >
       <h2 id="calibration-heading" className="font-display text-xl font-semibold">
         {text.heading}
       </h2>

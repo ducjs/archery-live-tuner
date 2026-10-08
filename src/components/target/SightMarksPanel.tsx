@@ -48,7 +48,10 @@ export function SightMarksPanel({ setup, result, sight }: Props) {
   const poorFit = fit !== null && fit.worstMiss > Math.max(0.5, span * 0.03)
 
   return (
-    <section aria-labelledby="sight-heading" className="border-line @container border-t pt-4">
+    <section
+      aria-labelledby="sight-heading"
+      className="border-line bg-panel rounded-xl border p-4 @container"
+    >
       <h2 id="sight-heading" className="font-display text-xl font-semibold">
         {text.heading}
       </h2>

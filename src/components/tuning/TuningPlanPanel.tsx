@@ -23,7 +23,7 @@ export function TuningPlanPanel({ plan, onApply }: Props) {
   if (plan.steps.length < 2) return null
 
   return (
-    <section aria-labelledby="plan-heading" className="border-line mt-5 border-t pt-4">
+    <section aria-labelledby="plan-heading" className="border-line bg-panel rounded-xl border p-4">
       <h2 id="plan-heading" className="font-display text-xl font-semibold">
         {text.heading}
       </h2>

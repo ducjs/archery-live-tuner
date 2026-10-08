@@ -4,11 +4,13 @@
   --font-sans: 'Barlow', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Barlow Condensed', 'Barlow', ui-sans-serif, sans-serif;
 
-  --color-paper: #f2f4f3;
+  /* Three steps of depth: the page, a section standing on it, a control inside a section. */
+  --color-paper: #dde3e2;
+  --color-panel: #f6f8f7;
   --color-surface: #ffffff;
   --color-ink: #13202e;
   --color-ink-muted: #51606c;
-  --color-line: #d2d9d8;
+  --color-line: #c3cdcb;
   --color-accent: #17689e;
 
   /* Tuning scale: gold is the middle of the target, so gold means in tune. */
@@ -28,8 +30,9 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --color-paper: #0f1a24;
-      --color-surface: #17242f;
+      --color-paper: #0a1219;
+      --color-panel: #121e29;
+      --color-surface: #1b2a37;
       --color-ink: #e8edef;
       --color-ink-muted: #9aa8b2;
       --color-line: #2c3c49;
@@ -89,6 +92,19 @@
       border-radius: 50%;
       background: var(--color-accent);
     }
+  }
+
+  /*
+    A section says where it starts: its heading carries a bar in the accent
+    color, and the section lifts a little off the page.
+  */
+  .bg-panel {
+    box-shadow: 0 1px 2px rgb(19 32 46 / 0.08);
+  }
+
+  .bg-panel > h2 {
+    border-left: 4px solid var(--color-accent);
+    padding-left: 0.625rem;
   }
 
   body {

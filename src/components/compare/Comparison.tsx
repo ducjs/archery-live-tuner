@@ -168,7 +168,10 @@ export function ComparisonTable({ saved, now, units }: TableProps) {
   )
 
   return (
-    <section aria-labelledby="compare-heading">
+    <section
+      aria-labelledby="compare-heading"
+      className="border-line bg-panel rounded-xl border p-4"
+    >
       <h2 id="compare-heading" className="font-display text-xl font-semibold">
         {m.compare.differences}
       </h2>

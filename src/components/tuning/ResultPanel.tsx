@@ -198,7 +198,10 @@ export function ResultPanel({
   }
 
   return (
-    <section aria-labelledby="result-heading" className="@container">
+    <section
+      aria-labelledby="result-heading"
+      className="border-line bg-panel rounded-xl border p-4 @container"
+    >
       <h2 id="result-heading" className="font-display text-xl font-semibold">
         {text.heading}
       </h2>

@@ -69,7 +69,7 @@ export function Simulator() {
               event.preventDefault()
               open(name)
             }}
-            className="text-ink-muted aria-[current=page]:border-ink aria-[current=page]:text-ink focus-visible:outline-accent font-display flex min-h-13 items-center justify-center border-t-2 border-transparent px-4 text-lg font-semibold focus-visible:outline-2 focus-visible:-outline-offset-2 lg:-mb-px lg:min-h-11 lg:border-t-0 lg:border-b-2"
+            className="text-ink-muted aria-[current=page]:border-accent aria-[current=page]:bg-panel aria-[current=page]:text-ink focus-visible:outline-accent font-display flex min-h-13 items-center justify-center border-t-2 border-transparent px-4 text-lg font-semibold focus-visible:outline-2 focus-visible:-outline-offset-2 lg:-mb-px lg:min-h-11 lg:rounded-t-lg lg:border-t-0 lg:border-b-2 lg:px-5"
           >
             {m.nav.workspace[name]}
           </a>

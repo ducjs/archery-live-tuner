@@ -233,7 +233,10 @@ function Group({ group, open, onToggle, openKey, onOpenKey, footer }: GroupProps
   ].join(' · ')
 
   return (
-    <section aria-labelledby={`${group}-heading`} className="border-line border-b">
+    <section
+      aria-labelledby={`${group}-heading`}
+      className={`bg-panel rounded-xl border px-3 ${open ? 'border-accent/60' : 'border-line'}`}
+    >
       <h2 id={`${group}-heading`}>
         <button
           type="button"
@@ -354,7 +357,7 @@ export function SetupGroups() {
           </div>
         )
       ) : (
-        <div className="border-line border-t">
+        <div className="grid gap-2">
           {GROUPS.map((group) => (
             <Group
               key={group}

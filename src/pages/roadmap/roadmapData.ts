@@ -306,6 +306,9 @@ export const ROADMAP: RoadmapPhase[] = [
             'Kết quả xoay quanh việc nên làm tiếp: một câu kết luận, một gợi ý để thử, phần còn lại nằm trong các tab',
           ),
           done(
+            'Các phần trên màn hình tách rõ khỏi nền: mỗi phần là một khung có viền và một vạch màu cạnh tiêu đề, nền trang đậm hơn một bậc, các ô điều khiển sáng hơn một bậc',
+          ),
+          done(
             'Ô tìm thông số ở mức Chuyên nghiệp. Đã xem bằng Chrome không giao diện ở 1440 px và 400 px, tiếng Việt',
           ),
           todo(

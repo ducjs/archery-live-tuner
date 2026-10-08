@@ -19,7 +19,10 @@ export function TargetReading({ reading, diagnosis, onSave, saved }: Props) {
   const conclusions = plotConclusions(reading, m)
 
   return (
-    <section aria-labelledby="target-heading">
+    <section
+      aria-labelledby="target-heading"
+      className="border-line bg-panel rounded-xl border p-4"
+    >
       <h2 id="target-heading" className="font-display text-xl font-semibold">
         {text.heading}
       </h2>

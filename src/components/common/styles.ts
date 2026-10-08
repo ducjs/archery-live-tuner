@@ -3,3 +3,6 @@ export const buttonClass =
 
 export const inputClass =
   'border-line bg-surface focus-visible:outline-accent min-h-11 min-w-0 rounded-md border px-3 focus-visible:outline-2 focus-visible:outline-offset-2'
+
+/** A section of a workspace: it stands on the page as a block of its own. */
+export const panelClass = 'border-line bg-panel rounded-xl border p-4'

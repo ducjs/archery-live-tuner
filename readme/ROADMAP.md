@@ -180,6 +180,7 @@ Raised by the project owner on 2026-10-08, and built the same day. Design and wh
 - [x] Setup with the values next to the 3D bow: press a part to go to its value, and the bow moves while a slider is dragged. The 3D bow can be switched off, and the flight can be drawn from above or from the side next to it (§40.4)
 - [x] The result built around the next step: the sentence, one suggestion to try, and the rest in tabs (§40.5)
 - [x] A callout for every part of the 3D bow: a box with a drawing of the part, its name and its value, and a line to the part, as on the screen where a weapon is fitted out in a shooter game. Pressing the box goes to the value
+- [x] Sections that stand out from the page: each is a panel with a border and a bar beside its heading, on a page a step darker, with the controls a step lighter
 - [x] Search for a value at Professional. Looked at in headless Chrome at 1440 px and at 400 px wide, in Vietnamese
 - [ ] The tests of the screen rewritten for the workspaces: 49 of them were written for the old layout and are skipped (§40.9)
 

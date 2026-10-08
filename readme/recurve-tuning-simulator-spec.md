@@ -1957,7 +1957,7 @@ On a phone the three tabs "setup, result, suggestions" under the animation go aw
 - The engine, the models of bow and arrow, the coefficient set, validation, stored setups, shared links and the import file. No stored setup changes.
 - The drawings, the geometry of the 3D bow, the target face and every chart.
 - The roadmap and previews pages.
-- The design tokens and the Barlow fonts. This is a change of structure, not of look.
+- The Barlow fonts and the colors of the tuning scale. One thing of the look did change, asked for by the owner on 2026-10-08 because the screen read as one white sheet: there are three steps of depth now. The page is the darkest, a section stands on it as a panel with a border, a slight shadow and a bar in the accent color beside its heading, and a control inside a section is the lightest. The token for the middle step is `--color-panel`.
 - §2.1: every result stays labelled as a model result.
 
 ## 40.7 Accessibility and touch

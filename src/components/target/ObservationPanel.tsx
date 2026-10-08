@@ -235,7 +235,7 @@ export function ObservationPanel({ setup }: { setup: TuningSetup }) {
   return (
     <section
       aria-labelledby="observations-heading"
-      className="border-line @container border-t pt-4"
+      className="border-line bg-panel @container rounded-xl border p-4"
     >
       <h2 id="observations-heading" className="font-display text-xl font-semibold">
         {text.heading}

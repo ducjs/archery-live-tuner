@@ -53,7 +53,7 @@ export function SetupWorkspace() {
 
       {/* On a phone its parts are placed around the values; on a wide screen it is one column that stays in view. */}
       <div className="contents lg:sticky lg:top-4 lg:order-2 lg:grid lg:max-h-[calc(100vh-2rem)] lg:gap-3 lg:overflow-y-auto">
-        <div className="order-1 flex flex-wrap items-center gap-x-6 gap-y-1">
+        <div className="border-line bg-panel order-1 flex flex-wrap items-center gap-x-6 gap-y-1 rounded-xl border px-3 py-1.5">
           <label className="flex min-h-11 cursor-pointer items-center gap-2 font-medium">
             <input
               type="checkbox"

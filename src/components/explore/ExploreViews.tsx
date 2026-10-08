@@ -43,7 +43,10 @@ export function Landscape({ grid }: { grid: LandscapeCell[][] }) {
   )
 
   return (
-    <section aria-labelledby="landscape-heading">
+    <section
+      aria-labelledby="landscape-heading"
+      className="border-line bg-panel rounded-xl border p-4"
+    >
       <h2 id="landscape-heading" className="font-display text-xl font-semibold">
         {text.landscape}
       </h2>
@@ -135,7 +138,10 @@ export function SensitivityChart({ entries }: { entries: Sensitivity[] }) {
   const largest = Math.max(...shown.map((entry) => Math.abs(entry.effect)), 0.01)
 
   return (
-    <section aria-labelledby="sensitivity-heading">
+    <section
+      aria-labelledby="sensitivity-heading"
+      className="border-line bg-panel rounded-xl border p-4"
+    >
       <h2 id="sensitivity-heading" className="font-display text-xl font-semibold">
         {text.sensitivity}
       </h2>
