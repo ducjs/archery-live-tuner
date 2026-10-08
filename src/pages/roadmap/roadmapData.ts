@@ -300,6 +300,9 @@ export const ROADMAP: RoadmapPhase[] = [
             'Setup có thông số nằm cạnh cây cung 3D: bấm vào một bộ phận thì nhảy tới thông số của nó, kéo thanh trượt thì cây cung chuyển động theo. Cung 3D bật tắt được, và vẽ thêm được đường tên bay nhìn từ trên hoặc từ bên',
           ),
           done(
+            'Mỗi bộ phận trên cung 3D có một ô chú thích: hình vẽ nhỏ của bộ phận, tên và giá trị của nó, kèm một đường kẻ nối tới bộ phận, giống màn hình độ súng trong game. Bấm vào ô là nhảy tới thông số',
+          ),
+          done(
             'Kết quả xoay quanh việc nên làm tiếp: một câu kết luận, một gợi ý để thử, phần còn lại nằm trong các tab',
           ),
           done(

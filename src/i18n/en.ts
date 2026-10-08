@@ -581,6 +581,7 @@ export const en = {
       alongString: 'Along the string',
     },
     part: {
+      riser: 'Riser',
       limbs: 'Limbs',
       string: 'String',
       nockingPoint: 'Nocking point',

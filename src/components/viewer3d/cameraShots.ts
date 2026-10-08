@@ -10,6 +10,7 @@ export const VIEWS = ['bow', 'front', 'top', 'alongString'] as const
  * that is set on it: its button goes to both.
  */
 export const EQUIPMENT = [
+  { name: 'riser', focus: 'bow', parameter: 'bow.riserSize' },
   { name: 'limbs', focus: 'tiller', parameter: 'bow.tiller' },
   { name: 'string', focus: 'braceHeight', parameter: 'bow.braceHeight' },
   { name: 'nockingPoint', focus: 'nockingPoint', parameter: 'bow.nockingPointHeight' },
@@ -18,6 +19,7 @@ export const EQUIPMENT = [
   { name: 'arrow', focus: 'arrow', parameter: 'arrow.length' },
   { name: 'stabilizer', focus: 'stabilizer', parameter: 'bow.stabilizerPosition' },
 ] as const satisfies readonly { name: string; focus: Focus; parameter: string }[]
+export type PartName = (typeof EQUIPMENT)[number]['name']
 export type Preset = (typeof VIEWS)[number] | 'rest'
 
 /** Views the camera flies to by itself when a value of the setup changes. */
@@ -206,5 +208,34 @@ export function marks(focus: Focus, geometry: BowGeometry): Mark[] {
     default:
       // Beside the upper limb pocket, where it covers nothing.
       return [{ shows: 'bowLength', at: lifted(geometry.pockets[1], 70) }]
+  }
+}
+
+/**
+ * The point of the bow that the callout of a part is tied to: the far end of
+ * the line that runs from its box to the bow.
+ */
+export function calloutAnchor(part: PartName, geometry: BowGeometry): Vec3 {
+  const { stringX, stringZ, nock, point, limbs, pockets, atRest, longRod } = geometry
+  const [upper] = limbs
+  switch (part) {
+    case 'riser':
+      // Below the grip, clear of the rest and the plunger.
+      return along(pockets[0], [0, 0, 0], 0.45)
+    case 'limbs':
+      return upper[Math.floor(upper.length * 0.6)]!
+    case 'string':
+      // Well under the nock, where only the string is.
+      return [stringX, -0.55 * Math.abs(pockets[0][1]), stringZ]
+    case 'nockingPoint':
+      return nock
+    case 'rest':
+      return [atRest[0], atRest[1] - 8, atRest[2]]
+    case 'plunger':
+      return [atRest[0], atRest[1] + 6, atRest[2] + 28 * geometry.side]
+    case 'arrow':
+      return along(nock, point, 0.8)
+    case 'stabilizer':
+      return longRod.to
   }
 }

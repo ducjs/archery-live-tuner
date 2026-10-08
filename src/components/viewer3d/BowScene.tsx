@@ -15,7 +15,15 @@ import {
   type BowGeometry,
   type Vec3,
 } from './bowGeometry.ts'
-import { cameraShot, marks, type Focus, type Mark } from './cameraShots.ts'
+import {
+  EQUIPMENT,
+  calloutAnchor,
+  cameraShot,
+  marks,
+  type Focus,
+  type Mark,
+} from './cameraShots.ts'
+import { PartIcon } from './PartIcon.tsx'
 
 type Props = {
   bow: BowSetup
@@ -249,6 +257,67 @@ function LabelPins({ anchors }: { anchors: Anchor[] }) {
       // oxlint-disable-next-line react/immutability
       element.current.style.visibility = visible ? 'visible' : 'hidden'
       element.current.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -100%)`
+    }
+  })
+  return null
+}
+
+type Callout = {
+  box: () => HTMLElement | null | undefined
+  line: () => SVGLineElement | null | undefined
+  dot: () => SVGCircleElement | null | undefined
+  position: Vec3
+}
+
+/** px, the gap between a callout box and the edge of the view */
+const CALLOUT_MARGIN = 6
+
+/**
+ * Lays the callouts out around the bow: a box for each part down the two sides
+ * of the view, and a line from the box to the part. The half of the parts that
+ * is further left gets the left side, so the lines seldom cross.
+ */
+function CalloutPins({ callouts }: { callouts: Callout[] }) {
+  const projected = useMemo(() => new Vector3(), [])
+  useFrame(({ camera, size }) => {
+    const seen: { callout: Callout; x: number; y: number }[] = []
+    for (const callout of callouts) {
+      projected.set(...callout.position).project(camera)
+      const x = (projected.x * 0.5 + 0.5) * size.width
+      const y = (-projected.y * 0.5 + 0.5) * size.height
+      const inView = projected.z < 1 && x > 0 && x < size.width && y > 0 && y < size.height
+      const box = callout.box()
+      const line = callout.line()
+      const dot = callout.dot()
+      if (!box || !line || !dot) continue
+      if (inView) seen.push({ callout, x, y })
+      // Written straight to the DOM: this runs every frame, outside React rendering.
+      // oxlint-disable-next-line react/immutability
+      box.style.visibility = inView ? 'visible' : 'hidden'
+      line.style.visibility = inView ? 'visible' : 'hidden'
+      dot.style.visibility = inView ? 'visible' : 'hidden'
+    }
+    seen.sort((a, b) => a.x - b.x)
+    const half = Math.ceil(seen.length / 2)
+    for (const [side, column] of [seen.slice(0, half), seen.slice(half)].entries()) {
+      column.sort((a, b) => a.y - b.y)
+      column.forEach(({ callout, x, y }, index) => {
+        const box = callout.box()!
+        const width = box.offsetWidth
+        const height = box.offsetHeight
+        const left = side === 0 ? CALLOUT_MARGIN : size.width - CALLOUT_MARGIN - width
+        const room = size.height - 2 * CALLOUT_MARGIN
+        const top = CALLOUT_MARGIN + ((index + 0.5) * room) / column.length - height / 2
+        box.style.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`
+        const line = callout.line()!
+        line.setAttribute('x1', (side === 0 ? left + width : left).toFixed(1))
+        line.setAttribute('y1', (top + height / 2).toFixed(1))
+        line.setAttribute('x2', x.toFixed(1))
+        line.setAttribute('y2', y.toFixed(1))
+        const dot = callout.dot()!
+        dot.setAttribute('cx', x.toFixed(1))
+        dot.setAttribute('cy', y.toFixed(1))
+      })
     }
   })
   return null
@@ -578,6 +647,25 @@ export default function BowScene({
     position: mark.at,
   }))
 
+  // A box for every part, with a line to it: the bow is its own menu.
+  const boxes = useRef<(HTMLButtonElement | null)[]>([])
+  const lines = useRef<(SVGLineElement | null)[]>([])
+  const dots = useRef<(SVGCircleElement | null)[]>([])
+  const callouts: Callout[] = EQUIPMENT.map(({ name }, index) => ({
+    box: () => boxes.current[index],
+    line: () => lines.current[index],
+    dot: () => dots.current[index],
+    position: calloutAnchor(name, geometry),
+  }))
+  /** The value a part is known by, as its callout writes it. */
+  const valueOf = (key: string): string => {
+    const parameter = getParameter(key)
+    return parameter.kind === 'enum'
+      ? (parameterText(m, parameter).options?.[getValue({ bow, arrow }, parameter)] ??
+          getValue({ bow, arrow }, parameter))
+      : formatValue(parameter, getValue({ bow, arrow }, parameter), units)
+  }
+
   const text = (mark: Mark): string => {
     if (mark.shows === 'bowLength') return m.panels.bowLength(bowLength(bow))
     const key = mark.shows.parameter
@@ -597,7 +685,7 @@ export default function BowScene({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="@container relative h-full w-full overflow-hidden">
       <Canvas
         frameloop="demand"
         dpr={[1, 2]}
@@ -620,14 +708,57 @@ export default function BowScene({
         />
         <CameraRig focus={focus} focusRequest={focusRequest} geometry={geometry} />
         <LabelPins anchors={anchors} />
+        <CalloutPins callouts={callouts} />
       </Canvas>
 
       {hovered && (
-        <p className="border-line bg-surface text-ink pointer-events-none absolute bottom-2 left-2 rounded-md border px-2 py-1 text-sm font-medium">
+        <p className="border-line bg-surface text-ink pointer-events-none absolute bottom-2 left-1/2 z-10 -translate-x-1/2 rounded-md border px-2 py-1 text-sm font-medium whitespace-nowrap">
           {m.viewer.goTo(parameterText(m, getParameter(hovered)).label)}
         </p>
       )}
+      <svg
+        className="text-ink-muted pointer-events-none absolute inset-0 h-full w-full"
+        aria-hidden="true"
+      >
+        {EQUIPMENT.map(({ name }, index) => (
+          <g key={name}>
+            <line
+              ref={(element) => {
+                lines.current[index] = element
+              }}
+              stroke="currentColor"
+              strokeWidth="1"
+              opacity="0.7"
+            />
+            <circle
+              ref={(element) => {
+                dots.current[index] = element
+              }}
+              r="3"
+              fill="currentColor"
+            />
+          </g>
+        ))}
+      </svg>
       <div className="pointer-events-none absolute inset-0">
+        {EQUIPMENT.map(({ name, parameter }, index) => (
+          <button
+            key={name}
+            type="button"
+            ref={(element) => {
+              boxes.current[index] = element
+            }}
+            onClick={() => onPick(parameter)}
+            aria-label={m.viewer.goTo(m.viewer.part[name])}
+            className="border-line bg-surface/90 text-ink hover:border-accent focus-visible:outline-accent pointer-events-auto invisible absolute top-0 left-0 flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md border px-1.5 py-1 text-left leading-tight shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 @md:gap-2 @md:px-2"
+          >
+            <PartIcon part={name} className="text-ink-muted size-6 shrink-0 @md:size-8" />
+            <span className="grid">
+              <span className="text-xs font-medium @md:text-sm">{m.viewer.part[name]}</span>
+              <span className="text-ink-muted hidden text-xs @md:block">{valueOf(parameter)}</span>
+            </span>
+          </button>
+        ))}
         {labels.map((mark, index) => (
           <span
             key={JSON.stringify(mark.shows)}

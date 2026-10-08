@@ -614,6 +614,7 @@ export const vi: Messages = {
       alongString: 'Dọc theo dây',
     },
     part: {
+      riser: 'Riser',
       limbs: 'Cánh cung',
       string: 'Dây',
       nockingPoint: 'Nocking point',
