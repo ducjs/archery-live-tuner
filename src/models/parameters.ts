@@ -2,10 +2,17 @@ import { convert, unitLabel, type Unit } from '../utils/units.ts'
 import type { ArrowSetup } from './arrow.ts'
 import type { BowSetup } from './bow.ts'
 
-export type ParameterTier = 'simple' | 'advanced'
-/** `size` is the riser and the limbs: what the bow is, before anything on it is set. */
-export type ParameterGroup = 'size' | 'bow' | 'arrow' | 'curve'
+/** The level a value belongs to: Basic, Advanced or Professional. A level shows the ones below it too. */
+export type ParameterTier = 'simple' | 'advanced' | 'pro'
+export const TIERS: readonly ParameterTier[] = ['simple', 'advanced', 'pro']
 
+/** Whether a level shows what belongs to `tier`. */
+export function tierShows(mode: ParameterTier, tier: ParameterTier): boolean {
+  return TIERS.indexOf(mode) >= TIERS.indexOf(tier)
+}
+/** The groups of the list of values, in the order they are shown. */
+export const GROUPS = ['bow', 'tuning', 'arrow', 'string', 'balance'] as const
+export type ParameterGroup = (typeof GROUPS)[number]
 type ParameterBase = {
   /** Path into the setup, e.g. `bow.string.strandCount`. Also the i18n key. */
   key: string
@@ -77,14 +84,28 @@ const HINTS: Record<string, string> = {
   'arrow.pointLength': 'How far the point sticks out past the end of the shaft.',
 }
 
-const SIZE_KEYS = ['bow.riserSize', 'bow.limbSize']
-const CURVE_KEYS = ['bow.drawForceNear', 'bow.drawForceMid']
+const TUNING_KEYS = [
+  'bow.braceHeight',
+  'bow.nockingPointHeight',
+  'bow.centerShot',
+  'bow.tiller',
+  'bow.limbAlignmentTop',
+  'bow.limbAlignmentBottom',
+  'bow.plungerStiffness',
+  'bow.plungerPreload',
+]
+const BALANCE_KEYS = ['bow.bowMass', 'bow.stabilizerMass', 'bow.stabilizerPosition']
 
 function groupOf(key: string): ParameterGroup {
-  if (SIZE_KEYS.includes(key)) return 'size'
-  if (CURVE_KEYS.includes(key)) return 'curve'
-  return key.startsWith('arrow.') ? 'arrow' : 'bow'
+  if (key.startsWith('arrow.')) return 'arrow'
+  if (key.startsWith('bow.string.')) return 'string'
+  if (TUNING_KEYS.includes(key)) return 'tuning'
+  if (BALANCE_KEYS.includes(key)) return 'balance'
+  return 'bow'
 }
+
+/** The two forces read from a bow scale. 0 means not measured. */
+export const MEASURED_FORCES: readonly string[] = ['bow.drawForceNear', 'bow.drawForceMid']
 
 function num(key: string, tier: ParameterTier, label: string, spec: NumberSpec): NumberParameter {
   const [unit, displayUnit] = spec.units ?? [null, null]
@@ -173,21 +194,21 @@ export const PARAMETERS: readonly Parameter[] = [
     default: 1,
     step: 0.05,
   }),
-  num('bow.tiller', 'advanced', 'Tiller', {
+  num('bow.tiller', 'simple', 'Tiller', {
     units: ['mm', 'mm'],
     min: -5,
     max: 15,
     default: 4,
     step: 0.5,
   }),
-  num('bow.limbAlignmentTop', 'advanced', 'Top limb alignment', {
+  num('bow.limbAlignmentTop', 'simple', 'Top limb alignment', {
     units: ['mm', 'mm'],
     min: -5,
     max: 5,
     default: 0,
     step: 0.5,
   }),
-  num('bow.limbAlignmentBottom', 'advanced', 'Bottom limb alignment', {
+  num('bow.limbAlignmentBottom', 'simple', 'Bottom limb alignment', {
     units: ['mm', 'mm'],
     min: -5,
     max: 5,
@@ -245,19 +266,19 @@ export const PARAMETERS: readonly Parameter[] = [
   ),
   choice(
     'bow.drawCurve',
-    'advanced',
+    'pro',
     'Draw force curve',
     { STRAIGHT: 'Straight', STANDARD: 'Standard', FULL: 'Full in mid-draw' },
     'STANDARD',
   ),
-  num('bow.drawForceNear', 'advanced', 'Force 2 in before full draw', {
+  num('bow.drawForceNear', 'pro', 'Force 2 in before full draw', {
     units: ['N', 'lbf'],
     min: 0,
     max: 80,
     default: 0,
     step: 0.5,
   }),
-  num('bow.drawForceMid', 'advanced', 'Force 8 in before full draw', {
+  num('bow.drawForceMid', 'pro', 'Force 8 in before full draw', {
     units: ['N', 'lbf'],
     min: 0,
     max: 80,
@@ -315,21 +336,21 @@ export const PARAMETERS: readonly Parameter[] = [
     default: 5,
     step: 0.5,
   }),
-  num('arrow.fletchingHeight', 'advanced', 'Vane height', {
+  num('arrow.fletchingHeight', 'pro', 'Vane height', {
     units: ['mm', 'mm'],
     min: 3,
     max: 30,
     default: 12,
     step: 0.5,
   }),
-  num('arrow.fletchingPosition', 'advanced', 'Vanes from the nock', {
+  num('arrow.fletchingPosition', 'pro', 'Vanes from the nock', {
     units: ['mm', 'mm'],
     min: 20,
     max: 150,
     default: 55,
     step: 1,
   }),
-  num('arrow.pointLength', 'advanced', 'Point past the shaft', {
+  num('arrow.pointLength', 'pro', 'Point past the shaft', {
     units: ['mm', 'mm'],
     min: 5,
     max: 60,
@@ -338,12 +359,16 @@ export const PARAMETERS: readonly Parameter[] = [
   }),
 ]
 
-/** Parameters of one panel, in display order. Simple mode hides the advanced tier. */
+/** Parameters of one panel, in display order. A level hides the tiers above it. */
 export function visibleParameters(group: ParameterGroup, mode: ParameterTier): Parameter[] {
   return PARAMETERS.filter(
-    (parameter) =>
-      parameter.group === group && (mode === 'advanced' || parameter.tier === 'simple'),
+    (parameter) => parameter.group === group && tierShows(mode, parameter.tier),
   )
+}
+
+/** Parameters a level does not show. */
+export function hiddenParameters(mode: ParameterTier): Parameter[] {
+  return PARAMETERS.filter((parameter) => !tierShows(mode, parameter.tier))
 }
 
 const BY_KEY = new Map(PARAMETERS.map((parameter) => [parameter.key, parameter]))
@@ -393,10 +418,13 @@ export function defaultValues(): SetupValues {
   return tree as SetupValues
 }
 
-/** Parameters that currently differ from their default. Used for the Simple-mode notice. */
-export function modifiedParameters(setup: SetupValues, tier?: ParameterTier): Parameter[] {
+/**
+ * Parameters that currently differ from their default. With `hiddenAt`, only
+ * the ones that level does not show: used for the notice about hidden values.
+ */
+export function modifiedParameters(setup: SetupValues, hiddenAt?: ParameterTier): Parameter[] {
   return PARAMETERS.filter((parameter) => {
-    if (tier && parameter.tier !== tier) return false
+    if (hiddenAt && tierShows(hiddenAt, parameter.tier)) return false
     const value = getValue(setup, parameter)
     if (parameter.kind === 'enum') return value !== parameter.default
     return Math.abs((value as number) - parameter.default) > 1e-9

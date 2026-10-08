@@ -19,7 +19,8 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 - [ ] Bắn xé giấy ở ba cự ly, ví dụ 2 m, 4 m và 6 m, và bareshaft ở 18 m; ghi lại vết rách về phía nào ở từng cự ly. *Bạn thấy trên phim quay chậm: có lúc đuôi tên đá ngang ngay khi rời cung, có lúc ra thẳng rồi gần 18 m đuôi mới đá, mũi nào cũng vậy. Mô hình chưa tái hiện được trường hợp sau. Nếu vết rách đổi chiều theo cự ly thì đó là đuôi lắc qua lại, và quãng giữa hai lần đổi chiều cho biết chu kỳ thật để chỉnh mô hình.*
 - [ ] Đo lực kéo trên cung của bạn bằng cân cung ở ba chỗ: full draw, trước đó 2 inch và trước đó 8 inch, kèm brace height và cỡ cung lúc đo. *Để kiểm hai hệ số hình dạng mặc định của đường lực kéo, hiện vẫn là ước lượng; ứng dụng đã nhận thẳng các số này ở Nâng cao, "Lực kéo tự đo". Chi tiết ở spec §39 và tuning-references.md mục 8.4.*
 - [x] Duyệt thiết kế đường lực kéo ở spec §39. *Chưa code gì cho tới khi bạn đồng ý.*
-- [ ] Duyệt thiết kế ba mức tune và màn hình setup bấm vào bộ phận cung ở spec §40. *Chưa code gì cho tới khi bạn đồng ý. Xem kỹ bảng chia mức ở §40.2 và bảng bộ phận ở §40.4.*
+- [x] Duyệt thiết kế ba mức tune và màn hình setup bấm vào bộ phận cung ở spec §40. *Bạn đã bảo cứ làm; đã làm xong.*
+- [ ] Dùng thử màn hình mới (ba mức, bốn màn hình làm việc, Setup có cung 3D) trên máy tính và điện thoại thật, rồi báo chỗ nào chưa vừa ý. *Mới xem bằng Chrome không giao diện ở 1440 px và 400 px. Chưa ai dùng thử bằng tay, và cảm ứng trên cảnh 3D chưa kiểm được.*
 - [ ] Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có. *Để các commit mới gắn với tài khoản ducjs.*
 
 ## How to use this file
@@ -36,7 +37,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | M1–M8 done. M9 (three levels, setup of its own) is designed in §40 and waits for the owner's review. Open: the owner's check of the ten points of §33 on a phone |
+| V0.1 | Basic simulator (MVP) | M1–M9 built. Open in M9: 49 skipped tests of the screen to rewrite. Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | In progress (8 of 12 done; walk-back needs a better source; the spine chart test waits for the Easton chart; the tail wobble needs measurements) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
 | V0.4 | Real-world calibration | All items done. Open: the exit criterion, which waits for real observations; the fit has only been tested on made-up ones |
@@ -171,14 +172,15 @@ Raised by the project owner on 2026-10-06, who then asked for all of it.
 
 > **Nói đơn giản:** Chia ứng dụng thành ba mức: Cơ bản, Nâng cao, Chuyên nghiệp. Mức nào chỉ thấy đúng thứ của mức đó, từ ô nhập tới kết quả và các màn hình. Phần setup ra một chỗ riêng: bấm vào một bộ phận trên cây cung 3D, thông số của nó hiện ra và kéo thanh trượt ngay tại chỗ, giống màn hình độ súng trong game.
 
-Raised by the project owner on 2026-10-08. Designed in §40; not started until the owner has reviewed it.
+Raised by the project owner on 2026-10-08, and built the same day. Design and what was built: §40.
 
-- [ ] Three levels in place of two, for the whole app: inputs, the detail of the result, and which workspaces exist (§40.2). Tiller and limb alignment become Basic; the draw curve and the extra arrow detail become Professional
-- [ ] Values in five groups (bow, tuning, arrow, string, balance), one open at a time, each closed group showing its main values. A value is one row that opens to its slider when it is in use
-- [ ] Four workspaces in place of the "Show" switch: Setup, Simulate, Target, Analysis. Name, save and share in one bar above them; language and units behind a settings button (§40.3)
-- [ ] The bow as the menu of Setup: press a part, its values open in a card beside the bow, or in a sheet on a phone, and the bow moves while a slider is dragged. The same values as a list, one press away (§40.4)
-- [ ] The result built around the next step: the sentence, one suggestion to try, and the rest in tabs (§40.5)
-- [ ] Search for a value at Professional, and the whole of it checked by eye at 400 px wide in both languages
+- [x] Three levels in place of two, for the whole app: inputs, the detail of the result, and which workspaces exist (§40.2). Tiller and limb alignment become Basic; the draw curve and the extra arrow detail become Professional
+- [x] Values in five groups (bow, tuning, arrow, string, balance), one open at a time, each closed group showing its main values. A value is one row that opens to its slider when it is in use
+- [x] Four workspaces in place of the "Show" switch: Setup, Flight, Target, Analysis. Name, save and share in one bar above them; language and units behind a settings button (§40.3)
+- [x] Setup with the values next to the 3D bow: press a part to go to its value, and the bow moves while a slider is dragged. The 3D bow can be switched off, and the flight can be drawn from above or from the side next to it (§40.4)
+- [x] The result built around the next step: the sentence, one suggestion to try, and the rest in tabs (§40.5)
+- [x] Search for a value at Professional. Looked at in headless Chrome at 1440 px and at 400 px wide, in Vietnamese
+- [ ] The tests of the screen rewritten for the workspaces: 49 of them were written for the old layout and are skipped (§40.9)
 
 **Exit criteria:** all ten points of §33 pass, and the engine runs in tests without React.
 

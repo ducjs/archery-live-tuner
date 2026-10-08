@@ -1,492 +1,106 @@
-import { useEffect, useMemo, useState } from 'react'
-import { SegmentedControl } from '../components/common/SegmentedControl.tsx'
-import {
-  ComparisonFlight,
-  ComparisonTable,
-  MOST_COMPARED,
-} from '../components/compare/Comparison.tsx'
-import { Landscape, SensitivityChart } from '../components/explore/ExploreViews.tsx'
-import { useExplore } from '../components/explore/useExplore.ts'
+import { useEffect, useState } from 'react'
 import { SavedSetups } from '../components/setups/SavedSetups.tsx'
 import { SharedSetupNotice } from '../components/setups/SetupTransfer.tsx'
-import { BowViewer, BowViewerControls } from '../components/viewer3d/SetupViewer.tsx'
-import { useBowViewer } from '../components/viewer3d/useBowViewer.ts'
-import {
-  FlightView,
-  PlaybackControls,
-  TimeScrubber,
-  type ViewSettings,
-} from '../components/simulation/SimulationStage.tsx'
-import {
-  DEFAULT_DISTANCE,
-  DEFAULT_EXAGGERATION,
-  DEFAULT_IMPACT,
-  DEFAULT_SPEED,
-  HOLD_SECONDS,
-  clipSeconds,
-} from '../components/simulation/timing.ts'
-import { usePlayback } from '../components/simulation/usePlayback.ts'
-import { DrawCurvePanel } from '../components/tuning/DrawCurvePanel.tsx'
-import { ResultPanel, ResultSummary } from '../components/tuning/ResultPanel.tsx'
-import { SetupPanels } from '../components/tuning/SetupPanels.tsx'
-import { TuningPlanPanel } from '../components/tuning/TuningPlanPanel.tsx'
-import { TuningSuggestions } from '../components/tuning/TuningSuggestions.tsx'
-import { CalibrationPanel } from '../components/target/CalibrationPanel.tsx'
-import { ObservationPanel } from '../components/target/ObservationPanel.tsx'
-import { SightMarksPanel } from '../components/target/SightMarksPanel.tsx'
-import { useSight } from '../components/target/useSight.ts'
-import { TargetControls } from '../components/target/TargetControls.tsx'
-import { TargetFace } from '../components/target/TargetFace.tsx'
-import { TargetReading } from '../components/target/TargetReading.tsx'
-import {
-  DEFAULT_TRAJECTORY_OPTIONS,
-  diagnosePlot,
-  planTuning,
-  readPlot,
-  suggestTuning,
-} from '../engine/index.ts'
 import { useMessages } from '../i18n/useMessages.ts'
+import { tierShows } from '../models/parameters.ts'
 import { useLibraryStore } from '../state/libraryStore.ts'
-import { useCalibrationStore, useModel } from '../state/calibrationStore.ts'
-import { useObservationStore } from '../state/observationStore.ts'
-import { usePlotStore } from '../state/plotStore.ts'
-import { useTuningStore } from '../state/tuningStore.ts'
-import { createObservation } from '../utils/observations.ts'
+import { WORKSPACES, WORKSPACE_TIER, useTuningStore, type Workspace } from '../state/tuningStore.ts'
+import { AnalysisWorkspace } from './workspaces/AnalysisWorkspace.tsx'
+import { SetupWorkspace } from './workspaces/SetupWorkspace.tsx'
+import { SimulateWorkspace } from './workspaces/SimulateWorkspace.tsx'
+import { TargetWorkspace } from './workspaces/TargetWorkspace.tsx'
 
-type Stage = 'flight' | 'compare' | 'explore' | 'bow' | 'target'
-/** The part of the page a phone shows under the animation. A wide screen shows all of them. */
-type Section = 'setup' | 'result' | 'advice'
-
-const DEFAULT_VIEW: ViewSettings = {
-  view: 'both',
-  distance: DEFAULT_DISTANCE,
-  impact: DEFAULT_IMPACT,
-  speed: DEFAULT_SPEED,
-  exaggeration: DEFAULT_EXAGGERATION,
-}
-
-// Two setups are drawn at once when comparing, so each gets a single view.
-const COMPARE_VIEWS = ['top', 'side'] as const
-
-/** The landscape and the sensitivity chart, in place of the animation. */
-function ExploreStage() {
-  const setup = useTuningStore((state) => state.setup)
-  const result = useExplore(setup)
-  return (
-    <div className="grid gap-6 @container">
-      <Landscape grid={result.landscape} />
-      <SensitivityChart entries={result.sensitivity} />
-    </div>
-  )
+/** The workspace an address asks for. `#3d` is the older address of the 3D bow, now part of Setup. */
+function workspaceOf(hash: string): Workspace | null {
+  const name = hash.replace(/^#/, '')
+  if (name === '3d') return 'setup'
+  return WORKSPACES.find((workspace) => workspace === name) ?? null
 }
 
 export function Simulator() {
   const m = useMessages()
-  const setup = useTuningStore((state) => state.setup)
   const mode = useTuningStore((state) => state.mode)
-  const units = useTuningStore((state) => state.units)
-  const setParameter = useTuningStore((state) => state.setParameter)
-  const pointTo = useTuningStore((state) => state.pointTo)
-  const saved = useLibraryStore((state) => state.saved)
+  const stored = useTuningStore((state) => state.workspace)
+  const setWorkspace = useTuningStore((state) => state.setWorkspace)
+  const setBow3d = useTuningStore((state) => state.setBow3d)
   const loadSaved = useLibraryStore((state) => state.load)
-  const [bareShaft, setBareShaft] = useState(true)
-  // The base model, or the one fitted to the archer when that is switched on.
-  const model = useModel()
-  const fitted = useCalibrationStore((state) => state.enabled)
+  // The saved setups picked for the comparison. Kept here: the setup menu sets them too.
+  const [chosenIds, setChosenIds] = useState<string[]>([])
 
   useEffect(() => {
     void loadSaved()
   }, [loadSaved])
 
-  // Amplification is an Advanced feature. Simple mode always uses its default,
-  // so a setting the user cannot see never changes what is shown.
-  const advanced = mode === 'advanced'
-  const [settings, setSettings] = useState(DEFAULT_VIEW)
-  const view = advanced ? settings : { ...settings, exaggeration: DEFAULT_EXAGGERATION }
+  // An address that names a workspace opens it, on arrival and on back and forward.
+  useEffect(() => {
+    const follow = () => {
+      const asked = workspaceOf(window.location.hash)
+      if (!asked) return
+      setWorkspace(asked)
+      if (window.location.hash === '#3d') setBow3d(true)
+    }
+    follow()
+    window.addEventListener('hashchange', follow)
+    return () => window.removeEventListener('hashchange', follow)
+  }, [setWorkspace, setBow3d])
 
-  const trajectory = useMemo(
-    () => ({ ...DEFAULT_TRAJECTORY_OPTIONS, distance: view.distance * 1000 }),
-    [view.distance],
-  )
-  const comparison = useMemo(
-    () => model.compareBareShaft(setup, { trajectory }),
-    [model, setup, trajectory],
-  )
-  const result = comparison.fletched
-  // Simple mode only gets suggestions about values it can see. All of them are
-  // asked for: the panel sorts them into its two groups and trims each.
-  const advice = useMemo(
-    () => suggestTuning(model, setup, { tier: mode, limit: Infinity }),
-    [model, setup, mode],
-  )
-  // The same suggestions, taken one after the other as a whole session.
-  const plan = useMemo(() => planTuning(model, setup, { tier: mode }), [model, setup, mode])
-
-  // The sight on the bow, with its pin where the distance being shot puts it.
-  const sight = useSight(setup, result)
-  const pinNow = sight.pins.find((pin) => pin.distance === view.distance * 1000)
-  const sightOnBow =
-    sight.entry.onBow && pinNow && pinNow.status !== 'unreachable'
-      ? {
-          extension: sight.entry.extension,
-          pinHeight: pinNow.pinHeight,
-          pinDiameter: sight.entry.pinDiameter,
-          status: pinNow.status,
-        }
-      : undefined
-
-  const [stage, setStage] = useState<Stage>(() =>
-    window.location.hash === '#3d'
-      ? 'bow'
-      : window.location.hash === '#target'
-        ? 'target'
-        : 'flight',
-  )
-
-  // The target: real arrows, read against the setup on screen.
-  const plot = usePlotStore((state) => state.plot)
-  const addMark = usePlotStore((state) => state.addMark)
-  const saveObservation = useObservationStore((state) => state.save)
-  const handedness = setup.bow.handedness
-  const plotReading = useMemo(() => readPlot(plot, handedness), [plot, handedness])
-  const diagnosis = useMemo(
-    () => diagnosePlot(plotReading, setup, model),
-    [plotReading, setup, model],
-  )
-  // The plot that was last saved, to say so until it changes.
-  const [savedPlot, setSavedPlot] = useState<typeof plot | null>(null)
-  const saveTarget = () => {
-    const seen = plotReading.conclusive
-      ? {
-          bareHorizontal: plotReading.bareHorizontal,
-          bareVertical: plotReading.bareVertical,
-          ...(plotReading.horizontal !== 'OK' && { stiffness: plotReading.horizontal }),
-        }
-      : {}
-    void saveObservation(createObservation(setup, seen, { plot }))
-    setSavedPlot(plot)
+  // A workspace above the level is not on offer; the level may have been lowered since.
+  const offered = WORKSPACES.filter((workspace) => tierShows(mode, WORKSPACE_TIER[workspace]))
+  const workspace = offered.includes(stored) ? stored : 'setup'
+  const open = (next: Workspace) => {
+    setWorkspace(next)
+    window.history.pushState(null, '', `#${next}`)
   }
-  const viewer = useBowViewer(setup)
-  const [section, setSection] = useState<Section>('setup')
-  // The top and side views can be put away, to leave a small screen to the values.
-  const [drawingHidden, setDrawingHidden] = useState(false)
-
-  // Compare against the chosen setups. Without a choice, against the saved copy
-  // of the setup on screen (before and after), or else the first saved one.
-  const [chosenIds, setChosenIds] = useState<string[]>([])
-  const others = useMemo(() => {
-    const chosen = chosenIds.flatMap((id) => saved.find((entry) => entry.id === id) ?? [])
-    const fallback = saved.find((entry) => entry.id === setup.id) ?? saved[0]
-    return chosen.length > 0 ? chosen : fallback ? [fallback] : []
-  }, [chosenIds, saved, setup.id])
-  const otherResults = useMemo(
-    () =>
-      others.map((other) => ({
-        setup: other,
-        result: model.simulate(other, { trajectory }),
-      })),
-    [model, others, trajectory],
-  )
-  const compared = stage === 'compare' &&
-    otherResults.length > 0 && { saved: otherResults, now: { setup, result } }
-  const toggleCompared = (id: string) => {
-    const current = others.map((other) => other.id)
-    setChosenIds(
-      current.includes(id) ? current.filter((chosen) => chosen !== id) : [...current, id],
-    )
-  }
-
-  // The slowest of the flights sets the length of the loop, so all of them finish.
-  const duration = compared
-    ? Math.max(clipSeconds(result), ...otherResults.map((other) => clipSeconds(other.result)))
-    : clipSeconds(result)
-  const playback = usePlayback(duration, HOLD_SECONDS, view.speed)
-
-  // A comparison has no suggestions of its own.
-  const sections: Section[] =
-    compared || stage === 'target' ? ['setup', 'result'] : ['setup', 'result', 'advice']
-  const shownSection = sections.includes(section) ? section : 'result'
-
-  /** Goes to the input of a value: from a part of the 3D bow, or from the button of a piece of equipment. */
-  const pickValue = (key: string) => {
-    // On a phone the inputs are a tab of their own.
-    setSection('setup')
-    pointTo(key)
-  }
-
-  const onSettingsChange = (next: ViewSettings) =>
-    // Simple mode shows the default amplification; do not store that.
-    setSettings((current) => (advanced ? next : { ...next, exaggeration: current.exaggeration }))
 
   return (
-    <main className="px-4 pt-5 pb-12 sm:px-6 lg:px-8">
-      <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
-        <div>
-          <h1 className="font-display text-3xl leading-tight font-semibold">{m.simulator.title}</h1>
-          <p className="text-ink-muted mt-1 max-w-prose">{m.simulator.intro}</p>
-        </div>
-        <SegmentedControl
-          label={m.simulator.show}
-          options={[
-            { value: 'flight', label: m.simulator.flight },
-            { value: 'compare', label: m.simulator.compare },
-            { value: 'explore', label: m.simulator.explore },
-            { value: 'bow', label: m.simulator.bow },
-            { value: 'target', label: m.simulator.target },
-          ]}
-          value={stage}
-          onChange={(next) => setStage(next as Stage)}
+    // On a phone the workspaces are a bar at the foot of the screen: leave it room.
+    <main className="px-4 pt-3 pb-28 sm:px-6 lg:px-8 lg:pb-12">
+      <h1 className="sr-only">{m.simulator.title}</h1>
+      <nav
+        aria-label={m.nav.workspaces}
+        className="border-line bg-paper fixed inset-x-0 bottom-0 z-20 grid auto-cols-fr grid-flow-col border-t px-2 pb-[env(safe-area-inset-bottom)] lg:static lg:flex lg:gap-1 lg:border-t-0 lg:border-b lg:p-0"
+      >
+        {offered.map((name) => (
+          <a
+            key={name}
+            href={`#${name}`}
+            aria-current={workspace === name ? 'page' : undefined}
+            onClick={(event) => {
+              event.preventDefault()
+              open(name)
+            }}
+            className="text-ink-muted aria-[current=page]:border-ink aria-[current=page]:text-ink focus-visible:outline-accent font-display flex min-h-13 items-center justify-center border-t-2 border-transparent px-4 text-lg font-semibold focus-visible:outline-2 focus-visible:-outline-offset-2 lg:-mb-px lg:min-h-11 lg:border-t-0 lg:border-b-2"
+          >
+            {m.nav.workspace[name]}
+          </a>
+        ))}
+      </nav>
+
+      <div className="mt-3">
+        <SavedSetups
+          onCompare={(id) => {
+            setChosenIds([id])
+            open('analysis')
+          }}
         />
-      </header>
+      </div>
       <SharedSetupNotice />
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-[22rem_1fr] lg:items-start lg:gap-8">
-        {/*
-          On a phone its parts are placed around the inputs. On a wide screen it is one
-          column, and on a very wide one the result moves beside the animation.
-        */}
-        <div className="contents lg:sticky lg:top-4 lg:order-2 lg:block lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto 2xl:grid 2xl:grid-cols-[minmax(0,1fr)_24rem] 2xl:grid-rows-[auto_1fr] 2xl:items-start 2xl:gap-x-8">
-          {/*
-            The animation stays in view on a phone while a slider is dragged. Two
-            drawings would cover half the screen, so a comparison scrolls away.
-          */}
-          <div
-            className={`bg-paper order-1 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0 ${stage === 'compare' || stage === 'explore' || stage === 'target' ? '' : 'sticky top-0 z-10'}`}
-          >
-            {stage === 'bow' ? (
-              <BowViewer
-                bow={setup.bow}
-                arrow={setup.arrow}
-                viewer={viewer}
-                units={units}
-                onPick={pickValue}
-                fallback={
-                  <FlightView
-                    view="both"
-                    result={result}
-                    handedness={setup.bow.handedness}
-                    elapsed={0}
-                    exaggeration={view.exaggeration}
-                  />
-                }
-              />
-            ) : stage === 'target' ? (
-              <>
-                <p className="text-ink-muted max-w-prose">{m.target.how}</p>
-                <TargetFace
-                  plot={plot}
-                  reading={plotReading}
-                  label={m.target.faceLabel(
-                    plot.faceDiameter / 10,
-                    plotReading.fletchedCount,
-                    plotReading.bareCount,
-                  )}
-                  onMark={addMark}
-                  keyboardLabel={m.target.keyboardLabel}
-                  describeCursor={m.target.cursor}
-                />
-              </>
-            ) : stage === 'explore' ? (
-              <ExploreStage />
-            ) : stage === 'compare' && !compared ? (
-              <p className="border-line bg-surface max-w-prose rounded-lg border p-4">
-                {m.compare.empty}
-              </p>
-            ) : drawingHidden ? null : (
-              <>
-                {compared ? (
-                  <ComparisonFlight
-                    {...compared}
-                    view={view.view === 'side' ? 'side' : 'top'}
-                    impact={view.impact}
-                    elapsed={playback.elapsed}
-                    exaggeration={view.exaggeration}
-                  />
-                ) : (
-                  <FlightView
-                    view={view.view}
-                    result={result}
-                    bare={bareShaft ? comparison.bare : undefined}
-                    sight={sightOnBow}
-                    handedness={setup.bow.handedness}
-                    impact={view.impact}
-                    elapsed={playback.elapsed}
-                    exaggeration={view.exaggeration}
-                  />
-                )}
-                <TimeScrubber
-                  result={result}
-                  elapsed={playback.elapsed}
-                  flightSeconds={duration}
-                  onSeek={playback.seek}
-                />
-              </>
-            )}
-            {stage !== 'compare' && stage !== 'target' && (
-              <div className="lg:hidden">
-                <ResultSummary result={result} />
-              </div>
-            )}
-          </div>
-          <div className="order-2 grid min-w-0 gap-3 lg:mt-3">
-            {stage === 'bow' && <BowViewerControls viewer={viewer} onPick={pickValue} />}
-            {stage === 'target' && <TargetControls />}
-            {compared && (
-              <fieldset>
-                <legend className="font-medium">
-                  {m.compare.with}{' '}
-                  <span className="text-ink-muted text-sm font-normal">
-                    {m.compare.upTo(MOST_COMPARED)}
-                  </span>
-                </legend>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {saved.map((entry) => {
-                    const checked = others.some((other) => other.id === entry.id)
-                    return (
-                      <label
-                        key={entry.id}
-                        className="border-line bg-surface has-checked:border-ink has-focus-visible:outline-accent has-disabled:text-ink-muted flex min-h-11 max-w-full cursor-pointer items-center gap-2 rounded-md border px-3 font-medium has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-disabled:cursor-default"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          // One setup always stays, and no more than fit on screen.
-                          disabled={checked ? others.length === 1 : others.length >= MOST_COMPARED}
-                          onChange={() => toggleCompared(entry.id)}
-                          className="accent-accent size-5 cursor-pointer disabled:cursor-default"
-                        />
-                        <span className="min-w-0 break-words">{entry.name}</span>
-                      </label>
-                    )
-                  })}
-                </div>
-              </fieldset>
-            )}
-            {stage === 'flight' && (
-              <PlaybackControls
-                playing={playback.playing}
-                onToggle={playback.toggle}
-                onRestart={playback.restart}
-                bareShaft={bareShaft}
-                onBareShaftChange={setBareShaft}
-                drawingHidden={drawingHidden}
-                onDrawingHiddenChange={setDrawingHidden}
-                settings={view}
-                onSettingsChange={onSettingsChange}
-                advanced={advanced}
-              />
-            )}
-            {compared && (
-              <PlaybackControls
-                playing={playback.playing}
-                onToggle={playback.toggle}
-                onRestart={playback.restart}
-                drawingHidden={drawingHidden}
-                onDrawingHiddenChange={setDrawingHidden}
-                settings={{ ...view, view: view.view === 'side' ? 'side' : 'top' }}
-                onSettingsChange={onSettingsChange}
-                advanced={advanced}
-                views={COMPARE_VIEWS}
-              />
-            )}
-          </div>
-          {/* On a phone the page is three sections, one at a time, so it stays short. */}
-          <div
-            role="tablist"
-            aria-label={m.simulator.sections}
-            className="border-line bg-surface order-2 grid auto-cols-fr grid-flow-col rounded-md border p-0.5 lg:hidden"
-          >
-            {sections.map((name) => (
-              <button
-                key={name}
-                type="button"
-                role="tab"
-                id={`section-tab-${name}`}
-                aria-selected={shownSection === name}
-                aria-controls={`section-${name === 'advice' ? 'result' : name}`}
-                onClick={() => setSection(name)}
-                className="aria-selected:bg-ink aria-selected:text-surface focus-visible:outline-accent min-h-11 cursor-pointer rounded px-2 font-medium focus-visible:outline-2 focus-visible:outline-offset-2"
-              >
-                {m.simulator.section[name]}
-              </button>
-            ))}
-          </div>
-          <div
-            id="section-result"
-            className={`order-4 min-w-0 lg:mt-6 lg:block 2xl:col-start-2 2xl:row-span-2 2xl:row-start-1 2xl:mt-0 ${shownSection === 'setup' ? 'hidden' : ''}`}
-          >
-            {stage === 'target' ? (
-              <div className="grid gap-6">
-                <TargetReading
-                  reading={plotReading}
-                  diagnosis={diagnosis}
-                  onSave={saveTarget}
-                  saved={savedPlot === plot}
-                />
-                <SightMarksPanel setup={setup} result={result} sight={sight} />
-                <ObservationPanel setup={setup} />
-                <CalibrationPanel />
-              </div>
-            ) : compared ? (
-              <ComparisonTable {...compared} units={units} />
-            ) : (
-              <>
-                <div className={`lg:block ${shownSection === 'result' ? '' : 'hidden'}`}>
-                  {fitted && (
-                    <p className="border-accent bg-accent/10 mb-3 max-w-prose rounded-md border-l-4 px-3 py-2">
-                      {m.calibration.active}
-                    </p>
-                  )}
-                  <ResultPanel
-                    result={result}
-                    comparison={bareShaft ? comparison : undefined}
-                    handedness={setup.bow.handedness}
-                    advanced={advanced}
-                    braceHeight={setup.bow.braceHeight}
-                    centerShot={setup.bow.centerShot}
-                  />
-                  {advanced && <DrawCurvePanel setup={setup} result={result} units={units} />}
-                </div>
-                <div className={`lg:mt-5 lg:block ${shownSection === 'advice' ? '' : 'hidden'}`}>
-                  <TuningSuggestions
-                    advice={advice}
-                    before={{
-                      classification: result.classification,
-                      horizontal: comparison.horizontal,
-                      vertical: comparison.vertical,
-                    }}
-                    onTry={setParameter}
-                  />
-                  <TuningPlanPanel
-                    plan={plan}
-                    onApply={(changes) => {
-                      for (const { parameterKey, value } of changes)
-                        setParameter(parameterKey, value)
-                    }}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div
-          id="section-setup"
-          className={`order-3 min-w-0 gap-5 lg:order-1 lg:grid ${shownSection === 'setup' ? 'grid' : 'hidden'}`}
-        >
-          <SavedSetups
-            onCompare={(id) => {
-              setChosenIds([id])
-              setStage('compare')
-            }}
-          />
-          <SetupPanels />
-        </div>
+      <div className="mt-4">
+        {workspace === 'setup' ? (
+          <SetupWorkspace />
+        ) : workspace === 'fly' ? (
+          <SimulateWorkspace />
+        ) : workspace === 'target' ? (
+          <TargetWorkspace />
+        ) : (
+          <AnalysisWorkspace chosenIds={chosenIds} onChosenIdsChange={setChosenIds} />
+        )}
       </div>
 
       <footer className="border-line text-ink-muted mt-10 grid max-w-prose gap-1 border-t pt-4 text-sm">
         <p>{m.simulator.disclaimer}</p>
-        {stage !== 'target' && <p>{m.simulator.modelOnly}</p>}
+        {workspace !== 'target' && <p>{m.simulator.modelOnly}</p>}
       </footer>
     </main>
   )

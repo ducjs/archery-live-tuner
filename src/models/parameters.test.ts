@@ -62,6 +62,9 @@ describe('parameter table', () => {
       'bow.nockingPointHeight',
       'bow.centerShot',
       'bow.plungerStiffness',
+      'bow.tiller',
+      'bow.limbAlignmentTop',
+      'bow.limbAlignmentBottom',
       'arrow.length',
       'arrow.spine',
       'arrow.pointWeight',
@@ -102,16 +105,18 @@ describe('setup values', () => {
     let values = defaultValues()
     expect(modifiedParameters(values)).toEqual([])
 
-    values = setValue(values, getParameter('bow.tiller'), 6)
+    values = setValue(values, getParameter('bow.bowMass'), 3500)
     values = setValue(values, getParameter('arrow.spine'), 600)
 
     expect(modifiedParameters(values).map((parameter) => parameter.key)).toEqual([
-      'bow.tiller',
+      'bow.bowMass',
       'arrow.spine',
     ])
-    expect(modifiedParameters(values, 'advanced').map((parameter) => parameter.key)).toEqual([
-      'bow.tiller',
+    // Only the ones a level does not show.
+    expect(modifiedParameters(values, 'simple').map((parameter) => parameter.key)).toEqual([
+      'bow.bowMass',
     ])
+    expect(modifiedParameters(values, 'advanced')).toEqual([])
   })
 
   it('converts to and from display units', () => {

@@ -2,7 +2,7 @@ import { useEffect, useSyncExternalStore } from 'react'
 import { SegmentedControl } from './components/common/SegmentedControl.tsx'
 import type { Language } from './i18n/index.ts'
 import { useMessages } from './i18n/useMessages.ts'
-import type { UnitSystem } from './models/parameters.ts'
+import { TIERS, type ParameterTier, type UnitSystem } from './models/parameters.ts'
 import { Demos } from './pages/demos/Demos.tsx'
 import { isDemoHash } from './pages/demos/demoTabs.ts'
 import { Roadmap } from './pages/roadmap/Roadmap.tsx'
@@ -38,6 +38,8 @@ function App() {
   const m = useMessages()
   const language = useTuningStore((state) => state.language)
   const units = useTuningStore((state) => state.units)
+  const mode = useTuningStore((state) => state.mode)
+  const setMode = useTuningStore((state) => state.setMode)
   const setLanguage = useTuningStore((state) => state.setLanguage)
   const setUnits = useTuningStore((state) => state.setUnits)
 
@@ -67,23 +69,46 @@ function App() {
             {m.nav.previews}
           </a>
         </nav>
-        {/* The roadmap and the previews are written in Vietnamese only. */}
+        {/* The roadmap and the previews are written in Vietnamese only, and have no levels. */}
         {!onRoadmap && !onDemos && (
-          <div className="flex flex-wrap gap-x-4 gap-y-1 py-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 py-1">
             <SegmentedControl
-              label={m.nav.language}
+              label={m.nav.level}
               hideLabel
-              options={LANGUAGES}
-              value={language}
-              onChange={(next) => setLanguage(next as Language)}
+              options={TIERS.map((tier) => ({ value: tier, label: m.nav.levels[tier] }))}
+              value={mode}
+              onChange={(next) => setMode(next as ParameterTier)}
             />
-            <SegmentedControl
-              label={m.nav.units}
-              hideLabel
-              options={UNITS}
-              value={units}
-              onChange={(next) => setUnits(next as UnitSystem)}
-            />
+            {/* Language and units are set once, so they wait behind one button. */}
+            <details className="group relative">
+              <summary className="border-line bg-surface focus-visible:outline-accent flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-md border px-3 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
+                <svg viewBox="0 0 20 20" className="size-5" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 6h9M16 6h1M3 14h1M8 14h9"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="14" cy="6" r="2" stroke="currentColor" strokeWidth="1.8" />
+                  <circle cx="6" cy="14" r="2" stroke="currentColor" strokeWidth="1.8" />
+                </svg>
+                <span className="sr-only sm:not-sr-only">{m.nav.settings}</span>
+              </summary>
+              <div className="border-line bg-paper absolute right-0 z-30 mt-1 grid w-max max-w-[calc(100vw-2rem)] gap-3 rounded-lg border p-3 shadow-lg">
+                <SegmentedControl
+                  label={m.nav.language}
+                  options={LANGUAGES}
+                  value={language}
+                  onChange={(next) => setLanguage(next as Language)}
+                />
+                <SegmentedControl
+                  label={m.nav.units}
+                  options={UNITS}
+                  value={units}
+                  onChange={(next) => setUnits(next as UnitSystem)}
+                />
+              </div>
+            </details>
           </div>
         )}
       </div>

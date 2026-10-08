@@ -51,9 +51,19 @@ type BowViewerProps = {
   fallback: ReactNode
   /** Called with the key of the value that a pressed part of the bow stands for. */
   onPick: (parameterKey: string) => void
+  /** Lower on a phone, where the values of the setup have to fit under it. */
+  compact?: boolean
 }
 
-export function BowViewer({ bow, arrow, viewer, units, fallback, onPick }: BowViewerProps) {
+export function BowViewer({
+  bow,
+  arrow,
+  viewer,
+  units,
+  fallback,
+  onPick,
+  compact = false,
+}: BowViewerProps) {
   const m = useMessages()
   const flat = (
     <div className="grid gap-2">
@@ -65,7 +75,9 @@ export function BowViewer({ bow, arrow, viewer, units, fallback, onPick }: BowVi
   )
   if (!hasWebGL()) return flat
   return (
-    <div className="border-line bg-surface h-[46vh] min-h-64 overflow-hidden rounded-lg border lg:h-[54vh]">
+    <div
+      className={`border-line bg-surface overflow-hidden rounded-lg border ${compact ? 'h-[34vh] min-h-48 lg:h-[48vh]' : 'h-[46vh] min-h-64 lg:h-[54vh]'}`}
+    >
       <SceneBoundary fallback={<div className="p-3">{flat}</div>}>
         <Suspense fallback={<p className="text-ink-muted p-4">{m.viewer.loading}</p>}>
           <BowScene

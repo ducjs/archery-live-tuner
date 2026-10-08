@@ -10,6 +10,11 @@ export const vi: Messages = {
     previews: 'Xem trước',
     language: 'Ngôn ngữ',
     units: 'Đơn vị',
+    level: 'Mức',
+    levels: { simple: 'Cơ bản', advanced: 'Nâng cao', pro: 'Chuyên nghiệp' },
+    settings: 'Cài đặt',
+    workspaces: 'Màn hình làm việc',
+    workspace: { setup: 'Setup', fly: 'Tên bay', target: 'Bia thật', analysis: 'Phân tích' },
   },
 
   simulator: {
@@ -23,6 +28,10 @@ export const vi: Messages = {
     target: 'Bia',
     sections: 'Phần của trang',
     section: { setup: 'Setup', result: 'Kết quả', advice: 'Gợi ý' },
+    analysisShow: 'Phân tích',
+    raiseLevel: (level) => `Chuyển sang ${level}`,
+    nextStep: 'Việc nên làm tiếp',
+    openSimulation: 'Mở màn hình mô phỏng',
     disclaimer:
       'Trình mô phỏng này dùng một mô hình đơn giản hoá về cung recurve và mũi tên. Kết quả dùng để tìm hiểu và hình dung việc tune, không thay cho việc tune thực tế, thông số của nhà sản xuất hay huấn luyện viên.',
     modelOnly:
@@ -118,6 +127,20 @@ export const vi: Messages = {
     bow: 'Cung',
     arrow: 'Tên',
     curve: 'Lực kéo tự đo',
+    groups: {
+      bow: 'Cung',
+      tuning: 'Điều chỉnh',
+      arrow: 'Tên',
+      string: 'Dây',
+      balance: 'Cân bằng',
+    },
+    hiddenChanged: (count) =>
+      `${count} thông số ở mức cao hơn đã đổi và vẫn ảnh hưởng tới kết quả.`,
+    assuming: (count) => `Đang giả định ${count} thông số khác`,
+    search: 'Tìm thông số',
+    searchNone: 'Không có thông số nào tên như vậy.',
+    preview: 'Xem trước',
+    previews: { bow: 'Cung 3D', top: 'Từ trên', side: 'Từ bên', off: 'Tắt' },
     advancedChanged: (count) => `${count} thông số nâng cao đã đổi và vẫn ảnh hưởng tới kết quả.`,
     showThem: 'Xem',
     resetThem: 'Đặt lại',
@@ -186,6 +209,14 @@ export const vi: Messages = {
     note: 'Mô hình đơn giản hoá, chưa đối chiếu với bắn thật. Hãy thử trên cung của bạn trước khi đổi thiết bị.',
     showGauges: 'Xem các thước đo',
     hideGauges: 'Ẩn các thước đo',
+    tabsLabel: 'Chi tiết kết quả',
+    tabs: {
+      gauges: 'Thước đo',
+      bareShaft: 'Bareshaft',
+      paper: 'Xé giấy',
+      numbers: 'Số liệu',
+      curve: 'Đường lực kéo',
+    },
     reading: {
       matched: 'Tên hợp với cung.',
       little: { WEAK: 'Tên hơi yếu.', STIFF: 'Tên hơi cứng.' },
@@ -475,6 +506,7 @@ export const vi: Messages = {
     emptyGroup: 'Nhóm này không có thay đổi nào giúp được nhiều.',
     tryIt: 'Thử',
     tryLabel: (action) => `Thử: ${action}`,
+    more: 'Các gợi ý khác',
     footnote:
       'Gợi ý lấy từ chính mô hình đơn giản này, không phải lời khuyên tune đã qua kiểm chứng.',
     actions: {
@@ -616,6 +648,7 @@ export const vi: Messages = {
   setups: {
     heading: 'Setup của bạn',
     defaultName: 'Setup của tôi',
+    menu: 'Các setup',
     name: 'Tên setup',
     notSaved: 'Chưa lưu',
     saved: 'Đã lưu',

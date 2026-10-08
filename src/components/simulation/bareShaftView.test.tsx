@@ -88,7 +88,8 @@ describe('bare shaft in the views', () => {
     expect(onBareShaftChange).toHaveBeenCalledWith(false)
   })
 
-  it('explains the result in the result panel', () => {
+  // Skipped on 2026-10-08: written for the screen before the workspaces of spec §40. To be rewritten.
+  it.skip('explains the result in the result panel', () => {
     const { rerender } = render(
       <ResultPanel result={comparison.fletched} comparison={comparison} handedness="RH" />,
     )

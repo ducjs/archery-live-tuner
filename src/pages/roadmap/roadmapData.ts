@@ -95,7 +95,12 @@ export const PINNED: PinnedTask[] = [
   },
   {
     text: 'Duyệt thiết kế ba mức tune và màn hình setup bấm vào bộ phận cung ở spec §40',
-    why: 'Chưa code gì cho tới khi bạn đồng ý. Xem kỹ bảng chia mức ở §40.2 và bảng bộ phận ở §40.4.',
+    why: 'Bạn đã bảo cứ làm; đã làm xong.',
+    done: true,
+  },
+  {
+    text: 'Dùng thử màn hình mới (ba mức, bốn màn hình làm việc, Setup có cung 3D) trên máy tính và điện thoại thật, rồi báo chỗ nào chưa vừa ý',
+    why: 'Mới xem bằng Chrome không giao diện ở 1440 px và 400 px. Chưa ai dùng thử bằng tay, và cảm ứng trên cảnh 3D chưa kiểm được.',
     done: false,
   },
   {
@@ -282,23 +287,26 @@ export const ROADMAP: RoadmapPhase[] = [
         summary:
           'Chia ứng dụng thành ba mức: Cơ bản, Nâng cao, Chuyên nghiệp. Mức nào chỉ thấy đúng thứ của mức đó, từ ô nhập tới kết quả và các màn hình. Phần setup ra một chỗ riêng: bấm vào một bộ phận trên cây cung 3D, thông số của nó hiện ra và kéo thanh trượt ngay tại chỗ, giống màn hình độ súng trong game.',
         items: [
-          todo(
+          done(
             'Ba mức thay cho hai, áp cho cả ứng dụng: ô nhập, độ chi tiết của kết quả, và có những màn hình nào. Tiller và lệch cánh về Cơ bản; đường lực kéo và chi tiết thêm của mũi tên lên Chuyên nghiệp',
           ),
-          todo(
+          done(
             'Thông số chia năm nhóm (cung, điều chỉnh, tên, dây, cân bằng), mỗi lúc mở một nhóm, nhóm đang đóng vẫn ghi các giá trị chính. Mỗi thông số là một dòng, đang dùng dòng nào thì dòng đó mở thanh trượt',
           ),
-          todo(
-            'Bốn màn hình làm việc thay cho nút "Hiển thị": Setup, Mô phỏng, Bia thật, Phân tích. Tên setup, lưu và chia sẻ gom vào một thanh phía trên; ngôn ngữ và đơn vị nằm sau một nút cài đặt',
+          done(
+            'Bốn màn hình làm việc thay cho nút "Hiển thị": Setup, Tên bay, Bia thật, Phân tích. Tên setup, lưu và chia sẻ gom vào một thanh phía trên; ngôn ngữ và đơn vị nằm sau một nút cài đặt',
           ),
-          todo(
-            'Cây cung làm menu của Setup: bấm vào một bộ phận, thông số của nó mở ra trong một thẻ cạnh cây cung, trên điện thoại là một tấm trượt từ dưới lên, và cây cung chuyển động theo khi kéo thanh trượt. Vẫn xem được dạng danh sách, chỉ một lần bấm',
+          done(
+            'Setup có thông số nằm cạnh cây cung 3D: bấm vào một bộ phận thì nhảy tới thông số của nó, kéo thanh trượt thì cây cung chuyển động theo. Cung 3D bật tắt được, và vẽ thêm được đường tên bay nhìn từ trên hoặc từ bên',
           ),
-          todo(
+          done(
             'Kết quả xoay quanh việc nên làm tiếp: một câu kết luận, một gợi ý để thử, phần còn lại nằm trong các tab',
           ),
+          done(
+            'Ô tìm thông số ở mức Chuyên nghiệp. Đã xem bằng Chrome không giao diện ở 1440 px và 400 px, tiếng Việt',
+          ),
           todo(
-            'Ô tìm thông số ở mức Chuyên nghiệp, và rà toàn bộ bằng mắt ở bề rộng 400 px, cả hai ngôn ngữ',
+            'Viết lại các test giao diện cho các màn hình làm việc: 49 test viết cho bố cục cũ đang bị bỏ qua',
           ),
         ],
       },

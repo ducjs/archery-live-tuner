@@ -47,7 +47,7 @@ export function planTuning<T extends SetupInput>(
   start: T,
   options: PlanOptions = {},
 ): TuningPlan<T> {
-  const { tier = 'advanced', maxSteps = 7 } = options
+  const { tier = 'pro', maxSteps = 7 } = options
   const steps: PlanStep<T>[] = []
   const changed: string[] = []
   let setup = start

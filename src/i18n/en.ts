@@ -27,6 +27,11 @@ export const en = {
     previews: 'Previews',
     language: 'Language',
     units: 'Units',
+    level: 'Level',
+    levels: { simple: 'Basic', advanced: 'Advanced', pro: 'Professional' },
+    settings: 'Settings',
+    workspaces: 'Workspace',
+    workspace: { setup: 'Setup', fly: 'Flight', target: 'Target', analysis: 'Analysis' },
   },
 
   simulator: {
@@ -40,6 +45,10 @@ export const en = {
     target: 'Target',
     sections: 'Part of the page',
     section: { setup: 'Setup', result: 'Result', advice: 'Suggestions' },
+    analysisShow: 'Analysis',
+    raiseLevel: (level: string) => `Switch to ${level}`,
+    nextStep: 'Next step',
+    openSimulation: 'Open the simulation',
     disclaimer:
       'This simulator provides a simplified model of recurve bow and arrow behavior. Results are intended for tuning exploration and visualization, not as a substitute for real-world tuning, manufacturer specifications, or professional coaching.',
     modelOnly:
@@ -57,6 +66,22 @@ export const en = {
     bow: 'Bow',
     arrow: 'Arrow',
     curve: 'Draw force, measured',
+    groups: {
+      bow: 'Bow',
+      tuning: 'Tuning',
+      arrow: 'Arrow',
+      string: 'String',
+      balance: 'Balance',
+    },
+    hiddenChanged: (count: number) =>
+      count === 1
+        ? '1 value above this level is changed and still affects the result.'
+        : `${count} values above this level are changed and still affect the result.`,
+    assuming: (count: number) => `Assuming ${count} other values`,
+    search: 'Find a value',
+    searchNone: 'No value has that name.',
+    preview: 'Preview',
+    previews: { bow: 'Bow 3D', top: 'From above', side: 'From the side', off: 'Off' },
     advancedChanged: (count: number) =>
       count === 1
         ? '1 advanced value is changed and still affects the result.'
@@ -128,6 +153,14 @@ export const en = {
     note: 'A simplified model, not checked against real shooting. Test on your own bow before changing equipment.',
     showGauges: 'Show the gauges',
     hideGauges: 'Hide the gauges',
+    tabsLabel: 'Detail of the result',
+    tabs: {
+      gauges: 'Gauges',
+      bareShaft: 'Bare shaft',
+      paper: 'Paper tear',
+      numbers: 'Numbers',
+      curve: 'Draw curve',
+    },
     reading: {
       matched: 'The arrow matches the bow.',
       little: { WEAK: 'The arrow reads a little weak.', STIFF: 'The arrow reads a little stiff.' },
@@ -434,6 +467,7 @@ export const en = {
     emptyGroup: 'Nothing in this group helps much.',
     tryIt: 'Try it',
     tryLabel: (action: string) => `Try it: ${action}`,
+    more: 'Other suggestions',
     footnote: 'Suggestions come from the same simplified model, not from tested tuning advice.',
     actions: {
       'bow.nockingPointHeight': {
@@ -583,6 +617,7 @@ export const en = {
   setups: {
     heading: 'Your setups',
     defaultName: 'My setup',
+    menu: 'Setups',
     name: 'Setup name',
     notSaved: 'Not saved yet',
     saved: 'Saved',

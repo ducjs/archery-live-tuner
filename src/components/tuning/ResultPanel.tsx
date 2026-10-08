@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useId, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { FOC_RANGE, HEURISTIC_V0, MIN_GRAINS_PER_POUND, readPaperTear } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import type { Handedness } from '../../models/bow.ts'
+import { tierShows, type ParameterTier } from '../../models/parameters.ts'
 import type { BareShaftComparison, SimulationResult } from '../../models/simulation.ts'
 import { convert } from '../../utils/units.ts'
 import { bareShaftReading } from './bareShaftReading.ts'
@@ -104,40 +105,65 @@ export function ResultSummary({ result }: { result: SimulationResult }) {
   )
 }
 
+type SentenceProps = {
+  result: SimulationResult
+  /** Leave out to say nothing of the bare shaft. */
+  comparison?: BareShaftComparison
+  handedness: Handedness
+}
+
+/** The result in a sentence or two of plain words. */
+export function ResultSentence({ result, comparison, handedness }: SentenceProps) {
+  const m = useMessages()
+  const reading = comparison && bareShaftReading(comparison, handedness, m)
+  return (
+    <p className="max-w-prose text-lg leading-snug font-medium">
+      {resultReading(result, m).join(' ')}
+      {reading && ` ${reading.landing}`}
+    </p>
+  )
+}
+
+const TABS = ['gauges', 'bareShaft', 'paper', 'numbers', 'curve'] as const
+type Tab = (typeof TABS)[number]
+
 type ResultPanelProps = {
   result: SimulationResult
   /** Leave out to hide the bare shaft test. */
   comparison?: BareShaftComparison
   handedness: Handedness
-  /** Shows the numbers behind the ratings: grains per pound, front of center, energy. */
-  advanced?: boolean
+  /** How much of the detail is on offer: the paper tear and the numbers from Advanced on. */
+  level?: ParameterTier
   /** mm, as entered. Given, the panel says when it is outside the range for the bow. */
   braceHeight?: number
   /** mm, as entered. Given, the panel says what limb alignment adds to it. */
   centerShot?: number
+  /** Shown right under the reading: what to try next. */
+  nextStep?: ReactNode
+  /** The draw force curve, as a tab of its own. */
+  curve?: ReactNode
 }
 
 export function ResultPanel({
   result,
   comparison,
   handedness,
-  advanced = false,
+  level = 'simple',
   braceHeight,
   centerShot,
+  nextStep,
+  curve,
 }: ResultPanelProps) {
   const { metrics, classification } = result
   const thresholds = HEURISTIC_V0.thresholds
   const target = result.trajectory.at(-1)!
   const m = useMessages()
   const text = m.result
+  const id = useId()
   const reading = comparison && bareShaftReading(comparison, handedness, m)
   const tear = comparison && readPaperTear(comparison, handedness)
   const tearReading = tear && paperTearReading(tear, handedness, m)
-  // The reading in words comes first. On a phone the gauges behind it wait to
-  // be asked for; a wide screen has room to show them from the start.
-  const [gaugesOpen, setGaugesOpen] = useState(
-    () => window.matchMedia?.('(min-width: 64rem)').matches ?? true,
-  )
+  const [chosen, setChosen] = useState<Tab>('gauges')
   const grainsPerPound = metrics.grainsPerPound.toFixed(1)
   const grains = (grams: number) => convert(grams, 'g', 'gr').toFixed(0)
   // Under the AMO chart the bow itself is at risk; that is said once, and louder.
@@ -149,16 +175,36 @@ export function ResultPanel({
   const limbShift = centerShot === undefined ? 0 : metrics.effectiveCenterShot - centerShot
   const frontOfCenter = metrics.frontOfCenter.toFixed(1)
   const focOutside = metrics.frontOfCenter < FOC_RANGE.low || metrics.frontOfCenter > FOC_RANGE.high
+  const advanced = tierShows(level, 'advanced')
+  const pro = tierShows(level, 'pro')
+
+  // Only one part of the detail is on screen at a time.
+  const available: Record<Tab, boolean> = {
+    gauges: true,
+    bareShaft: Boolean(reading),
+    paper: advanced && Boolean(tear && tearReading),
+    numbers: advanced,
+    curve: pro && Boolean(curve),
+  }
+  const tabs = TABS.filter((name) => available[name])
+  const tab = available[chosen] ? chosen : 'gauges'
+  const onTabKey = (event: KeyboardEvent<HTMLDivElement>) => {
+    const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+    if (step === 0) return
+    event.preventDefault()
+    const next = tabs[(tabs.indexOf(tab) + step + tabs.length) % tabs.length]!
+    setChosen(next)
+    document.getElementById(`${id}-tab-${next}`)?.focus()
+  }
 
   return (
     <section aria-labelledby="result-heading" className="@container">
       <h2 id="result-heading" className="font-display text-xl font-semibold">
         {text.heading}
       </h2>
-      <p className="mt-2 max-w-prose text-lg leading-snug font-medium">
-        {resultReading(result, m).join(' ')}
-        {reading && ` ${reading.landing}`}
-      </p>
+      <div className="mt-2">
+        <ResultSentence result={result} comparison={comparison} handedness={handedness} />
+      </div>
       {belowMinimum ? (
         <p
           role="alert"
@@ -190,55 +236,72 @@ export function ResultPanel({
           {text.limbsOff(`${limbShift > 0 ? '+' : '−'}${Math.abs(limbShift).toFixed(1)}`)}
         </p>
       )}
-      <button
-        type="button"
-        aria-expanded={gaugesOpen}
-        aria-controls="result-gauges"
-        onClick={() => setGaugesOpen(!gaugesOpen)}
-        className="text-accent focus-visible:outline-accent mt-1 min-h-11 cursor-pointer rounded-md font-medium underline underline-offset-4 focus-visible:outline-2"
+      {nextStep && <div className="mt-4">{nextStep}</div>}
+
+      <div
+        role="tablist"
+        aria-label={text.tabsLabel}
+        onKeyDown={onTabKey}
+        className="border-line mt-5 flex gap-1 overflow-x-auto overflow-y-hidden border-b"
       >
-        {gaugesOpen ? text.hideGauges : text.showGauges}
-      </button>
-      <div id="result-gauges" hidden={!gaugesOpen}>
-        <dl className="mt-2 grid gap-x-8 gap-y-5 @lg:grid-cols-2">
-          <DivergingGauge
-            title={text.stiffness}
-            word={m.rating[classification.stiffness]}
-            value={metrics.dynamicBehavior}
-            neutral={thresholds.stiffnessNeutral}
-            lowLabel={m.rating.WEAK}
-            highLabel={m.rating.STIFF}
-            tuningScale
-          />
-          <DivergingGauge
-            title={text.lateral}
-            word={m.rating[classification.lateral]}
-            value={metrics.lateralDeviation}
-            neutral={thresholds.lateralNeutral}
-            lowLabel={m.rating.LEFT}
-            highLabel={m.rating.RIGHT}
-          />
-          <DivergingGauge
-            title={text.vertical}
-            word={m.rating[classification.vertical]}
-            value={metrics.verticalTendency}
-            neutral={thresholds.verticalNeutral}
-            lowLabel={m.rating.NOCK_LOW}
-            highLabel={m.rating.NOCK_HIGH}
-          />
-          <LevelMeter
-            title={text.oscillation}
-            word={m.rating[classification.oscillation]}
-            value={metrics.oscillation}
-          />
-          <LevelMeter
-            title={text.clearance}
-            word={m.rating[classification.clearance]}
-            value={metrics.clearanceRisk}
-          />
-        </dl>
-        {reading && (
-          <div className="border-line mt-5 border-t pt-4">
+        {tabs.map((name) => (
+          <button
+            key={name}
+            type="button"
+            role="tab"
+            id={`${id}-tab-${name}`}
+            aria-selected={tab === name}
+            aria-controls={`${id}-panel`}
+            tabIndex={tab === name ? 0 : -1}
+            onClick={() => setChosen(name)}
+            className="text-ink-muted aria-selected:border-ink aria-selected:text-ink focus-visible:outline-accent -mb-px min-h-11 cursor-pointer border-b-2 border-transparent px-3 font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:-outline-offset-2"
+          >
+            {text.tabs[name]}
+          </button>
+        ))}
+      </div>
+      <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${tab}`} className="pt-4">
+        {tab === 'gauges' && (
+          <dl className="grid gap-x-8 gap-y-5 @lg:grid-cols-2">
+            <DivergingGauge
+              title={text.stiffness}
+              word={m.rating[classification.stiffness]}
+              value={metrics.dynamicBehavior}
+              neutral={thresholds.stiffnessNeutral}
+              lowLabel={m.rating.WEAK}
+              highLabel={m.rating.STIFF}
+              tuningScale
+            />
+            <DivergingGauge
+              title={text.lateral}
+              word={m.rating[classification.lateral]}
+              value={metrics.lateralDeviation}
+              neutral={thresholds.lateralNeutral}
+              lowLabel={m.rating.LEFT}
+              highLabel={m.rating.RIGHT}
+            />
+            <DivergingGauge
+              title={text.vertical}
+              word={m.rating[classification.vertical]}
+              value={metrics.verticalTendency}
+              neutral={thresholds.verticalNeutral}
+              lowLabel={m.rating.NOCK_LOW}
+              highLabel={m.rating.NOCK_HIGH}
+            />
+            <LevelMeter
+              title={text.oscillation}
+              word={m.rating[classification.oscillation]}
+              value={metrics.oscillation}
+            />
+            <LevelMeter
+              title={text.clearance}
+              word={m.rating[classification.clearance]}
+              value={metrics.clearanceRisk}
+            />
+          </dl>
+        )}
+        {tab === 'bareShaft' && reading && (
+          <div>
             <h3 className="font-semibold">{text.bareShaftHeading}</h3>
             <p className="mt-1 max-w-prose">
               {reading.landing} {reading.meaning}
@@ -246,8 +309,8 @@ export function ResultPanel({
             <p className="text-ink-muted mt-1 max-w-prose text-sm">{text.bareShaftNote}</p>
           </div>
         )}
-        {tear && tearReading && (
-          <div className="border-line mt-5 border-t pt-4">
+        {tab === 'paper' && tear && tearReading && (
+          <div>
             <h3 className="font-semibold">{m.paperTear.heading}</h3>
             <div className="mt-2 flex items-start gap-4">
               <PaperTearFigure tear={tear} label={m.paperTear.figure(tearReading.tearing)} />
@@ -263,42 +326,46 @@ export function ResultPanel({
             </div>
           </div>
         )}
-        <p className="mt-5">
-          <span className="text-ink-muted">{text.speed}</span>{' '}
-          <span className="font-semibold">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</span>
-          <span className="text-ink-muted">{text.reaching((target.x / 1000).toFixed(0))}</span>{' '}
-          <span className="font-semibold">{target.t.toFixed(2)} s</span>
-        </p>
-        {advanced && (
-          <dl className="mt-3 grid max-w-md gap-1">
-            {(
-              [
+        {tab === 'numbers' && (
+          <>
+            <p>
+              <span className="text-ink-muted">{text.speed}</span>{' '}
+              <span className="font-semibold">{(metrics.launchSpeed / 1000).toFixed(1)} m/s</span>
+              <span className="text-ink-muted">
+                {text.reaching((target.x / 1000).toFixed(0))}
+              </span>{' '}
+              <span className="font-semibold">{target.t.toFixed(2)} s</span>
+            </p>
+            <dl className="mt-3 grid max-w-md gap-1">
+              {[
                 [text.grainsPerPound, `${grainsPerPound} gr/lb`],
-                [text.frontOfCenter, `${frontOfCenter} %`],
+                // Front of center is a Professional number.
+                ...(pro ? [[text.frontOfCenter, `${frontOfCenter} %`]] : []),
                 [text.energy, `${metrics.kineticEnergy.toFixed(1)} J`],
                 [text.clearanceCycles, metrics.clearanceCycles.toFixed(2)],
-              ] as const
-            ).map(([label, value]) => (
-              <div key={label} className="flex items-baseline justify-between gap-3">
-                <dt className="text-ink-muted">{label}</dt>
-                <dd className="font-semibold">{value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-        {advanced && focOutside && (
-          // A note, not a warning: the guide calls its range a starting point.
-          <p className="text-ink-muted mt-2 max-w-prose text-sm">
-            {text.focOutside(
-              frontOfCenter,
-              FOC_RANGE.low,
-              FOC_RANGE.high,
-              metrics.frontOfCenter > FOC_RANGE.high,
+              ].map(([label, value]) => (
+                <div key={label} className="flex items-baseline justify-between gap-3">
+                  <dt className="text-ink-muted">{label}</dt>
+                  <dd className="font-semibold">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            {pro && focOutside && (
+              // A note, not a warning: the guide calls its range a starting point.
+              <p className="text-ink-muted mt-2 max-w-prose text-sm">
+                {text.focOutside(
+                  frontOfCenter,
+                  FOC_RANGE.low,
+                  FOC_RANGE.high,
+                  metrics.frontOfCenter > FOC_RANGE.high,
+                )}
+              </p>
             )}
-          </p>
+          </>
         )}
+        {tab === 'curve' && curve}
       </div>
-      <p className="text-ink-muted mt-2 max-w-prose text-sm">{text.note}</p>
+      <p className="text-ink-muted mt-4 max-w-prose text-sm">{text.note}</p>
     </section>
   )
 }

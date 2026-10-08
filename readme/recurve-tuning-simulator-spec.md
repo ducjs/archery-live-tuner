@@ -155,7 +155,7 @@ All parameters should support:
 
 ## 4.1 Simple / Advanced mode
 
-> A design with three levels and a setup workspace of its own is in §40. It replaces this section once it is built.
+> Replaced by §40: three levels in place of two, and they govern the whole app. What follows is kept for the reasons behind the rules, which still hold.
 
 The UI has a global `Simple | Advanced` toggle that separates basic tuning from deeper tuning.
 
@@ -181,7 +181,7 @@ The UI is bilingual (Vietnamese / English) and has a unit toggle (lb/kg, inch/cm
 
 - Language: the simulator starts in the browser's language when that is Vietnamese, in English otherwise, and remembers the choice. Names of parts that Vietnamese archers keep in English (spine, point, plunger, nocking point, brace height, tiller, bareshaft) are not translated. The roadmap and previews pages are Vietnamese only.
 - Less at once. The screen shows what is used all the time and puts the rest one press away. The playback row keeps play, restart and the bare shaft switch; view, distance, points of impact, speed and amplification open from "display options", and one line under the row says what they are set to. The result opens with its reading in a sentence or two; the gauges and numbers are shown from the start on a wide screen and on request on a phone. The bow and arrow groups fold, and each says how many of its values are changed. The top and side views can be put away with one button.
-- Phone. Under the animation the page is three tabs, setup, result and suggestions, shown one at a time; a wide screen shows all three. A slider moves only when its thumb is dragged, so a swipe to scroll that crosses a slider does not change a value, and every value has minus and plus buttons as a way to change it without dragging.
+- Phone (replaced by §40.3: the workspaces are a bar at the foot of the screen). Under the animation the page was three tabs, setup, result and suggestions, shown one at a time; a wide screen shows all three. A slider moves only when its thumb is dragged, so a swipe to scroll that crosses a slider does not change a value, and every value has minus and plus buttons as a way to change it without dragging.
 - Units: one switch between "lb, in, gr" and "kg, cm, g". It changes inputs, suggestions, saved setup summaries and the comparison table. Values that have no archery unit (brace height in cm, offsets in mm, bow mass in kg) look the same in both. Setups are always stored in internal units, so switching never changes a setup.
 
 ---
@@ -1829,11 +1829,11 @@ The marking is taken as 28 in AMO on a 25 in riser with the limb bolts in the mi
 
 # 40. Three levels and a setup of its own (V0.1, M9)
 
-Status: design, waiting for the owner's review (2026-10-08). Nothing is built. When it is, this section replaces §4.1 and the layout rules of §4.2.
+Status: built on 2026-10-08, after the owner said to go ahead. This section replaces §4.1 and the layout rules of §4.2. Still open: the tests of the screen (§40.9), and the look on a real phone.
 
-> **Nói đơn giản:** Màn hình đang cho thấy mọi thứ cùng lúc. Phần này chia ứng dụng thành ba mức (Cơ bản, Nâng cao, Chuyên nghiệp), mức nào thì chỉ thấy đúng thứ của mức đó, và đưa phần nhập setup ra một chỗ riêng. Ở đó bạn bấm vào một bộ phận trên cây cung 3D, thông số của bộ phận ấy hiện ra và kéo thanh trượt ngay tại chỗ, giống màn hình độ súng trong game. Mô hình tính toán không đổi.
+> **Nói đơn giản:** Màn hình đang cho thấy mọi thứ cùng lúc. Phần này chia ứng dụng thành ba mức (Cơ bản, Nâng cao, Chuyên nghiệp), mức nào thì chỉ thấy đúng thứ của mức đó, và đưa phần nhập setup ra một chỗ riêng. Ở đó thông số nằm cạnh cây cung 3D: bấm vào một bộ phận trên cung thì nhảy tới thông số của nó, kéo thanh trượt thì cung chuyển động theo, giống màn hình độ súng trong game. Cung 3D bật tắt được, và có thêm hình tên bay nhìn từ trên hoặc từ bên. Mô hình tính toán không đổi.
 
-Goal: an archer at the Basic level sees about fifteen values, one bow to press on, one sentence and one next step. Everything else still exists and is one level away.
+Goal: an archer at the Basic level sees about fifteen values in three groups, the bow they are set on, one sentence and one next step. Everything else still exists and is one level away.
 
 ## 40.1 What is wrong today
 
@@ -1870,7 +1870,7 @@ Rules:
 - The level is a UI concern only. The engine always receives a complete setup.
 - Nothing in use is hidden silently. Values above the level that differ from their default are counted in a notice with "show them" and "reset them", as today. A calibrated model that is switched on says so at every level.
 - Warnings about safety show at every level: the AMO minimum arrow weight and the 5 gr/lb note.
-- Pointing to a value above the level (from a suggestion or a shared link) raises the level to that value's level. The level is never lowered by the app.
+- Pointing to a value above the level (from the 3D bow or a suggestion) raises the level to that value's level. The level is never lowered by the app.
 - Suggestions and the session plan only name values the level shows. Because tiller and limb alignment are now Basic, Basic suggestions can name them.
 - The level is remembered per user. A stored level that is not one of the three falls back to Basic.
 
@@ -1880,15 +1880,15 @@ The "Show" switch with five entries gives way to workspaces, one per job, as tab
 
 | Workspace | Hash | Level | Holds |
 |---|---|---|---|
-| Setup | `#setup` | Basic | the bow to press on, or the values as a list |
+| Setup | `#setup` | Basic | the values in groups, next to the 3D bow and the flight |
 | Simulate | `#fly` | Basic | top and side views, playback, result, suggestions |
 | Target | `#target` | Advanced | target plot and reading, observations; at Professional also sight marks and calibration |
 | Analysis | `#analysis` | Advanced | Compare; at Professional also the landscape and the sensitivity chart |
 
-- The 3D bow is no longer a view of its own. It becomes the Setup workspace (§40.4). `#3d` opens Setup.
+- The 3D bow is no longer a view of its own. It stands next to the values in Setup (§40.4). `#3d` opens Setup with the bow switched on.
 - The workspace is remembered. A first visit opens Setup.
 - A workspace above the level is not listed. Opening its hash raises the level.
-- Changing workspace keeps the setup, the playback position and the scroll position of each workspace.
+- Changing workspace keeps the setup. Playback starts again.
 
 ### The setup bar
 
@@ -1902,60 +1902,44 @@ The menu holds: saved setups (open, rename, delete, compare), save as new, new s
 
 ### The top bar
 
-Level, language and units are global. The level stays in sight as a three-way switch. Language and units go behind one settings button, since they are set once.
+Level, language and units are global. The level stays in sight as a three-way switch. Language and units go behind one settings button, since they are set once. The title and the line under it are gone from the screen; the title stays for screen readers.
 
 ## 40.4 The Setup workspace
 
-Asked for by the owner on 2026-10-08: like the screen where a weapon is fitted out in a shooter game. The bow is the menu. Pressing a part shows what is set on it, and its sliders work right there.
+Asked for by the owner on 2026-10-08: the values and the bow together, as on the screen where a weapon is fitted out in a shooter game. The values are a list with their sliders; next to it stands the bow in 3D, and pressing a part of it goes to the value set on that part.
 
 ```text
 phone                                   wide screen
-+--------------------------------+      +----------------------------+------------------+
-| Tên hơi yếu. Bareshaft lệch    |      | Tên hơi yếu.               | PLUNGER          |
-| phải.                [Tên bay] |      |                            |                  |
-|                                |      |          ( bow, 3D )       | Độ cứng    1,00  |
-|          ( bow, 3D )           |      |    o Cánh                  | ====o=====  [-][+]|
-|     o          o               |      |          o Nocking point   | 0 mềm, 2 cứng    |
-|          o  <- pressed         |      |    o Dây    (o) Plunger    |                  |
-|                                |      |          o Rest            | Nén trước  1,0 mm|
-| [Cung][Dây][NP][Rest][Plunger] |      |    o Tên      o Stabilizer | ====o=====  [-][+]|
-+--------------------------------+      |                            |                  |
-| PLUNGER                    [x] |      | [Cung][Dây][NP][Rest]...   | [Đặt lại]        |
-| Độ cứng       1,00     [-] [+] |      | [Trên cung | Danh sách]    | Việc nên làm tiếp|
-| ====o========================= |      +----------------------------+------------------+
++--------------------------------+      +----------------------+---------------------------+
+| [x] Cung 3D  Tên bay [Trên|Bên|Tắt]   | v Cung               | [x] Cung 3D  Tên bay [..] |
++--------------------------------+      |   Riser  H23 H25 H27 | Tên hơi yếu.              |
+| Tên hơi yếu. Bareshaft lệch    | pin  |   Lực kéo 38,0 lb -+ |                           |
+| phải.                          |      |   ====o=======       |        ( bow, 3D )        |
+|         ( bow, 3D )            |      |   Kéo    28,00 in -+ |                           |
++--------------------------------+      | > Điều chỉnh  BH 22  +---------------------------+
+| v Cung                         |      | > Tên   27 in · 700  |    flight, from above     |
+|   Lực kéo      38,0 lb  [-][+] |      |                      +---------------------------+
+|   ====o======================= |      |                      | Việc nên làm tiếp  [Thử]  |
+| > Điều chỉnh   BH 22 · NP 4    |      +----------------------+---------------------------+
 +--------------------------------+
 ```
 
-**Parts.** Every value belongs to exactly one part, so the bow reaches all of them. A part with no value at the current level is drawn but cannot be pressed.
+**Two previews, each with its own switch.** "Bow 3D" turns the 3D bow on and off. "Flight" draws the arrow leaving the bow from above, from the side, or not at all. Both choices are remembered. A wide screen starts with the bow and the flight from above; a phone starts with the bow only, because two drawings leave no room for the values. The previews stay in view while a value is changed: pinned to the top on a phone, in a column of their own on a wide screen.
 
-| Part | Values |
-|---|---|
-| Bow (riser and limbs) | riser, limbs, handedness, draw weight, draw length, tiller, top and bottom limb alignment; at Professional the draw curve style and the two measured forces |
-| String | brace height; at Advanced strands, string mass, nock fit |
-| Nocking point | nocking point height |
-| Rest | center shot |
-| Plunger | plunger stiffness; at Advanced plunger preload |
-| Arrow | every arrow value |
-| Stabilizer | at Advanced bow mass, stabilizer mass and position |
+**The bow as a way in.** Pressing a part of the bow opens the group of its value, opens the row, and puts the focus on its slider. Changing a value flies the camera to the part it moves and writes the value there. Both exist since §36; here they sit next to the list instead of on another screen. A part whose value lives above the level raises the level. The views of the whole bow, the buttons of the pieces of equipment and the two switches of the 3D view are under "display options" below the previews.
 
-**Pressing a part.** The camera flies to the part, as it does today when a value changes, and the part's card opens: beside the bow on a wide screen, as a sheet over the lower part of the screen on a phone. The bow stays in view above the sheet and moves while a slider is dragged, with the dimension line and its value. A card with up to three values shows each with its slider open; a longer card uses the rows below. The card says how many of its values differ from the default and can reset them.
+**The result stays in sight.** The sentence of the result stands above the previews and changes as a slider moves. Under them: the next step with its "Try it" button, and the line about assumed values.
 
-**Markers.** Each part that can be pressed carries a marker on the bow that keeps its place as the bow is turned, and a marker is at least 44 px. A part with a changed value has a filled marker. Under the bow the same parts are a row of buttons: the way in for a keyboard and a screen reader, and for a thin part that is hard to hit. These are today's "Equipment" buttons.
-
-**The result stays in sight.** The sentence of the result is written over the top of the bow and changes as a slider moves. A button next to it swaps the bow for the small top view of the flight, so the effect on the arrow can be watched without leaving Setup. On a wide screen the next step sits under the card.
-
-**The list.** "On the bow | List" switches to the same values as a list, remembered per user. The list is also what a browser without WebGL gets, with a line that says why. In the list the values are in five groups: `ParameterGroup` becomes `'bow' | 'tuning' | 'arrow' | 'string' | 'balance'`, with `size` and `curve` going into `bow`.
+**Groups.** `ParameterGroup` becomes `'bow' | 'tuning' | 'arrow' | 'string' | 'balance'`; `size` and `curve` go into `bow`.
 
 - A group with no value at the current level is not shown, so Basic has three groups.
 - One group is open at a time. A closed group shows its main values on its header (`H25/68 · 38 lb · 28 in`) and how many values differ from the default.
 - Under Bow: the bow length. Under Arrow: the estimated total mass. Both as today.
 - At Professional a search field above the groups filters the values by name.
 
-**One value, one row.** In the list and in a long card, a value is a row 44 px tall: label, number field, unit, minus and plus. The row in use, by focus or by a press, opens to show its slider, its hint and reset. One row is open at a time. A value that differs from its default carries a dot. This takes a value from about 100 px to 44 px.
+**One value, one row.** A value is a row 44 px tall: label, number field, unit, minus and plus. The row in use, by focus or by a press, opens to show its slider, its hint and reset. One row is open at a time. A value that differs from its default carries a dot. This takes a value from about 100 px to 44 px.
 
-**Assumed values.** The block becomes one line under the sentence of the result: "assuming 18 other values · show". The list opens in place. At Professional nothing is hidden and the line is gone.
-
-In the metadata table each value gets a `part` next to its `group`. The camera views, the dimension lines and the pressing of parts already exist (§36); what is new is the card, the markers and the parts for values that had none.
+**Assumed values.** The block becomes one line: "assuming 16 other values". The list opens in place. At Professional nothing is hidden and the line is gone.
 
 ## 40.5 The Simulate workspace
 
@@ -1964,7 +1948,7 @@ The drawing and the playback row stay as they are (§4.2). The result is rebuilt
 1. The sentence, as today.
 2. **The next step**: the first suggestion, with its "Try it" button. When the model reads the setup as tuned, it says so here.
 3. Tabs for the rest, so only one is on screen: Gauges · Bare shaft · Paper tear (Advanced) · Numbers (Advanced) · Draw curve (Professional).
-4. Under them: the other suggestions, and from Advanced the whole session.
+4. Under them: the other suggestions when there is more than one, and from Advanced the whole session.
 
 On a phone the three tabs "setup, result, suggestions" under the animation go away: setup is a workspace, and result and suggestions are one page.
 
@@ -1979,29 +1963,27 @@ On a phone the three tabs "setup, result, suggestions" under the animation go aw
 ## 40.7 Accessibility and touch
 
 - Workspaces are links with `aria-current`; the level is a radio group; groups are buttons with `aria-expanded`; the result tabs follow the tabs pattern with arrow keys.
-- Every value can be reached and changed without the 3D scene: by the part buttons, or in the list.
+- Every value can be reached and changed without the 3D scene: the list is always there.
 - Every target is at least 44 by 44 px with 8 px between targets.
 - A row opens on focus, so a keyboard user gets the slider without a press.
-- The card takes the focus when it opens, Escape closes it, and the focus goes back to the part's button.
-- Opening and closing takes 150 ms; the camera flight and the sheet are instant under `prefers-reduced-motion`.
-- Turning the bow with one finger must not fight the page scroll: the scene takes the gesture only inside its frame, and the sheet scrolls on its own.
+- Opening and closing takes 150 ms, and is instant under `prefers-reduced-motion`.
+- Turning the bow with one finger must not fight the page scroll: the scene takes the gesture only inside its frame.
 - Checked at 400 px wide in both languages, in light and dark.
 
-## 40.8 Order of work
+## 40.8 As built
 
-Each step leaves the app working and is committed on its own.
-
-1. Levels: the third tier, the new tier of each value, the store, the level switch in the top bar, suggestions and the notice by level.
-2. Groups and rows: five groups, one open at a time, the header summary, the 44 px row that opens.
-3. Workspaces: the four tabs and their hashes, the setup bar, the settings button. Setup shows the list for now.
-4. The bow as the menu: a part for every value, markers, the card beside the bow and as a sheet, the sentence over the bow, the switch to the list.
-5. Result: the next step, the tabs, the assumed-values line, gating by level.
-6. Search at Professional; the check by eye at 400 px in both languages and on a real phone; §4.1 and §4.2 rewritten to match.
+- Levels: `ParameterTier` and `tierShows` in `models/parameters.ts`; the level switch is in the top bar (`App.tsx`).
+- Groups and rows: `components/setup/SetupGroups.tsx` and `ValueRow.tsx`, in place of `SetupPanels` and `ParameterSlider`.
+- Workspaces: `pages/Simulator.tsx` holds the tabs and the setup bar; one file per workspace in `pages/workspaces/`. The workspace and the two preview switches are remembered in `tuningStore`.
+- Setup bar: `SavedSetups`, with the saved setups and the transfer behind its "Setups" button.
+- Result: `ResultPanel` with its tabs, `NextStep` for the first suggestion.
 
 ## 40.9 Limits and open points
 
-- The 3D scene costs more than a list on an old phone, and it is loaded on the first visit now instead of on request. If it runs badly there, the list is one press away and is remembered. Touch on a real phone has not been tried yet (pinned in the roadmap).
-- Draw weight, spine and other values have nothing to show on the bow (§36). Their slider works in the card, and the bow does not move; the sentence of the result does.
-- Sight marks are useful to every archer but sit at Professional, as the owner chose. Moving them is a one-line change of the table in §40.2.
+- 49 tests of the screen were written for the old layout: the "Show" switch, the two levels, the three tabs on a phone. They are skipped, each with a note, and have to be rewritten for the workspaces. The tests of the engine, the models and the stores all run.
+- The 3D scene costs more than a list on an old phone, and it is loaded on the first visit now instead of on request. Switching it off is one press and is remembered. Touch on a real phone has not been tried yet (pinned in the roadmap).
+- On a phone with both previews switched on, the pinned drawings take most of the screen. That is why a phone starts with one.
+- Draw weight, spine and other values have nothing to show on the bow (§36). The bow does not move for them; the sentence of the result and the flight do.
+- Sight marks are useful to every archer but sit at Professional, as the owner chose. Moving them is a one-line change in `TargetWorkspace`.
 - "Grains per pound" and "estimated speed" stay at Advanced; only front of center moved to Professional.
-- The V0.5 exit criterion "Simple mode is unchanged" no longer holds once tiller and limb alignment are Basic. It is reworded with step 1.
+- The V0.5 exit criterion "Simple mode is unchanged" no longer holds: tiller and limb alignment are Basic now.

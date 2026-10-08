@@ -29,10 +29,10 @@ export function DrawCurvePanel({ setup, result, units }: Props) {
   ).length
 
   return (
-    <section aria-labelledby="draw-curve-heading" className="border-line mt-5 border-t pt-4">
-      <h2 id="draw-curve-heading" className="font-display text-xl font-semibold">
+    <section aria-labelledby="draw-curve-heading">
+      <h3 id="draw-curve-heading" className="font-semibold">
         {text.heading}
-      </h2>
+      </h3>
       <div className="mt-2">
         <DrawCurveChart
           curves={[{ name: setup.name, bow: setup.bow, shape: shapeOf(metrics) }]}

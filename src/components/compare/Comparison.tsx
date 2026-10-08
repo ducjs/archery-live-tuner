@@ -1,7 +1,13 @@
 import { shapeOf } from '../../engine/index.ts'
 import { parameterText } from '../../i18n/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
-import { PARAMETERS, formatValue, getValue, type UnitSystem } from '../../models/parameters.ts'
+import {
+  MEASURED_FORCES,
+  PARAMETERS,
+  formatValue,
+  getValue,
+  type UnitSystem,
+} from '../../models/parameters.ts'
 import type { TuningSetup } from '../../models/setup.ts'
 import type { SimulationResult } from '../../models/simulation.ts'
 import { convert, unitLabel } from '../../utils/units.ts'
@@ -107,7 +113,7 @@ export function ComparisonTable({ saved, now, units }: TableProps) {
       parameter.kind === 'enum'
         ? (parameterText(m, parameter).options?.[getValue(setup, parameter)] ??
           getValue(setup, parameter))
-        : parameter.group === 'curve' && getValue(setup, parameter) === 0
+        : MEASURED_FORCES.includes(parameter.key) && getValue(setup, parameter) === 0
           ? m.curve.notMeasured
           : formatValue(parameter, getValue(setup, parameter), units)
     const values = sides.map((side) => show(side.setup))
