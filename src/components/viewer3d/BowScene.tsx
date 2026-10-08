@@ -487,6 +487,13 @@ const PART_OF: Record<string, PartName> = {
   'bow.nockingPointHeight': 'nockingPoint',
 }
 
+/** Close looks that no piece of equipment has as its own, and the part each one is about. */
+const EXTRA_FOCUS: Partial<Record<Focus, PartName>> = {
+  limbs: 'limbs',
+  string: 'string',
+  rest: 'rest',
+}
+
 /** Opacity of the parts that are not the one pointed at. */
 const DIMMED = 0.22
 
@@ -838,7 +845,12 @@ export default function BowScene({
   const [hovered, setHovered] = useState<string | null>(null)
   // The part whose callout is under the pointer, or has the focus.
   const [pointed, setPointed] = useState<PartName | null>(null)
-  const lit = pointed ?? (hovered ? (PART_OF[hovered] ?? null) : null)
+  // The part being looked at closely, which is the one being set, stays bright too.
+  const ownPiece = EQUIPMENT.find((piece) => piece.focus === focus)
+  const inFocus: PartName | null =
+    EXTRA_FOCUS[focus] ?? (focus !== 'bow' && ownPiece ? ownPiece.name : null)
+  const underPointer: PartName | null = hovered ? (PART_OF[hovered] ?? null) : null
+  const lit = pointed ?? underPointer ?? inFocus
 
   // One label per thing measured. Two marks may share a label: it is written once.
   // The length of the bow is left out: with the whole bow in view the callouts need the room.
