@@ -94,6 +94,11 @@ export const PINNED: PinnedTask[] = [
     done: true,
   },
   {
+    text: 'Duyệt thiết kế ba mức tune và màn hình setup bấm vào bộ phận cung ở spec §40',
+    why: 'Chưa code gì cho tới khi bạn đồng ý. Xem kỹ bảng chia mức ở §40.2 và bảng bộ phận ở §40.4.',
+    done: false,
+  },
+  {
     text: 'Thêm ducnblue@gmail.com vào GitHub, Settings, Emails nếu chưa có',
     why: 'Để các commit mới gắn với tài khoản ducjs.',
     done: false,
@@ -269,6 +274,31 @@ export const ROADMAP: RoadmapPhase[] = [
           ),
           done(
             'Nút cất hình vẽ nhìn từ trên và từ bên đi rồi hiện lại, để màn hình nhỏ dành chỗ cho thông số và kết quả',
+          ),
+        ],
+      },
+      {
+        title: 'M9. Ba mức tune và màn hình setup riêng',
+        summary:
+          'Chia ứng dụng thành ba mức: Cơ bản, Nâng cao, Chuyên nghiệp. Mức nào chỉ thấy đúng thứ của mức đó, từ ô nhập tới kết quả và các màn hình. Phần setup ra một chỗ riêng: bấm vào một bộ phận trên cây cung 3D, thông số của nó hiện ra và kéo thanh trượt ngay tại chỗ, giống màn hình độ súng trong game.',
+        items: [
+          todo(
+            'Ba mức thay cho hai, áp cho cả ứng dụng: ô nhập, độ chi tiết của kết quả, và có những màn hình nào. Tiller và lệch cánh về Cơ bản; đường lực kéo và chi tiết thêm của mũi tên lên Chuyên nghiệp',
+          ),
+          todo(
+            'Thông số chia năm nhóm (cung, điều chỉnh, tên, dây, cân bằng), mỗi lúc mở một nhóm, nhóm đang đóng vẫn ghi các giá trị chính. Mỗi thông số là một dòng, đang dùng dòng nào thì dòng đó mở thanh trượt',
+          ),
+          todo(
+            'Bốn màn hình làm việc thay cho nút "Hiển thị": Setup, Mô phỏng, Bia thật, Phân tích. Tên setup, lưu và chia sẻ gom vào một thanh phía trên; ngôn ngữ và đơn vị nằm sau một nút cài đặt',
+          ),
+          todo(
+            'Cây cung làm menu của Setup: bấm vào một bộ phận, thông số của nó mở ra trong một thẻ cạnh cây cung, trên điện thoại là một tấm trượt từ dưới lên, và cây cung chuyển động theo khi kéo thanh trượt. Vẫn xem được dạng danh sách, chỉ một lần bấm',
+          ),
+          todo(
+            'Kết quả xoay quanh việc nên làm tiếp: một câu kết luận, một gợi ý để thử, phần còn lại nằm trong các tab',
+          ),
+          todo(
+            'Ô tìm thông số ở mức Chuyên nghiệp, và rà toàn bộ bằng mắt ở bề rộng 400 px, cả hai ngôn ngữ',
           ),
         ],
       },
