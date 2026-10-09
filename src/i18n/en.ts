@@ -122,7 +122,7 @@ export const en = {
     search: 'Find a value',
     searchNone: 'No value has that name.',
     preview: 'Preview',
-    previews: { bow: 'Bow 3D', top: 'From above', side: 'From the side', off: 'Off' },
+    previews: { show: 'Show', bow: 'Bow 3D', top: 'From above', side: 'From the side', off: 'Off' },
     advancedChanged: (count: number) =>
       count === 1
         ? '1 advanced value is changed and still affects the result.'

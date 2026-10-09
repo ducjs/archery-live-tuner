@@ -334,6 +334,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Bảng chỉ số ở Setup, thay cho câu kết luận và bước tiếp theo: setup hiện thành các thanh trong ba nhóm (bare shaft, đường bay, hiệu năng), mỗi mức thêm một nhóm. Thanh lệch từ giữa cho trái hay phải, thấp hay cao, mềm hay cứng; xanh, vàng, đỏ ở chỗ mô hình có ngưỡng, xám ở chỗ không có. Số mới: độ dễ tha thứ, hiệu suất cung, độ đằm của cung ở dạng ước lượng thô, và cự ly xa nhất chưa đụng sight',
           ),
+          done(
+            'Ở Setup, tùy chọn nằm ngay cạnh hình mà nó điều khiển: một thanh chỉ để chọn hiện gì, góc nhìn của cung 3D mở từ một nút ngay trên cung, nút phát và thanh thời gian nằm sát dưới hình đường bay',
+          ),
           todo('Hai setup trên cùng một thanh của bảng chỉ số, ở phần Phân tích'),
           todo(
             'Thêm tạ bên vào thông số của setup, để độ đằm của cung được tính thay vì ước lượng',

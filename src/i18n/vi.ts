@@ -180,7 +180,7 @@ export const vi: Messages = {
     search: 'Tìm thông số',
     searchNone: 'Không có thông số nào tên như vậy.',
     preview: 'Xem trước',
-    previews: { bow: 'Cung 3D', top: 'Từ trên', side: 'Từ bên', off: 'Tắt' },
+    previews: { show: 'Hiện', bow: 'Cung 3D', top: 'Từ trên', side: 'Từ bên', off: 'Tắt' },
     advancedChanged: (count) => `${count} thông số nâng cao đã đổi và vẫn ảnh hưởng tới kết quả.`,
     showThem: 'Xem',
     resetThem: 'Đặt lại',

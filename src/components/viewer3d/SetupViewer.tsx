@@ -53,6 +53,11 @@ type BowViewerProps = {
   onPick: (parameterKey: string) => void
   /** Lower on a phone, where the values of the setup have to fit under it. */
   compact?: boolean
+  /**
+   * What sets how the bow is looked at. It opens from a button on the view
+   * itself: an option stands with the drawing it changes.
+   */
+  controls?: ReactNode
 }
 
 export function BowViewer({
@@ -63,6 +68,7 @@ export function BowViewer({
   fallback,
   onPick,
   compact = false,
+  controls,
 }: BowViewerProps) {
   const m = useMessages()
   // A pressed part is looked at as well as set: the camera goes to it.
@@ -100,6 +106,19 @@ export function BowViewer({
           />
         </Suspense>
       </SceneBoundary>
+      {controls && (
+        <details className="group absolute top-2 left-2 z-20 max-h-[calc(100%-1rem)] max-w-[calc(100%-1rem)]">
+          <summary className="border-line bg-surface text-ink focus-visible:outline-accent flex min-h-11 w-fit cursor-pointer list-none items-center gap-1.5 rounded-md border px-3 font-medium shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
+            {m.viewer.views}
+            <span aria-hidden="true" className="text-ink-muted text-xs group-open:rotate-180">
+              ▼
+            </span>
+          </summary>
+          <div className="border-line bg-surface mt-1 overflow-y-auto rounded-md border p-3 shadow-md">
+            {controls}
+          </div>
+        </details>
+      )}
       {/* After a close look at a part, the way back to all of them. */}
       {viewer.focus !== 'bow' && (
         <button
@@ -118,15 +137,20 @@ type ControlsProps = {
   viewer: BowViewerState
   /** Called with the key of the value that a piece of equipment is set with. */
   onPick: (parameterKey: string) => void
+  /**
+   * Only the views and the two switches. For where the parts are pressed on
+   * the bow itself, and the room is that of the view.
+   */
+  brief?: boolean
 }
 
-export function BowViewerControls({ viewer, onPick }: ControlsProps) {
+export function BowViewerControls({ viewer, onPick, brief = false }: ControlsProps) {
   const m = useMessages()
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <fieldset className="min-w-0">
-          <legend className="text-ink-muted text-sm">{m.viewer.views}</legend>
+          <legend className={brief ? 'sr-only' : 'text-ink-muted text-sm'}>{m.viewer.views}</legend>
           <div className="mt-1 flex flex-wrap gap-2">
             {VIEWS.map((focus) => (
               <button
@@ -142,7 +166,7 @@ export function BowViewerControls({ viewer, onPick }: ControlsProps) {
           </div>
         </fieldset>
         {/* A piece of equipment is looked at and set in one press: the camera goes to it, and the page to its value. */}
-        <fieldset className="min-w-0">
+        <fieldset className="min-w-0" hidden={brief}>
           <legend className="text-ink-muted text-sm">{m.viewer.equipment}</legend>
           <div className="mt-1 flex flex-wrap gap-2">
             {EQUIPMENT.map(({ name, focus, parameter }) => (
@@ -180,8 +204,8 @@ export function BowViewerControls({ viewer, onPick }: ControlsProps) {
           {m.viewer.drawn}
         </label>
       </div>
-      <p className="text-ink-muted max-w-prose text-sm">{m.viewer.about}</p>
-      <p className="text-ink-muted max-w-prose text-sm">{m.viewer.notDrawn}</p>
+      {!brief && <p className="text-ink-muted max-w-prose text-sm">{m.viewer.about}</p>}
+      {!brief && <p className="text-ink-muted max-w-prose text-sm">{m.viewer.notDrawn}</p>}
     </div>
   )
 }

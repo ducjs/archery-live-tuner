@@ -187,6 +187,7 @@ Raised by the project owner on 2026-10-08, and built the same day. Design and wh
 - [x] Sections that stand out from the page: each is a panel with a border and a bar beside its heading, on a page a step darker, with the controls a step lighter
 - [x] Search for a value at Professional. Looked at in headless Chrome at 1440 px and at 400 px wide, in Vietnamese
 - [x] A sheet of attributes on Setup, in place of the sentence and the next step: the setup as bars in three groups (bare shaft, flight, performance), a group more at each level. A bar that leans from a middle for left or right, low or high, weak or stiff; green, yellow and red where the model has a threshold, grey where it has none. New numbers: forgiveness, bow efficiency, bow steadiness as a rough estimate, and the farthest distance the sight clears (§41)
+- [x] On Setup an option stands with the drawing it changes: one bar says what is shown, the views of the 3D bow open from a button on the bow, and play and the time line sit right under the flight
 - [ ] Two setups on one bar of the sheet, on Analysis (§41.6)
 - [ ] Side rods as values of the setup, so that bow steadiness is worked out instead of estimated (§41.6)
 - [ ] The tests of the screen rewritten for the workspaces: 49 of them were written for the old layout and are skipped (§40.9)

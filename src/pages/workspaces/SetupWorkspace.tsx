@@ -68,7 +68,9 @@ export function SetupWorkspace() {
 
       {/* On a phone its parts are placed around the values; on a wide screen it is one column that stays in view. */}
       <div className="contents lg:sticky lg:top-4 lg:order-2 lg:grid lg:max-h-[calc(100vh-2rem)] lg:gap-3 lg:overflow-y-auto">
+        {/* Only what is shown. What sets a drawing stands with that drawing. */}
         <div className="border-line bg-panel order-1 flex flex-wrap items-center gap-x-6 gap-y-1 rounded-xl border px-3 py-1.5">
+          <span className="text-ink-muted text-sm">{m.panels.previews.show}</span>
           <label className="flex min-h-11 cursor-pointer items-center gap-2 font-medium">
             <input
               type="checkbox"
@@ -100,6 +102,7 @@ export function SetupWorkspace() {
               onPick={pointTo}
               compact
               fallback={null}
+              controls={<BowViewerControls viewer={viewer} onPick={pointTo} brief />}
             />
           )}
           {flightPreview !== 'off' && (
@@ -114,9 +117,7 @@ export function SetupWorkspace() {
               compact
             />
           )}
-        </div>
-
-        <div className="order-4 grid min-w-0 gap-3">
+          {/* Play and the place in time belong to the flight: right under its drawing. */}
           {flightPreview !== 'off' && (
             <div className="flex flex-wrap items-center gap-3">
               <button type="button" onClick={playback.toggle} className={buttonClass}>
@@ -132,16 +133,11 @@ export function SetupWorkspace() {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="order-4 grid min-w-0 gap-3">
           <AttributeSheet groups={sheet} level={mode} units={units} />
           <AssumedValues />
-          {bow3d && (
-            <details>
-              <summary className="focus-visible:outline-accent flex min-h-11 cursor-pointer items-center font-medium focus-visible:outline-2">
-                {m.panels.previews.bow}: {m.stage.options.toLowerCase()}
-              </summary>
-              <BowViewerControls viewer={viewer} onPick={pointTo} />
-            </details>
-          )}
         </div>
       </div>
     </div>
