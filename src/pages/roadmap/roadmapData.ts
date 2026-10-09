@@ -337,6 +337,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Ở Setup, tùy chọn nằm ngay cạnh hình mà nó điều khiển: một thanh chỉ để chọn hiện gì, góc nhìn của cung 3D mở từ một nút ngay trên cung, nút phát và thanh thời gian nằm sát dưới hình đường bay',
           ),
+          done(
+            'Điểm chạm trên một mặt bia ở Setup, tên có cánh và bare shaft trên cùng một bia. Setup mở ra với hình này ở mọi cỡ màn; hình đường bay từ trên và từ bên cách một lần bấm. Chia hai cột từ 640 px thay vì 1024 px, cho điện thoại gập khi mở và tablet cầm dọc',
+          ),
           todo('Hai setup trên cùng một thanh của bảng chỉ số, ở phần Phân tích'),
           todo(
             'Thêm tạ bên vào thông số của setup, để độ đằm của cung được tính thay vì ước lượng',

@@ -12,6 +12,7 @@ import {
   clipSeconds,
 } from '../../components/simulation/timing.ts'
 import { usePlayback } from '../../components/simulation/usePlayback.ts'
+import { PredictedTarget } from '../../components/target/PredictedTarget.tsx'
 import { useSight } from '../../components/target/useSight.ts'
 import { AttributeSheet } from '../../components/tuning/AttributeSheet.tsx'
 import { BowViewer, BowViewerControls } from '../../components/viewer3d/SetupViewer.tsx'
@@ -59,15 +60,17 @@ export function SetupWorkspace() {
   const viewer = useBowViewer(setup)
   const playback = usePlayback(clipSeconds(result), HOLD_SECONDS, DEFAULT_SPEED)
   const handedness = setup.bow.handedness
+  /** The flight as a drawing with time in it, when that is what is shown. */
+  const drawn = flightPreview === 'top' || flightPreview === 'side' ? flightPreview : null
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
-      <div className="order-3 min-w-0 lg:order-1">
+    <div className="grid gap-4 sm:grid-cols-[minmax(0,21rem)_minmax(0,1fr)] sm:items-start sm:gap-5 lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] lg:gap-8">
+      <div className="order-3 min-w-0 sm:order-1">
         <SetupGroups />
       </div>
 
       {/* On a phone its parts are placed around the values; on a wide screen it is one column that stays in view. */}
-      <div className="contents lg:sticky lg:top-4 lg:order-2 lg:grid lg:max-h-[calc(100vh-2rem)] lg:gap-3 lg:overflow-y-auto">
+      <div className="contents sm:sticky sm:top-4 sm:order-2 sm:grid sm:max-h-[calc(100vh-7rem)] sm:gap-3 sm:overflow-y-auto lg:max-h-[calc(100vh-2rem)]">
         {/* Only what is shown. What sets a drawing stands with that drawing. */}
         <div className="border-line bg-panel order-1 flex flex-wrap items-center gap-x-6 gap-y-1 rounded-xl border px-3 py-1.5">
           <span className="text-ink-muted text-sm">{m.panels.previews.show}</span>
@@ -82,7 +85,7 @@ export function SetupWorkspace() {
           </label>
           <SegmentedControl
             label={m.simulator.flight}
-            options={(['top', 'side', 'off'] as const).map((value) => ({
+            options={(['target', 'top', 'side', 'off'] as const).map((value) => ({
               value,
               label: m.panels.previews[value],
             }))}
@@ -92,7 +95,7 @@ export function SetupWorkspace() {
         </div>
 
         {/* What the values do stays in view while one of them is changed. */}
-        <div className="bg-paper sticky top-0 z-10 order-2 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0">
+        <div className="bg-paper sticky top-0 z-10 order-2 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:static sm:m-0 sm:p-0">
           {bow3d && (
             <BowViewer
               bow={setup.bow}
@@ -105,9 +108,10 @@ export function SetupWorkspace() {
               controls={<BowViewerControls viewer={viewer} onPick={pointTo} brief />}
             />
           )}
-          {flightPreview !== 'off' && (
+          {flightPreview === 'target' && <PredictedTarget comparison={comparison} />}
+          {drawn && (
             <FlightView
-              view={flightPreview}
+              view={drawn}
               result={result}
               bare={comparison.bare}
               handedness={handedness}
@@ -118,7 +122,7 @@ export function SetupWorkspace() {
             />
           )}
           {/* Play and the place in time belong to the flight: right under its drawing. */}
-          {flightPreview !== 'off' && (
+          {drawn && (
             <div className="flex flex-wrap items-center gap-3">
               <button type="button" onClick={playback.toggle} className={buttonClass}>
                 {playback.playing ? m.stage.pause : m.stage.play}

@@ -122,7 +122,20 @@ export const en = {
     search: 'Find a value',
     searchNone: 'No value has that name.',
     preview: 'Preview',
-    previews: { show: 'Show', bow: 'Bow 3D', top: 'From above', side: 'From the side', off: 'Off' },
+    previews: {
+      show: 'Show',
+      bow: 'Bow 3D',
+      target: 'Target',
+      top: 'From above',
+      side: 'From the side',
+      off: 'Off',
+    },
+    onTarget: {
+      label: 'Where the model has the arrows land on the target.',
+      together: 'The bare shaft lands with the fletched arrows',
+      lands: (sides: string) => `The bare shaft lands ${sides}`,
+      note: 'It shows the side, not centimetres.',
+    },
     advancedChanged: (count: number) =>
       count === 1
         ? '1 advanced value is changed and still affects the result.'

@@ -24,11 +24,8 @@ export const WORKSPACE_TIER: Record<Workspace, ParameterTier> = {
   analysis: 'advanced',
 }
 /** The flight drawn next to the values of the setup, if any. */
-export type FlightPreview = 'top' | 'side' | 'off'
-const FLIGHT_PREVIEWS: readonly FlightPreview[] = ['top', 'side', 'off']
-
-const wideScreen = () =>
-  typeof window !== 'undefined' && (window.matchMedia?.('(min-width: 64rem)').matches ?? false)
+export type FlightPreview = 'target' | 'top' | 'side' | 'off'
+const FLIGHT_PREVIEWS: readonly FlightPreview[] = ['target', 'top', 'side', 'off']
 
 /**
  * Whether this looks like a device that the 3D bow would weigh on: few
@@ -88,8 +85,9 @@ export const useTuningStore = create<TuningState>()(
       units: 'archery',
       workspace: 'setup',
       bow3d: !weakDevice(),
-      // A phone has no room for two drawings above the values.
-      flightPreview: wideScreen() ? 'top' : 'off',
+      // The landing on a target face: small, and it says in one look what the
+      // two drawings of the flight say in two. Those are one press away.
+      flightPreview: 'target',
       // A workspace above the level raises the level: nothing is opened that is then hidden.
       setWorkspace: (workspace) =>
         set((state) => ({

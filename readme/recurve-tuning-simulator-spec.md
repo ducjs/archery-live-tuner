@@ -1930,6 +1930,10 @@ phone                                   wide screen
 
 **An option stands with the drawing it changes.** One bar above the drawings says only what is shown: the 3D bow, and the flight from above, from the side, or not at all. How the bow is looked at (the four views, the larger offsets, full draw) opens from a button on the 3D view itself. Play and the time line sit right under the drawing of the flight. Before, the options of the 3D bow were at the bottom of the column, under everything else.
 
+**The landing on a target face.** Next to the 3D bow Setup shows where the model has the arrows land, on one face: the fletched arrows in the middle, as a sight set for them puts them, and the bare shaft where it lands against them, with the side in words next to it. A filled mark and a ring, told apart by shape. The face is a square of about a hundred pixels and needs no play button, where the flight drawn from above is a long strip with a time line under it. It is what Setup starts with at every width; the flight from above and from the side are the other choices of the same switch. As in those drawings the distance from the middle is a lean and not centimetres, and the face says so. A bare shaft past the edge of the drawing is held at the edge with an arrowhead.
+
+**Width.** Setup is two columns from 640 px on: an unfolded phone and a tablet held upright have the values next to the drawings, where it took 1024 px before. Under 640 px it is one column with the drawings pinned above the values.
+
 **The result stays in sight.** Under the previews stands the sheet of attributes (§41): the setup as bars that move as a slider does. It took the place of the sentence of the result and of the next step, which are on the Flight workspace. Under it: the line about assumed values.
 
 **Groups.** `ParameterGroup` becomes `'bow' | 'tuning' | 'arrow' | 'string' | 'balance'`; `size` and `curve` go into `bow`.

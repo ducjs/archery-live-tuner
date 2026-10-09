@@ -1,10 +1,8 @@
 import { useState, type KeyboardEvent, type MouseEvent } from 'react'
 import type { PlotReading } from '../../engine/index.ts'
 import type { TargetPlot } from '../../models/observation.ts'
+import { RINGS, RING_COLORS } from './rings.ts'
 
-// World Archery colors, outer ring first. Each color covers two scoring rings.
-const RING_COLORS = ['#f5f5f5', '#1b1e22', '#3fb4e4', '#f0483e', '#ffe552']
-const RINGS = 10
 /** How much of the butt around the face is shown, so a miss can be marked too. */
 const MARGIN = 1.12
 // Marks are drawn larger than an arrow, to be seen and told apart on a phone.
