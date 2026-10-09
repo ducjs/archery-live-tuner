@@ -201,12 +201,16 @@ type RigProps = Pick<Props, 'focus' | 'focusRequest' | 'onLeave'> & {
   geometry: BowGeometry
   /** Called when the view is taken hold of, and again when it is let go. */
   onHold: (held: boolean) => void
+  /** Called when a flight of the camera has ended. */
+  onArrive: () => void
 }
 
 /** Zoomed out to this many times the distance of a close look, the close look is over. */
 const LEAVE_AT = 1.6
+/** With this share of a flight left, the camera is put where it was going. */
+const ARRIVED = 0.005
 
-function CameraRig({ focus, focusRequest, geometry, onLeave, onHold }: RigProps) {
+function CameraRig({ focus, focusRequest, geometry, onLeave, onHold, onArrive }: RigProps) {
   const controls = useRef<ControlsHandle | null>(null)
   const flying = useRef(true)
   const first = useRef(true)
@@ -219,29 +223,41 @@ function CameraRig({ focus, focusRequest, geometry, onLeave, onHold }: RigProps)
 
   // A new request starts a flight. Geometry changes on their own do not, or the
   // camera would fight the user while a slider is dragged.
-  const goal = useRef<{ position: Vector3; target: Vector3 } | null>(null)
+  const goal = useRef<{ position: Vector3; target: Vector3; near: number } | null>(null)
   useEffect(() => {
     const shot = cameraShot(focus, latest.current)
+    const position = new Vector3(...shot.position)
     goal.current = {
-      position: new Vector3(...shot.position),
+      position,
       target: new Vector3(...shot.target),
+      near: Math.max(1, camera.position.distanceTo(position) * ARRIVED),
     }
     flying.current = true
     invalidate()
-  }, [focus, focusRequest, geometry.side, invalidate])
+  }, [focus, focusRequest, geometry.side, camera, invalidate])
 
   useFrame((_, delta) => {
     if (!flying.current || !controls.current || !goal.current) return
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-    const step = first.current || reduceMotion ? 1 : 1 - Math.exp(-5 * Math.min(delta, 0.1))
+    // Back to the whole bow is the quicker flight: there is nothing to follow on the way.
+    const rate = focus === 'bow' ? 8 : 5
+    const step = first.current || reduceMotion ? 1 : 1 - Math.exp(-rate * Math.min(delta, 0.1))
     first.current = false
 
     camera.position.lerp(goal.current.position, step)
     controls.current.target.lerp(goal.current.target, step)
+    // The last stretch of such a flight is too slow to see and keeps the callouts waiting.
+    const arrived = camera.position.distanceTo(goal.current.position) < goal.current.near
+    if (arrived) {
+      camera.position.copy(goal.current.position)
+      controls.current.target.copy(goal.current.target)
+    }
     controls.current.update()
 
-    if (camera.position.distanceTo(goal.current.position) < 1) flying.current = false
-    else invalidate()
+    if (arrived) {
+      flying.current = false
+      onArrive()
+    } else invalidate()
   })
 
   return (
@@ -302,6 +318,12 @@ type Callout = {
 const CALLOUT_GAP = 6
 /** s, how long the view has to stand still before the callouts are drawn again */
 const CALLOUT_SETTLE = 0.2
+/** s, the same after a flight of the camera, which ends standing still */
+const CALLOUT_ARRIVED = 0.04
+/** The parts count as standing in one line when their spread across it is this share of the spread along it. */
+const IN_LINE = 0.5
+/** px, a part this close to that line is on it */
+const ON_LINE = 14
 
 type CalloutPinsProps = {
   callouts: Callout[]
@@ -309,14 +331,18 @@ type CalloutPinsProps = {
   layer: () => HTMLElement | null
   /** Whether a hand is on the view, turning it. */
   held: () => boolean
-  /** Called with the way to draw the callouts again, for when the view is let go. */
-  onSettle: (settle: () => void) => void
+  /**
+   * Called with the way to draw the callouts again, for when the view is let
+   * go. Called with true, they are drawn without the usual wait.
+   */
+  onSettle: (settle: (soon?: boolean) => void) => void
 }
 
 /**
  * Puts a box next to each part, a short way out from the middle of the bow,
  * with a line from the box to the part. Boxes that would cover each other are
- * pushed apart. While the bow is turned or a value moves it, the callouts are
+ * pushed apart. Parts that stand in one line, as seen from behind the string,
+ * get their boxes on either side of it by turns. While the bow is turned or a value moves it, the callouts are
  * put away, and they are drawn again a moment after the view is let go and
  * stands still: lines that follow every frame are restless to look at.
  */
@@ -325,6 +351,7 @@ function CalloutPins({ callouts, layer, held, onSettle }: CalloutPinsProps) {
   const latest = useRef(callouts)
   const seenView = useRef('')
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const soon = useRef(false)
 
   const layout = () => {
     const projected = new Vector3()
@@ -369,11 +396,51 @@ function CalloutPins({ callouts, layer, held, onSettle }: CalloutPinsProps) {
     // on the open side of its part.
     const middleX = placed.reduce((sum, item) => sum + item.x, 0) / placed.length
     const middleY = placed.reduce((sum, item) => sum + item.y, 0) / placed.length
+    // A bow is long and thin, and turned towards its string or its target the
+    // parts stand close to one line: outward would put the boxes on that line
+    // too, over the bow and over each other. Then every box goes sideways from
+    // the line: a part that stands off it to its own side, the parts on it to
+    // either side by turns, in the order they have along it.
+    let xx = 0
+    let yy = 0
+    let xy = 0
+    for (const item of placed) {
+      xx += (item.x - middleX) ** 2
+      yy += (item.y - middleY) ** 2
+      xy += (item.x - middleX) * (item.y - middleY)
+    }
+    const lineAngle = Math.atan2(2 * xy, xx - yy) / 2
+    const lineX = Math.cos(lineAngle)
+    const lineY = Math.sin(lineAngle)
+    const spreadAlong = xx * lineX ** 2 + 2 * xy * lineX * lineY + yy * lineY ** 2
+    const spreadAcross = xx + yy - spreadAlong
+    const inLine = placed.length > 2 && spreadAcross < spreadAlong * IN_LINE ** 2
+    type Placed = (typeof placed)[number]
+    const alongLine = (item: Placed) => (item.x - middleX) * lineX + (item.y - middleY) * lineY
+    const offLine = (item: Placed) => (item.y - middleY) * lineX - (item.x - middleX) * lineY
+    const turns = new Map<Placed, number>()
+    if (inLine) {
+      const onLine = placed.filter((item) => Math.abs(offLine(item)) < ON_LINE)
+      for (const item of placed)
+        if (!onLine.includes(item)) turns.set(item, Math.sign(offLine(item)))
+      // The side with fewer boxes so far gets the next one.
+      let lean = [...turns.values()].reduce((sum, turn) => sum + turn, 0)
+      for (const item of onLine.toSorted((a, b) => alongLine(a) - alongLine(b))) {
+        const turn = lean > 0 ? -1 : 1
+        turns.set(item, turn)
+        lean += turn
+      }
+    }
+
     placed.forEach((item, index) => {
       let dx = item.x - middleX
       let dy = item.y - middleY
       const length = Math.hypot(dx, dy)
-      if (length < 12) {
+      if (inLine) {
+        const turn = turns.get(item)!
+        dx = -lineY * turn
+        dy = lineX * turn
+      } else if (length < 12) {
         // In the middle there is no outward: spread such parts around the clock.
         const angle = (index / placed.length) * 2 * Math.PI
         dx = Math.cos(angle)
@@ -436,20 +503,28 @@ function CalloutPins({ callouts, layer, held, onSettle }: CalloutPinsProps) {
     }
   }
 
-  const settle = useRef(() => {})
+  const settle = useRef<(now?: boolean) => void>(() => {})
   useEffect(() => {
     latest.current = callouts
-    settle.current = () => {
+    settle.current = (now = false) => {
       const element = layer()
       if (element) element.style.opacity = '0'
       clearTimeout(timer.current)
+      if (now) soon.current = true
       // A hand still on the view may go on turning it: wait for it to let go.
-      if (held()) return
-      timer.current = setTimeout(() => {
-        layout()
-        const shown = layer()
-        if (shown) shown.style.opacity = '1'
-      }, CALLOUT_SETTLE * 1000)
+      if (held()) {
+        soon.current = false
+        return
+      }
+      timer.current = setTimeout(
+        () => {
+          soon.current = false
+          layout()
+          const shown = layer()
+          if (shown) shown.style.opacity = '1'
+        },
+        (soon.current ? CALLOUT_ARRIVED : CALLOUT_SETTLE) * 1000,
+      )
     }
     onSettle(settle.current)
   })
@@ -850,7 +925,9 @@ export default function BowScene({
   const inFocus: PartName | null =
     EXTRA_FOCUS[focus] ?? (focus !== 'bow' && ownPiece ? ownPiece.name : null)
   const underPointer: PartName | null = hovered ? (PART_OF[hovered] ?? null) : null
-  const lit = pointed ?? underPointer ?? inFocus
+  // While the bow is turned the pointer crosses parts without meaning any of them.
+  const [turning, setTurning] = useState(false)
+  const lit = turning ? inFocus : (pointed ?? underPointer ?? inFocus)
 
   // One label per thing measured. Two marks may share a label: it is written once.
   // The length of the bow is left out: with the whole bow in view the callouts need the room.
@@ -869,7 +946,7 @@ export default function BowScene({
   // A box for every part, with a line to it: the bow is its own menu.
   const calloutLayer = useRef<HTMLDivElement | null>(null)
   // What the hand is doing to the view: the callouts wait until it lets go.
-  const handling = useRef({ held: false, released: () => {} })
+  const handling = useRef({ held: false, released: (_soon?: boolean) => {} })
   const boxes = useRef<(HTMLButtonElement | null)[]>([])
   const lines = useRef<(SVGLineElement | null)[]>([])
   const dots = useRef<(SVGCircleElement | null)[]>([])
@@ -943,8 +1020,10 @@ export default function BowScene({
           onLeave={onLeave}
           onHold={(held) => {
             handling.current.held = held
+            setTurning(held)
             if (!held) handling.current.released()
           }}
+          onArrive={() => handling.current.released(true)}
         />
         <LabelPins anchors={anchors} />
         <CalloutPins
@@ -957,7 +1036,7 @@ export default function BowScene({
         />
       </Canvas>
 
-      {hovered && (
+      {hovered && !turning && (
         <p className="border-line bg-surface text-ink pointer-events-none absolute bottom-2 left-1/2 z-10 -translate-x-1/2 rounded-md border px-2 py-1 text-sm font-medium whitespace-nowrap">
           {m.viewer.goTo(parameterText(m, getParameter(hovered)).label)}
         </p>
