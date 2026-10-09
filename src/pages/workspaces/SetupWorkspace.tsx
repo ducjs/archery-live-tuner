@@ -70,7 +70,7 @@ export function SetupWorkspace() {
       </div>
 
       {/* On a phone its parts are placed around the values; on a wide screen it is one column that stays in view. */}
-      <div className="contents sm:sticky sm:top-4 sm:order-2 sm:grid sm:max-h-[calc(100vh-7rem)] sm:gap-3 sm:overflow-y-auto lg:max-h-[calc(100vh-2rem)]">
+      <div className="contents sm:sticky sm:top-4 sm:order-2 sm:grid sm:min-w-0 sm:grid-cols-1 sm:max-h-[calc(100vh-7rem)] sm:gap-3 sm:overflow-y-auto lg:max-h-[calc(100vh-2rem)]">
         {/* Only what is shown. What sets a drawing stands with that drawing. */}
         <div className="border-line bg-panel order-1 flex flex-wrap items-center gap-x-6 gap-y-1 rounded-xl border px-3 py-1.5">
           <span className="text-ink-muted text-sm">{m.panels.previews.show}</span>
@@ -95,7 +95,7 @@ export function SetupWorkspace() {
         </div>
 
         {/* What the values do stays in view while one of them is changed. */}
-        <div className="bg-paper sticky top-0 z-10 order-2 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:static sm:m-0 sm:p-0">
+        <div className="bg-paper sticky top-0 z-10 order-2 -mx-4 grid min-w-0 grid-cols-1 gap-2 px-4 py-2 sm:static sm:m-0 sm:p-0">
           {bow3d && (
             <BowViewer
               bow={setup.bow}
@@ -139,7 +139,7 @@ export function SetupWorkspace() {
           )}
         </div>
 
-        <div className="order-4 grid min-w-0 gap-3">
+        <div className="order-4 grid min-w-0 grid-cols-1 gap-3">
           <AttributeSheet groups={sheet} level={mode} units={units} />
           <AssumedValues />
         </div>

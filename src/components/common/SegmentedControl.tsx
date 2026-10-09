@@ -12,7 +12,7 @@ type Props = {
 export function SegmentedControl({ label, hideLabel = false, options, value, onChange }: Props) {
   const name = useId()
   return (
-    <fieldset className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+    <fieldset className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1">
       <legend className={hideLabel ? 'sr-only' : 'float-left font-medium'}>{label}</legend>
       <div className="border-line bg-surface inline-flex max-w-full flex-wrap rounded-md border p-0.5">
         {options.map((option) => (

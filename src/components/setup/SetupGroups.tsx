@@ -269,7 +269,7 @@ function Group({ group, open, onToggle, openKey, onOpenKey, footer }: GroupProps
           </svg>
         </button>
       </h2>
-      <div id={`${group}-values`} hidden={!open} className="-mx-2 grid gap-1 pb-4">
+      <div id={`${group}-values`} hidden={!open} className="-mx-2 grid grid-cols-1 gap-1 pb-4">
         {shown.map((parameter) => (
           <Value
             key={parameter.key}
@@ -328,7 +328,7 @@ export function SetupGroups() {
   )
 
   return (
-    <div className="grid gap-3">
+    <div className="grid grid-cols-1 gap-3">
       <HiddenNotice />
       {/* With every value on show, finding one by name is quicker than opening groups. */}
       {mode === 'pro' && (
@@ -345,7 +345,7 @@ export function SetupGroups() {
         matches.length === 0 ? (
           <p className="text-ink-muted">{m.panels.searchNone}</p>
         ) : (
-          <div className="-mx-2 grid gap-1">
+          <div className="-mx-2 grid grid-cols-1 gap-1">
             {matches.map((parameter) => (
               <Value
                 key={parameter.key}
@@ -357,7 +357,7 @@ export function SetupGroups() {
           </div>
         )
       ) : (
-        <div className="grid gap-2">
+        <div className="grid grid-cols-1 gap-2">
           {GROUPS.map((group) => (
             <Group
               key={group}

@@ -212,3 +212,22 @@ test('the guide and the privacy page open, and the guide leads into the simulato
   const keys = await page.evaluate(() => Object.keys(localStorage))
   for (const key of keys) await expect(page.getByRole('table')).toContainText(key)
 })
+
+for (const width of [345, 690]) {
+  test(`at ${width} px nothing is wider than the screen or than its column`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 })
+    await page.goto('/')
+    await expect(page.locator('#bow-heading')).toBeVisible()
+    const found = await page.evaluate(() => {
+      const column = document.querySelector('#bow-heading')!.closest('.order-3')!
+      const edge = column.getBoundingClientRect().right
+      return {
+        page: document.documentElement.scrollWidth - window.innerWidth,
+        pastTheColumn: [...column.querySelectorAll('*')].filter(
+          (element) => element.getBoundingClientRect().right > edge + 1,
+        ).length,
+      }
+    })
+    expect(found).toEqual({ page: 0, pastTheColumn: 0 })
+  })
+}

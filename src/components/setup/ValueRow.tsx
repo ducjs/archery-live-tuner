@@ -72,8 +72,9 @@ export function ValueRow({ parameter, value, open, onOpen, onChange, onReset }: 
       onClick={onOpen}
       className={`rounded-lg px-2 transition-colors duration-150 motion-reduce:transition-none ${open ? 'bg-surface border-line border py-2' : 'border border-transparent'}`}
     >
-      <div className="flex min-h-11 items-center gap-2">
-        <label htmlFor={`${id}-number`} className="min-w-0 flex-1 leading-tight font-medium">
+      {/* With large text the label takes a line of its own; the buttons never leave the panel. */}
+      <div className="flex min-h-11 flex-wrap items-center justify-end gap-2">
+        <label htmlFor={`${id}-number`} className="min-w-16 flex-1 leading-tight font-medium">
           {label}
           {/* Says, without color alone, that the value is not the default. */}
           {!isDefault && (
