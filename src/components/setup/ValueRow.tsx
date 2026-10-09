@@ -23,6 +23,14 @@ type Props = {
 }
 
 /**
+ * Whether the device is worked by a finger. There a press on the number opens
+ * the row and no more: a keyboard sliding up over half the screen for every
+ * value is in the way, and minus, plus and the slider set the value.
+ */
+const byFinger = () =>
+  typeof window !== 'undefined' && (window.matchMedia?.('(pointer: coarse)').matches ?? false)
+
+/**
  * One value on one row: label, number, unit, minus and plus. The row that is
  * in use opens to its slider, so a long list stays short.
  */
@@ -94,7 +102,7 @@ export function ValueRow({ parameter, value, open, onOpen, onChange, onReset, in
         <input
           id={`${id}-number`}
           type="number"
-          inputMode="decimal"
+          inputMode={byFinger() ? 'none' : 'decimal'}
           min={min}
           max={max}
           step={step}

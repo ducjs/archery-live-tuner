@@ -2047,6 +2047,7 @@ Code: `engine/explore/influence.ts`, `components/setup/influenceLook.ts`.
 
 - **How a setup reads as a whole** is the worst of the three bars of the bare shaft group: weak or stiff, bare shaft left or right, bare shaft low or high, with the same steps.
 - **Under the slider of a value** there is a strip of color: the setup is read with that value at 49 places over its range and every other value left as it is. Green is where the setup would be in order. The strip is drawn for the row in use only, and only when the value makes a difference somewhere on its range.
+- **On a device worked by a finger** a press on the number of a value opens its row and brings up no keyboard: minus, plus and the slider set the value there. With a mouse or a keyboard the number is typed as before.
 - **The number of a value** is written in yellow or red when the setup is not in order and that value can do something about it. In order is written as any other number: only trouble is marked. The same on the callouts of the 3D bow, where the box gets an edge of that color as well, since a narrow view does not show the value. A screen reader is told the word.
 - This marks every value that could bring the setup back, not the one that was changed last. With a draw weight far too high, the spine, the point weight and the plunger are written red with it: each of them is a way out.
 - The rows of a folded group work nothing out. A row takes 13 places to know whether to mark its number, about half a millisecond.
