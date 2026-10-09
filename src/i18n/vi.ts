@@ -123,6 +123,41 @@ export const vi: Messages = {
     },
   },
 
+  attributes: {
+    heading: 'Chỉ số của setup',
+    groups: {
+      bareShaft: 'Bare shaft',
+      flight: 'Đường bay',
+      performance: 'Hiệu năng',
+    },
+    labels: {
+      lateral: 'Bare shaft lệch trái hay phải',
+      vertical: 'Bare shaft lệch thấp hay cao',
+      stiffness: 'Tên mềm hay cứng',
+      speed: 'Tốc độ tên',
+      settling: 'Thân tên hết rung sau',
+      clearance: 'Độ thoáng khi qua cung',
+      frontOfCenter: 'FOC',
+      efficiency: 'Hiệu suất cung',
+      arrowMass: 'Khối lượng tên trên mỗi pound',
+      forgiveness: 'Độ dễ tha thứ',
+      steadiness: 'Độ đằm của cung',
+      sightReach: 'Cự ly xa nhất chưa đụng sight',
+    },
+    ends: {
+      lateral: { low: 'Trái', middle: 'Chụm', high: 'Phải' },
+      vertical: { low: 'Thấp', middle: 'Chụm', high: 'Cao' },
+      stiffness: { low: 'Mềm', middle: 'Vừa', high: 'Cứng' },
+    },
+    tones: { good: 'Ổn', fair: 'Lưu ý', poor: 'Kém' },
+    outOfTen: (value: string) => `${value}/10`,
+    estimate: 'ước lượng thô',
+    noReach: 'không có',
+    andMore: (meters: number) => `từ ${meters} m trở lên`,
+    sightNote: 'Sight lấy theo phần Bia; chưa nhập thì dùng một bộ sight thông thường.',
+    about:
+      'Xanh lá là ổn, vàng là nên xem lại, đỏ là chưa ổn. Thanh xám không tốt không xấu: nó để so sánh giữa các setup.',
+  },
   panels: {
     detail: 'Mức chi tiết',
     simple: 'Cơ bản',

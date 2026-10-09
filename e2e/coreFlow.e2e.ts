@@ -3,7 +3,8 @@ import { expect, test, type Page } from '@playwright/test'
 // The core flow of spec §33, on the built site: enter a setup, see the result
 // change, try a suggestion, save, compare, and find it all again after a reload.
 
-const sentence = (page: Page) => page.locator('p.text-lg').first()
+/** The bars that say what the setup is like, on Setup. */
+const sheet = (page: Page) => page.getByRole('region', { name: 'What this setup is like' })
 
 /** Opens a group of values, if it is folded. */
 async function openGroup(page: Page, group: string) {
@@ -33,12 +34,12 @@ test('starts on Setup at the Basic level, with three groups of values', async ({
 })
 
 test('a heavier point makes the arrow read weak, as the value is changed', async ({ page }) => {
-  await expect(sentence(page)).toContainText('matches the bow')
+  await expect(sheet(page)).toContainText('In tune')
   await openGroup(page, 'arrow')
   const pointWeight = page.getByRole('spinbutton', { name: /Point weight/ })
   await pointWeight.fill('200')
   await pointWeight.blur()
-  await expect(sentence(page)).toContainText('weak')
+  await expect(sheet(page)).toContainText('Weak')
   // The folded group says what is in it, and that something was changed.
   await page.locator('#arrow-heading button').click()
   await expect(page.locator('#arrow-heading')).toContainText('200 gr')

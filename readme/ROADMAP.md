@@ -41,7 +41,7 @@ Những việc chỉ chủ dự án làm được: quyết định, cấp quyề
 
 | Phase | Theme | Status |
 |---|---|---|
-| V0.1 | Basic simulator (MVP) | M1–M9 built. Open in M9: 49 skipped tests of the screen to rewrite. Open: the owner's check of the ten points of §33 on a phone |
+| V0.1 | Basic simulator (MVP) | M1–M9 built. Open in M9: 49 skipped tests of the screen to rewrite, two setups on one bar of the attribute sheet, side rods as values. Open: the owner's check of the ten points of §33 on a phone |
 | V0.2 | Improved dynamic model | In progress (8 of 12 done; walk-back needs a better source; the spine chart test waits for the Easton chart; the tail wobble needs measurements) |
 | V0.3 | Landscape, sensitivity, sharing, 3D setup viewer | All items done. Open: the owner's look at the 3D viewer on a real phone |
 | V0.4 | Real-world calibration | All items done. Open: the exit criterion, which waits for real observations; the fit has only been tested on made-up ones |
@@ -186,6 +186,9 @@ Raised by the project owner on 2026-10-08, and built the same day. Design and wh
 - [x] A callout for every part of the 3D bow: a box with a drawing of the part, its name and its value, and a line to the part, as on the screen where a weapon is fitted out in a shooter game. Pressing the box goes to the value. Seen from behind the string, where the parts stand in one line, the boxes go to either side of it by turns. No part is picked out while the bow is turned, and the callouts are back as soon as the camera has flown back to the whole bow. Setting the value of the part in view leaves the view as the user turned or zoomed it. The held wheel of the mouse moves the view. The limbs leave the pockets in the line of the riser and curl forward at the tips, after a photograph of a strung bow
 - [x] Sections that stand out from the page: each is a panel with a border and a bar beside its heading, on a page a step darker, with the controls a step lighter
 - [x] Search for a value at Professional. Looked at in headless Chrome at 1440 px and at 400 px wide, in Vietnamese
+- [x] A sheet of attributes on Setup, in place of the sentence and the next step: the setup as bars in three groups (bare shaft, flight, performance), a group more at each level. A bar that leans from a middle for left or right, low or high, weak or stiff; green, yellow and red where the model has a threshold, grey where it has none. New numbers: forgiveness, bow efficiency, bow steadiness as a rough estimate, and the farthest distance the sight clears (§41)
+- [ ] Two setups on one bar of the sheet, on Analysis (§41.6)
+- [ ] Side rods as values of the setup, so that bow steadiness is worked out instead of estimated (§41.6)
 - [ ] The tests of the screen rewritten for the workspaces: 49 of them were written for the old layout and are skipped (§40.9)
 
 **Exit criteria:** all ten points of §33 pass, and the engine runs in tests without React.

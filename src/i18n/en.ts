@@ -62,6 +62,42 @@ export const en = {
 
   parameter,
 
+  attributes: {
+    heading: 'What this setup is like',
+    groups: {
+      bareShaft: 'Bare shaft',
+      flight: 'Flight',
+      performance: 'Performance',
+    },
+    labels: {
+      lateral: 'Bare shaft left or right',
+      vertical: 'Bare shaft low or high',
+      stiffness: 'Shaft weak or stiff',
+      speed: 'Arrow speed',
+      settling: 'Shaft settles',
+      clearance: 'Clearance past the bow',
+      frontOfCenter: 'Front of center',
+      efficiency: 'Bow efficiency',
+      arrowMass: 'Arrow mass per pound',
+      forgiveness: 'Forgiveness',
+      steadiness: 'Bow steadiness',
+      sightReach: 'Farthest distance the sight clears',
+    },
+    /** The two ends of a bar that leans, and its middle. */
+    ends: {
+      lateral: { low: 'Left', middle: 'Together', high: 'Right' },
+      vertical: { low: 'Low', middle: 'Together', high: 'High' },
+      stiffness: { low: 'Weak', middle: 'In tune', high: 'Stiff' },
+    },
+    tones: { good: 'Good', fair: 'Watch', poor: 'Poor' },
+    outOfTen: (value: string) => `${value}/10`,
+    estimate: 'rough estimate',
+    noReach: 'none',
+    andMore: (meters: number) => `${meters} m or more`,
+    sightNote: 'The sight is the one set under Target; until then a usual one is assumed.',
+    about:
+      'Green is in order, yellow is worth a look, red is not in order. A grey bar is neither: it is there to compare setups.',
+  },
   panels: {
     detail: 'Detail',
     simple: 'Simple',

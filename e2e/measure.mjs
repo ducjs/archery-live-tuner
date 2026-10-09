@@ -38,7 +38,7 @@ async function run(label, { bow3d }) {
 
   const started = Date.now()
   await page.goto(URL)
-  await page.locator('p.text-lg').first().waitFor()
+  await page.locator('#attributes-heading').waitFor()
   const readable = Date.now() - started
   const plus = page.getByRole('button', { name: 'Increase Draw weight' })
   await plus.waitFor()

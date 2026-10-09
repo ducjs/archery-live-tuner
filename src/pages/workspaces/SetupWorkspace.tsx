@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo } from 'react'
+import { useMemo } from 'react'
 import { SegmentedControl } from '../../components/common/SegmentedControl.tsx'
 import { buttonClass } from '../../components/common/styles.ts'
 import { AssumedValues, SetupGroups } from '../../components/setup/SetupGroups.tsx'
@@ -12,13 +12,12 @@ import {
   clipSeconds,
 } from '../../components/simulation/timing.ts'
 import { usePlayback } from '../../components/simulation/usePlayback.ts'
-import { NextStep } from '../../components/tuning/NextStep.tsx'
-import { ResultSentence } from '../../components/tuning/ResultPanel.tsx'
+import { useSight } from '../../components/target/useSight.ts'
+import { AttributeSheet } from '../../components/tuning/AttributeSheet.tsx'
 import { BowViewer, BowViewerControls } from '../../components/viewer3d/SetupViewer.tsx'
 import { useBowViewer } from '../../components/viewer3d/useBowViewer.ts'
-import { suggestTuning } from '../../engine/index.ts'
+import { attributes, dragPerMeter } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
-import type { TuningSetup } from '../../models/setup.ts'
 import { useTuningStore, type FlightPreview } from '../../state/tuningStore.ts'
 import { useFlight } from './useFlight.ts'
 
@@ -34,17 +33,28 @@ export function SetupWorkspace() {
   const flightPreview = useTuningStore((state) => state.flightPreview)
   const setBow3d = useTuningStore((state) => state.setBow3d)
   const setFlightPreview = useTuningStore((state) => state.setFlightPreview)
-  const setParameter = useTuningStore((state) => state.setParameter)
   const pointTo = useTuningStore((state) => state.pointTo)
 
   const { setup, model, comparison, result } = useFlight(DEFAULT_DISTANCE)
-  // Finding the next step tries hundreds of setups. It follows a value a moment
-  // later, so the value itself and the reading answer at once.
-  // On the first drawing of the page it is left out altogether, and follows.
-  const settled = useDeferredValue<TuningSetup | null>(setup, null)
-  const advice = useMemo(
-    () => settled && suggestTuning(model, settled, { tier: mode, limit: 1 }),
-    [model, settled, mode],
+  // What the setup is like, as bars that move with every value. The sight is
+  // the one of the Target workspace, with the speed its marks imply when there
+  // are enough of them.
+  const sight = useSight(setup, result)
+  const sheet = useMemo(
+    () =>
+      attributes({
+        model,
+        setup,
+        comparison,
+        sight: {
+          speed: sight.fit?.speed ?? result.metrics.launchSpeed,
+          drag: dragPerMeter(setup.arrow),
+          eyeHeight: sight.entry.eyeHeight,
+          extension: sight.entry.extension,
+          pinDiameter: sight.entry.pinDiameter,
+        },
+      }),
+    [model, setup, comparison, result, sight],
   )
   const viewer = useBowViewer(setup)
   const playback = usePlayback(clipSeconds(result), HOLD_SECONDS, DEFAULT_SPEED)
@@ -81,7 +91,6 @@ export function SetupWorkspace() {
 
         {/* What the values do stays in view while one of them is changed. */}
         <div className="bg-paper sticky top-0 z-10 order-2 -mx-4 grid min-w-0 gap-2 px-4 py-2 sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:p-0">
-          <ResultSentence result={result} comparison={comparison} handedness={handedness} />
           {bow3d && (
             <BowViewer
               bow={setup.bow}
@@ -123,15 +132,7 @@ export function SetupWorkspace() {
               </div>
             </div>
           )}
-          <NextStep
-            advice={advice}
-            before={{
-              classification: result.classification,
-              horizontal: comparison.horizontal,
-              vertical: comparison.vertical,
-            }}
-            onTry={setParameter}
-          />
+          <AttributeSheet groups={sheet} level={mode} units={units} />
           <AssumedValues />
           {bow3d && (
             <details>

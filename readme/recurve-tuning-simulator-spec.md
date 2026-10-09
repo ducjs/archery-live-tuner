@@ -1928,7 +1928,7 @@ phone                                   wide screen
 
 **The bow as a way in.** Every part has a callout: a box at the side of the view with a small drawing of the part, its name and its main value, and a line from the box to the part. Each box stands a short way out from its part, on the side away from the middle of the bow, and boxes that would cover each other are pushed apart. Seen from behind the string, or from the target, the parts stand in one line on the screen and outward would stack the boxes on that line; there the boxes go to either side of the line by turns, in the order the parts have along it. While the bow is turned, or a value moves it, the callouts are put away; they are drawn again a fifth of a second after the view is let go and stands still, because lines that follow every frame are restless to look at. A flight of the camera ends standing still, so after one they are drawn at once; the flight back to the whole bow is the quicker one, and a flight is ended when half a percent of it is left, which is too slow to see. With the pointer on a box, or on a part, that part is drawn bright and the others faint, so it is plain which part the box belongs to. Not while the bow is turned: then the pointer crosses parts without meaning any of them, and all are drawn as they are. The same holds for the part the camera is close on, which is the one being set. A part that is out of view has no box. On a narrow view the box keeps the drawing and the name only. Pressing a box, or the part itself, flies the camera to the part and puts the callouts of the other parts away, so only that part's stays. They come back with the whole bow: by the button for it, by a press beside the bow, or by zooming well back out. Pressing also opens the group of its value, opens the row, and puts the focus on its slider. Changing a value flies the camera to the part it moves and writes the value there, unless that part is in view already: then the view stays as the user turned or zoomed it, for as long as the value is set. The held wheel of the mouse moves the view, as the right button does. Both exist since §36; here they sit next to the list instead of on another screen. A part whose value lives above the level raises the level. The views of the whole bow, the buttons of the pieces of equipment and the two switches of the 3D view are under "display options" below the previews.
 
-**The result stays in sight.** The sentence of the result stands above the previews and changes as a slider moves. Under them: the next step with its "Try it" button, and the line about assumed values.
+**The result stays in sight.** Under the previews stands the sheet of attributes (§41): the setup as bars that move as a slider does. It took the place of the sentence of the result and of the next step, which are on the Flight workspace. Under it: the line about assumed values.
 
 **Groups.** `ParameterGroup` becomes `'bow' | 'tuning' | 'arrow' | 'string' | 'balance'`; `size` and `curve` go into `bow`.
 
@@ -1983,7 +1983,54 @@ On a phone the three tabs "setup, result, suggestions" under the animation go aw
 - 49 tests of the screen were written for the old layout: the "Show" switch, the two levels, the three tabs on a phone. They are skipped, each with a note, and have to be rewritten for the workspaces. The tests of the engine, the models and the stores all run.
 - The 3D scene costs more than a list on an old phone, and it is loaded on the first visit now instead of on request. Switching it off is one press and is remembered. Touch on a real phone has not been tried yet (pinned in the roadmap).
 - On a phone with both previews switched on, the pinned drawings take most of the screen. That is why a phone starts with one.
-- Draw weight, spine and other values have nothing to show on the bow (§36). The bow does not move for them; the sentence of the result and the flight do.
+- Draw weight, spine and other values have nothing to show on the bow (§36). The bow does not move for them; the attributes (§41) and the flight do.
 - Sight marks are useful to every archer but sit at Professional, as the owner chose. Moving them is a one-line change in `TargetWorkspace`.
 - "Grains per pound" and "estimated speed" stay at Advanced; only front of center moved to Professional.
 - The V0.5 exit criterion "Simple mode is unchanged" no longer holds: tiller and limb alignment are Basic now.
+
+---
+
+# 41. The sheet of attributes
+
+Status: built, except §41.6.
+
+Goal: what a setup is like, read at a glance and compared at a glance, the way a game shows what a weapon is like on the screen where it is fitted out. Code: `engine/explore/attributes.ts`, `components/tuning/AttributeSheet.tsx`.
+
+## 41.1 Two kinds of bar
+
+- **A lean.** The middle is the aim and the bar grows from it to one side: bare shaft left or right, bare shaft low or high, shaft weak or stiff. Next to it stands the side and how far, out of ten, or the word for the middle. One bar that leans says what two bars from nothing to full ("flies high 9/10", "flies low 0/10") would say twice.
+- **A level.** From nothing to full, with the number in its unit next to it.
+
+## 41.2 The groups
+
+| Group | From level | Attribute | Read from |
+|---|---|---|---|
+| Bare shaft | Basic | left or right, low or high | the offset of the bare shaft test |
+| | | weak or stiff | dynamic behavior |
+| Flight | Advanced | arrow speed | launch speed, in m/s or fps |
+| | | shaft settles | the time until the bending has died down; the bar is the oscillation |
+| | | clearance past the bow | clearance risk, turned over |
+| | | front of center | as in §4 |
+| Performance | Professional | bow efficiency | energy of the arrow over energy stored in the bow |
+| | | arrow mass per pound | grains per pound |
+| | | forgiveness | §41.4 |
+| | | bow steadiness | §41.5 |
+| | | farthest distance the sight clears | §38.6, looked for up to 90 m |
+
+## 41.3 Colors
+
+Green is in order, yellow is worth a look, red is not in order, and every colored bar has the word next to it, so the color is not the only sign. The steps are the thresholds the model has already (`thresholds` of the coefficients, the range of front of center, the lightest arrow the bow allows). Speed, efficiency, arrow mass, steadiness and the reach of the sight have no right and wrong: their bars are grey and are there to compare setups. Arrow mass turns red below the lightest arrow the bow allows, which is a matter of safety.
+
+## 41.4 Forgiveness
+
+HEURISTIC. The setup is run with the draw 5 mm short and 5 mm long, the draw weight 1.5 % down and up with it. What counts against the setup is the worst of three: how far the arrow moves between the two draws, how much the shaft still bends at the worse of them, and how near it comes to the bow there. How far the arrow moves is not enough by itself: in this model a shaft far from matching moves little, because its lean is near the end of the scale already, and would read as forgiving.
+
+## 41.5 Bow steadiness
+
+A rough estimate, and marked as one on the screen. It is the resistance of the bow to being moved by the shot that the model has already (`relativeBowInertia`): the mass in the hand and the one weight on the long rod. The reference bow reads 6 out of ten. The model knows of no side rods and of no balance point.
+
+## 41.6 Open
+
+- Two setups on one bar, the saved one as a mark on the bar of the open one, on Analysis.
+- Side rods and their weights as values of the setup, so that steadiness and balance are worked out instead of estimated.
+- The sight reach uses the sight of the Target workspace, which is Professional. Until it is entered a usual sight is assumed, and the sheet says so.

@@ -331,6 +331,13 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Ô tìm thông số ở mức Chuyên nghiệp. Đã xem bằng Chrome không giao diện ở 1440 px và 400 px, tiếng Việt',
           ),
+          done(
+            'Bảng chỉ số ở Setup, thay cho câu kết luận và bước tiếp theo: setup hiện thành các thanh trong ba nhóm (bare shaft, đường bay, hiệu năng), mỗi mức thêm một nhóm. Thanh lệch từ giữa cho trái hay phải, thấp hay cao, mềm hay cứng; xanh, vàng, đỏ ở chỗ mô hình có ngưỡng, xám ở chỗ không có. Số mới: độ dễ tha thứ, hiệu suất cung, độ đằm của cung ở dạng ước lượng thô, và cự ly xa nhất chưa đụng sight',
+          ),
+          todo('Hai setup trên cùng một thanh của bảng chỉ số, ở phần Phân tích'),
+          todo(
+            'Thêm tạ bên vào thông số của setup, để độ đằm của cung được tính thay vì ước lượng',
+          ),
           todo(
             'Viết lại các test giao diện cho các màn hình làm việc: 49 test viết cho bố cục cũ đang bị bỏ qua',
           ),

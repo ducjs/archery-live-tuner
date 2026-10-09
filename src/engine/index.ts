@@ -25,6 +25,16 @@ export {
   type ObservationComparison,
   type ObservationRow,
 } from './diagnosis/observation.ts'
+export {
+  FARTHEST_DISTANCE,
+  attributes,
+  forgiveness,
+  sightReach,
+  type Attribute,
+  type AttributeGroup,
+  type AttributeId,
+  type Tone,
+} from './explore/attributes.ts'
 export { DRAG_COEFFICIENT, dragPerMeter, launchAngleFor } from './ballistics/flight.ts'
 export {
   CLOSE_ROOM,
