@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree, type ThreeElements, type ThreeEvent } from 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   CatmullRomCurve3,
+  MOUSE,
   Quaternion,
   TubeGeometry,
   Vector3,
@@ -265,6 +266,8 @@ function CameraRig({ focus, focusRequest, geometry, onLeave, onHold, onArrive }:
       ref={controls as never}
       makeDefault
       enableDamping={false}
+      // The wheel zooms as it is turned; held down, it moves the view.
+      mouseButtons={{ LEFT: MOUSE.ROTATE, MIDDLE: MOUSE.PAN, RIGHT: MOUSE.PAN }}
       minDistance={150}
       maxDistance={6000}
       onStart={() => {
@@ -987,7 +990,13 @@ export default function BowScene({
   }
 
   return (
-    <div className="@container relative h-full w-full overflow-hidden">
+    <div
+      className="@container relative h-full w-full overflow-hidden"
+      // Or the browser starts its own scrolling under the held wheel.
+      onMouseDown={(event) => {
+        if (event.button === 1) event.preventDefault()
+      }}
+    >
       <Canvas
         frameloop="demand"
         dpr={[1, 2]}

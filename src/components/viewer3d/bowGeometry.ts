@@ -57,6 +57,25 @@ const TILLER_AT = 0.26
 const CONTACT_AT = 0.93
 /** Share of the draw that the limb tips come back by. Chosen by eye. */
 const TIP_FOLLOW = 0.35
+/** mm, how far the tip of a limb stands in front of the string: the recurve. */
+const TIP_RECURVE = 30
+/**
+ * The side view of a limb, as [how far along it, share of the way from the
+ * pocket back to where the string leaves it]. It leaves the pocket in the line
+ * of the riser's end, runs back nearly straight, and turns upright where the
+ * string lies on it, before the tip curls forward. Drawn after a photograph of
+ * a strung bow.
+ */
+const LIMB_PROFILE: [number, number][] = [
+  [0, 0],
+  [TILLER_AT, 0.26],
+  [0.54, 0.62],
+  [0.8, 0.91],
+  [0.88, 0.985],
+  [CONTACT_AT, 1],
+]
+/** How far along the limb the two points between the string and the tip are, where it curls. */
+const CURL_AT = [0.955, 0.98]
 
 export type BowGeometry = {
   /** +1 when the riser is on the archer's right of the arrow (right-handed), -1 otherwise. */
@@ -160,7 +179,7 @@ export function bowGeometry(
   // curve of the bow takes up; they come back and in as the string is drawn.
   const pull = drawn ? Math.max(0, bow.drawLength - brace) : 0
   const reach = TIP_HEIGHT + ((bowLength(bow) - 68) * 25.4) / 2
-  const tipX = -brace + 30 - TIP_FOLLOW * pull
+  const tipX = -brace + TIP_RECURVE - TIP_FOLLOW * pull
   // The string keeps its length: what it gains toward the nock, the tips give up in height.
   const halfString = reach - TIP_TO_STRING
   const contactX = -brace - TIP_FOLLOW * pull
@@ -187,12 +206,22 @@ export function bowGeometry(
     const tipZ = alignment * amplify
     const span = tipY - base[1]
     // [x, height above the arrow line, how far along the limb].
+    const back = contactX - 8 - base[0]
     const shape: [number, number, number][] = [
-      [base[0], base[1], 0],
-      [-42 - 0.1 * pull, base[1] + TILLER_AT * span, TILLER_AT],
-      [-brace * 0.45 - 0.2 * pull, base[1] + 0.54 * span, 0.54],
-      [-brace * 0.85 - 0.3 * pull, base[1] + 0.8 * span, 0.8],
-      [contactX - 8, contactY, CONTACT_AT],
+      ...LIMB_PROFILE.map(([along, share]): [number, number, number] => [
+        base[0] + share * back,
+        along === CONTACT_AT ? contactY : base[1] + along * span,
+        along,
+      ]),
+      // The curl of the tip starts upright at the string and turns forward faster and faster.
+      ...CURL_AT.map((along): [number, number, number] => {
+        const share = (along - CONTACT_AT) / (1 - CONTACT_AT)
+        return [
+          contactX - 8 + share ** 2 * (tipX - contactX + 8),
+          contactY + share * (tipY - contactY),
+          along,
+        ]
+      }),
       [tipX, tipY, 1],
     ]
     return shape.map(([x, y, along]) => [
@@ -207,7 +236,7 @@ export function bowGeometry(
   const lower = limb(-1, bow.limbAlignmentBottom)
   // Where the string leaves each limb: on the limb's face, just in front of its centerline.
   const contact = (points: Vec3[]): Vec3 => {
-    const [x, y, z] = points.at(-2)!
+    const [x, y, z] = points.at(-2 - CURL_AT.length)!
     return [x + 8, y, z]
   }
   const upperContact = contact(upper)

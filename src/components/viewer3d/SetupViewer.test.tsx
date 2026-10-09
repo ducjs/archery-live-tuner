@@ -56,7 +56,18 @@ describe('where the camera goes', () => {
     const before = result.current.focusRequest
     rerender(withValue(key, value))
     expect(result.current.focus).toBe(focus)
-    expect(result.current.focusRequest).toBe(before + 1)
+    // The whole bow is in view already: nothing to fly to.
+    expect(result.current.focusRequest).toBe(focus === 'bow' ? before : before + 1)
+  })
+
+  it('leaves the view alone while the value of the part in view is set', () => {
+    const { result, rerender } = viewer(reference)
+    rerender(withValue('bow.stabilizerPosition', 500))
+    const before = result.current.focusRequest
+    rerender(withValue('bow.stabilizerPosition', 520))
+    rerender(withValue('bow.stabilizerPosition', 540))
+    expect(result.current.focus).toBe('stabilizer')
+    expect(result.current.focusRequest).toBe(before)
   })
 
   it('stays put for a value with nothing to draw', () => {

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ArrowSetup } from '../../models/arrow.ts'
 import type { BowSetup } from '../../models/bow.ts'
 import { PARAMETERS, getValue } from '../../models/parameters.ts'
-import { focusOf, type Focus } from './cameraShots.ts'
+import { EQUIPMENT, focusOf, type Focus } from './cameraShots.ts'
 
 export type BowViewerState = {
   focus: Focus
@@ -41,7 +41,15 @@ export function useBowViewer(setup: Values): BowViewerState {
     // being opened, which is no reason to move the camera.
     if (changed.length !== 1) return
     const key = changed[0]!.key
-    lookAt(focusOf(key)!)
+    const shot = focusOf(key)!
+    const ownShot = EQUIPMENT.find((piece) => piece.parameter === key)?.focus
+    // A part that is being looked at already is left as the user has it: turned,
+    // or zoomed in or out, while the value is set.
+    setView((current) =>
+      current.focus === shot || current.focus === ownShot
+        ? current
+        : { focus: shot, request: current.request + 1 },
+    )
     // Draw length only shows on a drawn bow.
     if (key === 'bow.drawLength') setDrawn(true)
   }, [bow, arrow])
