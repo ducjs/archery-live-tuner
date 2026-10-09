@@ -58,6 +58,8 @@ type BowViewerProps = {
    * itself: an option stands with the drawing it changes.
    */
   controls?: ReactNode
+  /** By the key of a value: the tone its callout on the bow writes it in. */
+  tones?: Partial<Record<string, 'fair' | 'poor' | 'plain'>>
 }
 
 export function BowViewer({
@@ -69,6 +71,7 @@ export function BowViewer({
   onPick,
   compact = false,
   controls,
+  tones,
 }: BowViewerProps) {
   const m = useMessages()
   // A pressed part is looked at as well as set: the camera goes to it.
@@ -103,6 +106,7 @@ export function BowViewer({
             units={units}
             onPick={pick}
             onLeave={() => viewer.lookAt('bow')}
+            tones={tones}
           />
         </Suspense>
       </SceneBoundary>

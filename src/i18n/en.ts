@@ -130,6 +130,7 @@ export const en = {
       side: 'From the side',
       off: 'Off',
     },
+    influence: 'The colors under the slider: how the setup reads with the value there.',
     onTarget: {
       label: 'Where the model has the arrows land on the target.',
       together: 'The bare shaft lands with the fletched arrows',

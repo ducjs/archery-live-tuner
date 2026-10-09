@@ -1,10 +1,12 @@
 import { useId, useState } from 'react'
+import type { Influence } from '../../engine/index.ts'
 import { parameterText } from '../../i18n/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import { displayOf, fromDisplay, toDisplay, type NumberParameter } from '../../models/parameters.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
 import { unitLabel } from '../../utils/units.ts'
 import { clampValue } from '../../utils/validation.ts'
+import { TONE_TEXT, strip, textTone } from './influenceLook.ts'
 
 type Props = {
   parameter: NumberParameter
@@ -16,14 +18,17 @@ type Props = {
   onOpen: () => void
   onChange: (value: number) => void
   onReset: () => void
+  /** What the value does to the reading of the setup over its range. Colors the number and the slider. */
+  influence?: Influence
 }
 
 /**
  * One value on one row: label, number, unit, minus and plus. The row that is
  * in use opens to its slider, so a long list stays short.
  */
-export function ValueRow({ parameter, value, open, onOpen, onChange, onReset }: Props) {
+export function ValueRow({ parameter, value, open, onOpen, onChange, onReset, influence }: Props) {
   const id = useId()
+  const tone = textTone(influence)
   // Text being typed. Kept apart from the value so half-typed numbers are not rejected.
   const [draft, setDraft] = useState<string | null>(null)
 
@@ -107,8 +112,14 @@ export function ValueRow({ parameter, value, open, onOpen, onChange, onReset }: 
             if (draft !== null && draft !== '' && Number.isFinite(typed)) commit(typed)
             setDraft(null)
           }}
-          className="border-line bg-surface focus-visible:outline-accent h-10 w-20 rounded-md border px-2 text-right text-lg font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+          aria-describedby={tone === 'plain' ? undefined : `${id}-tone`}
+          className={`border-line bg-surface focus-visible:outline-accent h-10 w-20 rounded-md border px-2 text-right text-lg font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 ${TONE_TEXT[tone]}`}
         />
+        {tone !== 'plain' && (
+          <span id={`${id}-tone`} className="sr-only">
+            {m.attributes.tones[tone]}
+          </span>
+        )}
         <span className="text-ink-muted w-7 shrink-0 text-sm">{unit}</span>
         {stepButton(-1)}
         {stepButton(1)}
@@ -129,8 +140,20 @@ export function ValueRow({ parameter, value, open, onOpen, onChange, onReset }: 
             }}
             className="accent-accent focus-visible:outline-accent block h-11 w-full cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
           />
+          {influence?.lever && (
+            // Under the slider, place for place: how the setup reads with the value there.
+            <div
+              aria-hidden="true"
+              data-influence={influence.tones.join(' ')}
+              className="mx-2 -mt-2 mb-2 h-1.5 rounded-full"
+              style={{ background: strip(influence.tones) }}
+            />
+          )}
           <div className="flex items-start justify-between gap-3">
-            <p className="text-ink-muted min-w-0 text-sm">{hint}</p>
+            <p className="text-ink-muted min-w-0 text-sm">
+              {hint}
+              {influence?.lever && <> {m.panels.influence}</>}
+            </p>
             {!isDefault && (
               <button
                 type="button"

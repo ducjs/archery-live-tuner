@@ -340,6 +340,9 @@ export const ROADMAP: RoadmapPhase[] = [
           done(
             'Điểm chạm trên một mặt bia ở Setup, tên có cánh và bare shaft trên cùng một bia. Setup mở ra với hình này ở mọi cỡ màn; hình đường bay từ trên và từ bên cách một lần bấm. Chia hai cột từ 640 px thay vì 1024 px, cho điện thoại gập khi mở và tablet cầm dọc',
           ),
+          done(
+            'Dải màu dưới thanh trượt của mỗi thông số: xanh, vàng, đỏ cho biết setup sẽ ra sao nếu đặt giá trị ở từng chỗ trong khoảng của nó. Con số của thông số chuyển vàng hoặc đỏ khi setup chưa ổn và thông số đó sửa được, cả trong danh sách lẫn trên các ô tên phụ kiện của cung 3D',
+          ),
           todo('Hai setup trên cùng một thanh của bảng chỉ số, ở phần Phân tích'),
           todo(
             'Thêm tạ bên vào thông số của setup, để độ đằm của cung được tính thay vì ước lượng',

@@ -15,10 +15,13 @@ import { usePlayback } from '../../components/simulation/usePlayback.ts'
 import { PredictedTarget } from '../../components/target/PredictedTarget.tsx'
 import { useSight } from '../../components/target/useSight.ts'
 import { AttributeSheet } from '../../components/tuning/AttributeSheet.tsx'
+import { textTone } from '../../components/setup/influenceLook.ts'
+import { EQUIPMENT } from '../../components/viewer3d/cameraShots.ts'
 import { BowViewer, BowViewerControls } from '../../components/viewer3d/SetupViewer.tsx'
 import { useBowViewer } from '../../components/viewer3d/useBowViewer.ts'
-import { attributes, dragPerMeter } from '../../engine/index.ts'
+import { attributes, dragPerMeter, influence } from '../../engine/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
+import { getParameter } from '../../models/parameters.ts'
 import { useTuningStore, type FlightPreview } from '../../state/tuningStore.ts'
 import { useFlight } from './useFlight.ts'
 
@@ -56,6 +59,18 @@ export function SetupWorkspace() {
         },
       }),
     [model, setup, comparison, result, sight],
+  )
+  // The callouts on the bow write their values as the rows of the list do:
+  // marked when the setup is not in order and the value can do something about it.
+  const tones = useMemo(
+    () =>
+      Object.fromEntries(
+        EQUIPMENT.map(({ parameter }) => [
+          parameter,
+          textTone(influence(model, setup, getParameter(parameter))),
+        ]),
+      ),
+    [model, setup],
   )
   const viewer = useBowViewer(setup)
   const playback = usePlayback(clipSeconds(result), HOLD_SECONDS, DEFAULT_SPEED)
@@ -106,6 +121,7 @@ export function SetupWorkspace() {
               compact
               fallback={null}
               controls={<BowViewerControls viewer={viewer} onPick={pointTo} brief />}
+              tones={tones}
             />
           )}
           {flightPreview === 'target' && <PredictedTarget comparison={comparison} />}

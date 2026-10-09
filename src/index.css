@@ -16,6 +16,8 @@
   /* Tuning scale: gold is the middle of the target, so gold means in tune. */
   --color-gold: #e3a900;
   --color-good: #2b8a4b;
+  /* Gold is too light to read as text on a light page. */
+  --color-caution: #8a6100;
   --color-weak: #c8323a;
   --color-stiff: #1f6fae;
 
@@ -40,6 +42,7 @@
       --color-accent: #5bb0e4;
       --color-gold: #f2c230;
       --color-good: #4fc27a;
+      --color-caution: #f2c230;
       --color-weak: #f0666c;
       --color-stiff: #62aee6;
       --color-chart-weak: #e0555c;

@@ -188,6 +188,7 @@ export const vi: Messages = {
       side: 'Từ bên',
       off: 'Tắt',
     },
+    influence: 'Dải màu dưới thanh trượt: setup sẽ ra sao nếu đặt giá trị ở đó.',
     onTarget: {
       label: 'Điểm chạm trên bia theo mô hình.',
       together: 'Bare shaft chụm với tên có cánh',

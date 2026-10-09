@@ -35,6 +35,7 @@ export {
   type AttributeId,
   type Tone,
 } from './explore/attributes.ts'
+export { FINE, influence, setupTone, valueTone, type Influence } from './explore/influence.ts'
 export { DRAG_COEFFICIENT, dragPerMeter, launchAngleFor } from './ballistics/flight.ts'
 export {
   CLOSE_ROOM,

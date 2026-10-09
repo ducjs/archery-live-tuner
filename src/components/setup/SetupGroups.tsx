@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { SegmentedControl } from '../common/SegmentedControl.tsx'
 import { inputClass } from '../common/styles.ts'
+import { FINE, influence } from '../../engine/index.ts'
 import { parameterText } from '../../i18n/index.ts'
 import { useMessages } from '../../i18n/useMessages.ts'
 import { arrowTotalMass } from '../../models/arrow.ts'
@@ -20,6 +21,7 @@ import {
   type Parameter,
   type ParameterGroup,
 } from '../../models/parameters.ts'
+import { useModel } from '../../state/calibrationStore.ts'
 import { useTuningStore } from '../../state/tuningStore.ts'
 import { convert } from '../../utils/units.ts'
 import { ValueRow } from './ValueRow.tsx'
@@ -59,10 +61,13 @@ function Value({
   parameter,
   open,
   onOpen,
+  live = true,
 }: {
   parameter: Parameter
   open: boolean
   onOpen: () => void
+  /** False while the row is folded away with its group: nothing is worked out for it. */
+  live?: boolean
 }) {
   const m = useMessages()
   const setup = useTuningStore((state) => state.setup)
@@ -71,6 +76,17 @@ function Value({
   const highlighted = useTuningStore((state) => state.highlighted)
   const clearHighlight = useTuningStore((state) => state.clearHighlight)
   const element = useRef<HTMLDivElement>(null)
+  // Where on its range the value leaves the setup in order, and where not.
+  const model = useModel()
+  const found = useMemo(
+    () =>
+      // Finely for the row in use, whose slider shows it; roughly for the others,
+      // which only need to know whether to mark their number.
+      live && parameter.kind === 'number'
+        ? influence(model, setup, parameter, open ? FINE : undefined)
+        : undefined,
+    [model, setup, parameter, live, open],
+  )
   const active = highlighted?.key === parameter.key
   const request = highlighted?.request
 
@@ -118,6 +134,7 @@ function Value({
           onOpen={onOpen}
           onChange={(value) => setParameter(parameter.key, value)}
           onReset={() => resetParameter(parameter.key)}
+          influence={found}
         />
       )}
     </div>
@@ -276,6 +293,7 @@ function Group({ group, open, onToggle, openKey, onOpenKey, footer }: GroupProps
             parameter={parameter}
             open={openKey === parameter.key}
             onOpen={() => onOpenKey(parameter.key)}
+            live={open}
           />
         ))}
         {footer && <div className="px-2">{footer}</div>}

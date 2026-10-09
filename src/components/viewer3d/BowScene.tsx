@@ -51,6 +51,11 @@ type Props = {
   onPick: (parameterKey: string) => void
   /** Called when the close look at a part ends: a press beside the bow, or zooming back out. */
   onLeave: () => void
+  /**
+   * By the key of a value: the tone its callout writes it in, when the setup
+   * does not read as in order and that value can do something about it.
+   */
+  tones?: Partial<Record<string, 'fair' | 'poor' | 'plain'>>
 }
 
 /** The nocking point locators are a few millimetres long; this is what answers a press on them. */
@@ -898,6 +903,13 @@ function Bow({ geometry, measured, lit, onPick, onHover, onLeave }: BowProps) {
   )
 }
 
+/** How the value of a callout is written. On a narrow view the value is not shown; the edge of the box says it. */
+const CALLOUT_TONE = {
+  plain: 'text-ink-muted',
+  fair: 'text-caution font-semibold',
+  poor: 'text-weak font-semibold',
+}
+
 const labelClass =
   'border-line bg-surface text-ink absolute top-0 left-0 rounded-md border px-2 py-1 text-sm font-medium whitespace-nowrap shadow-sm'
 
@@ -911,6 +923,7 @@ export default function BowScene({
   units,
   onPick,
   onLeave,
+  tones,
 }: Props) {
   const m = useMessages()
   const geometry = useMemo(
@@ -1091,13 +1104,20 @@ export default function BowScene({
               onPointerLeave={() => setPointed((current) => (current === name ? null : current))}
               onFocus={() => setPointed(name)}
               onBlur={() => setPointed((current) => (current === name ? null : current))}
-              aria-label={m.viewer.goTo(m.viewer.part[name])}
-              className="border-line bg-surface/90 text-ink hover:border-accent focus-visible:outline-accent pointer-events-auto invisible absolute top-0 left-0 flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md border px-1.5 py-1 text-left leading-tight shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 @md:gap-2 @md:px-2"
+              aria-label={
+                (tones?.[parameter] ?? 'plain') === 'plain'
+                  ? m.viewer.goTo(m.viewer.part[name])
+                  : `${m.viewer.goTo(m.viewer.part[name])}. ${m.attributes.tones[tones![parameter] as 'fair' | 'poor']}`
+              }
+              data-tone={tones?.[parameter] ?? 'plain'}
+              className="border-line bg-surface/90 text-ink hover:border-accent data-[tone=fair]:border-l-gold data-[tone=poor]:border-l-weak data-[tone=fair]:border-l-4 data-[tone=poor]:border-l-4 focus-visible:outline-accent pointer-events-auto invisible absolute top-0 left-0 flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md border px-1.5 py-1 text-left leading-tight shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 @md:gap-2 @md:px-2"
             >
               <PartIcon part={name} className="text-ink-muted size-6 shrink-0 @md:size-8" />
               <span className="grid">
                 <span className="text-xs font-medium @md:text-sm">{m.viewer.part[name]}</span>
-                <span className="text-ink-muted hidden text-xs @md:block">
+                <span
+                  className={`hidden text-xs @md:block ${CALLOUT_TONE[tones?.[parameter] ?? 'plain']}`}
+                >
                   {valueOf(parameter)}
                 </span>
               </span>
